@@ -1,0 +1,29 @@
+# dependencies
+/node_modules
+
+# testing
+/coverage
+/test-results
+/playwright-report
+/blob-report
+
+# next.js
+/.next/
+/out/
+/build
+
+# local data (SQLite database + uploaded materials)
+/data/
+
+# misc
+.DS_Store
+*.pem
+npm-debug.log*
+
+# env files (see .env.example)
+.env*
+!.env.example
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts

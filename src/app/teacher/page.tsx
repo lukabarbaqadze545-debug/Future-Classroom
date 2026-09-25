@@ -1,0 +1,163 @@
+import Link from "next/link";
+import { BookPlus, FileUp, Radio } from "lucide-react";
+import { getCurrentUser } from "@/lib/auth/session";
+import { getDictionary } from "@/lib/i18n/server";
+import { fmt, fmtCount, relativeTime } from "@/lib/i18n/config";
+import { listLessonsForTeacher } from "@/lib/services/lessons";
+import { listSessionsForTeacher } from "@/lib/services/sessions";
+import { listQuizzesForTeacher } from "@/lib/services/quizzes";
+import { listMaterials } from "@/lib/services/materials";
+import { PageContainer } from "@/components/layout/site-header";
+import { PageHeader } from "@/components/ui/misc";
+import { Card, CardHeader } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { ButtonLink } from "@/components/ui/button";
+import { StartSessionButton } from "@/components/teacher/start-session-dialog";
+
+export const metadata = { title: "Teacher dashboard" };
+
+export default async function TeacherDashboard() {
+  const user = (await getCurrentUser())!;
+  const { dict } = await getDictionary();
+  const d = dict.teacher.dashboard;
+  const lessons = listLessonsForTeacher(user.id);
+  const sessions = listSessionsForTeacher(user.id);
+  const live = sessions.filter((s) => s.status !== "ended");
+  const ended = sessions.filter((s) => s.status === "ended").slice(0, 5);
+  const quizzes = listQuizzesForTeacher(user.id).filter((q) => q.attemptCount > 0).slice(0, 4);
+  const materials = listMaterials(user).slice(0, 4);
+  const firstName = user.displayName.split(" ")[0];
+
+  return (
+    <PageContainer>
+      <PageHeader title={fmt(d.greeting, { name: firstName })} description={d.lead} />
+
+      {/* Quick actions */}
+      <div className="grid gap-4 md:grid-cols-3">
+        <Link href="/teacher/lessons/new" className="group rounded-2xl border border-brand/20 bg-brand p-6 text-white shadow-[var(--shadow-card)] transition-colors hover:bg-brand-hover" data-testid="create-lesson">
+          <BookPlus aria-hidden className="size-7" />
+          <p className="mt-4 text-lg font-semibold">{d.createLesson}</p>
+          <p className="mt-1 text-sm text-white/80">{d.createLessonText}</p>
+        </Link>
+        <div className="flex flex-col rounded-2xl border border-line bg-surface p-6 shadow-[var(--shadow-card)]">
+          <Radio aria-hidden className="size-7 text-brand" />
+          <p className="mt-4 text-lg font-semibold">{d.startSession}</p>
+          <p className="mt-1 mb-4 text-sm text-ink-muted">{d.startSessionText}</p>
+          <div className="mt-auto">
+            <StartSessionButton size="md" variant="secondary" label={d.startSession} lessons={lessons.filter((l) => l.activityCount > 0).map((l) => ({ id: l.id, title: l.title, grade: l.grade }))} />
+          </div>
+        </div>
+        <Link href="/teacher/materials" className="rounded-2xl border border-line bg-surface p-6 shadow-[var(--shadow-card)] transition-colors hover:border-line-strong">
+          <FileUp aria-hidden className="size-7 text-brand" />
+          <p className="mt-4 text-lg font-semibold">{d.uploadMaterial}</p>
+          <p className="mt-1 text-sm text-ink-muted">{d.uploadMaterialText}</p>
+        </Link>
+      </div>
+
+      {live.length ? (
+        <Card className="mt-6 border-success/30">
+          <CardHeader title={<span className="flex items-center gap-2"><span className="fc-pulse size-2.5 rounded-full bg-success" />{d.liveNow}</span>} />
+          <ul className="divide-y divide-line">
+            {live.map((s) => (
+              <li key={s.id} className="flex flex-wrap items-center justify-between gap-3 px-5 py-3">
+                <div>
+                  <p className="font-medium">{s.title} {s.classLabel ? <span className="text-ink-subtle">· {s.classLabel}</span> : null}</p>
+                  <p className="text-sm text-ink-muted">
+                    <span className="font-mono font-semibold text-ink">{s.joinCode}</span> · {fmtCount(d.participants, s.participantCount)} · {dict.status[s.status]}
+                  </p>
+                </div>
+                <ButtonLink href={`/teacher/sessions/${s.id}`} size="sm">{d.resume}</ButtonLink>
+              </li>
+            ))}
+          </ul>
+        </Card>
+      ) : null}
+
+      <div className="mt-6 grid gap-6 lg:grid-cols-2">
+        <Card>
+          <CardHeader title={d.recentLessons} action={<ButtonLink href="/teacher/lessons" variant="ghost" size="sm">{dict.common.viewAll}</ButtonLink>} />
+          {lessons.length ? (
+            <ul className="divide-y divide-line">
+              {lessons.slice(0, 5).map((l) => (
+                <li key={l.id}>
+                  <Link href={`/teacher/lessons/${l.id}`} className="flex items-center justify-between gap-3 px-5 py-3 hover:bg-muted/50">
+                    <div className="min-w-0">
+                      <p className="truncate font-medium">{l.title}</p>
+                      <p className="text-sm text-ink-muted">
+                        {dict.subjects[l.subject]} · {fmt(dict.common.grade, { n: l.grade })} · {fmtCount(dict.teacher.lessons.activities, l.activityCount)}
+                      </p>
+                    </div>
+                    <Badge tone={l.status === "published" ? "success" : "neutral"}>{dict.status[l.status]}</Badge>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="px-5 py-6 text-sm text-ink-muted">{d.noLessons}</p>
+          )}
+        </Card>
+
+        <Card>
+          <CardHeader title={d.recentSessions} action={<ButtonLink href="/teacher/sessions" variant="ghost" size="sm">{dict.common.viewAll}</ButtonLink>} />
+          {ended.length ? (
+            <ul className="divide-y divide-line">
+              {ended.map((s) => (
+                <li key={s.id}>
+                  <Link href={`/teacher/sessions/${s.id}`} className="flex items-center justify-between gap-3 px-5 py-3 hover:bg-muted/50">
+                    <div className="min-w-0">
+                      <p className="truncate font-medium">{s.title} {s.classLabel ? <span className="text-ink-subtle">· {s.classLabel}</span> : null}</p>
+                      <p className="text-sm text-ink-muted">{relativeTime(dict, s.endedAt ?? s.createdAt)} · {fmtCount(d.participants, s.participantCount)}</p>
+                    </div>
+                    <span className="text-sm font-medium text-brand">{d.summary}</span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="px-5 py-6 text-sm text-ink-muted">{d.noSessions}</p>
+          )}
+        </Card>
+
+        <Card>
+          <CardHeader title={d.quizResults} action={<ButtonLink href="/teacher/quizzes" variant="ghost" size="sm">{dict.common.viewAll}</ButtonLink>} />
+          {quizzes.length ? (
+            <ul className="divide-y divide-line">
+              {quizzes.map((q) => (
+                <li key={q.id}>
+                  <Link href={`/teacher/quizzes/${q.id}?tab=results`} className="flex items-center justify-between gap-3 px-5 py-3 hover:bg-muted/50">
+                    <div className="min-w-0">
+                      <p className="truncate font-medium">{q.title}</p>
+                      <p className="text-sm text-ink-muted">{fmtCount(d.attempts, q.attemptCount)}</p>
+                    </div>
+                    {q.averagePercent !== null ? <Badge tone={q.averagePercent >= 70 ? "success" : q.averagePercent >= 50 ? "warn" : "danger"}>{fmt(d.averageScore, { n: q.averagePercent })}</Badge> : null}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="px-5 py-6 text-sm text-ink-muted">{d.noQuizzes}</p>
+          )}
+        </Card>
+
+        <Card>
+          <CardHeader title={d.recentMaterials} action={<ButtonLink href="/teacher/materials" variant="ghost" size="sm">{dict.common.viewAll}</ButtonLink>} />
+          {materials.length ? (
+            <ul className="divide-y divide-line">
+              {materials.map((m) => (
+                <li key={m.id} className="flex items-center justify-between gap-3 px-5 py-3">
+                  <div className="min-w-0">
+                    <p className="truncate font-medium">{m.title}</p>
+                    <p className="text-sm text-ink-muted">{dict.subjects[m.subject]} · {relativeTime(dict, m.createdAt)}</p>
+                  </div>
+                  <Badge tone={m.visibility === "students" ? "brand" : "neutral"}>{dict.visibility[m.visibility]}</Badge>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="px-5 py-6 text-sm text-ink-muted">{d.noMaterials}</p>
+          )}
+        </Card>
+      </div>
+    </PageContainer>
+  );
+}

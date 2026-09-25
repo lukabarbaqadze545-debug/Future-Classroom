@@ -1,0 +1,146 @@
+@import "tailwindcss";
+
+/*
+ * Future Classroom design tokens.
+ * Calm, high-contrast and readable on classroom monitors and projectors.
+ */
+@theme {
+  --color-canvas: #f5f6f8;
+  --color-surface: #ffffff;
+  --color-muted: #f0f2f5;
+  --color-line: #e2e5ea;
+  --color-line-strong: #c9cfd8;
+
+  --color-ink: #101828;
+  --color-ink-muted: #475467;
+  --color-ink-subtle: #5d6679;
+
+  --color-brand: #1d4ed8;
+  --color-brand-hover: #1a44bd;
+  --color-brand-soft: #eaf0fd;
+  --color-brand-ink: #173a9e;
+
+  --color-success: #067647;
+  --color-success-soft: #eaf8f0;
+  --color-warn: #a44a06;
+  --color-warn-soft: #fff6e5;
+  --color-danger: #b42318;
+  --color-danger-soft: #fdf0ef;
+  --color-ai: #5b3fc4;
+  --color-ai-soft: #f2effd;
+
+  --font-sans: "Inter Variable", "Noto Sans Georgian Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  --radius-card: 14px;
+  --shadow-card: 0 1px 2px rgb(16 24 40 / 0.05), 0 1px 3px rgb(16 24 40 / 0.04);
+  --shadow-raised: 0 4px 12px rgb(16 24 40 / 0.08), 0 2px 4px rgb(16 24 40 / 0.04);
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    background: var(--color-canvas);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 1.55;
+    font-feature-settings: "cv11", "ss01";
+  }
+
+  /* Georgian script reads better with slightly more line height. */
+  :lang(ka) body,
+  body:lang(ka) {
+    line-height: 1.65;
+  }
+
+  :focus-visible {
+    outline: 3px solid color-mix(in srgb, var(--color-brand) 55%, transparent);
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
+
+  ::selection {
+    background: color-mix(in srgb, var(--color-brand) 22%, transparent);
+  }
+
+  h1,
+  h2,
+  h3 {
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+  }
+
+  button,
+  [role="button"] {
+    cursor: pointer;
+  }
+
+  button:disabled {
+    cursor: not-allowed;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@keyframes fc-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.fc-fade-in {
+  animation: fc-fade-in 180ms ease-out both;
+}
+
+@keyframes fc-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.45;
+  }
+}
+
+.fc-pulse {
+  animation: fc-pulse 1.6s ease-in-out infinite;
+}
+
+/* Preserve line breaks in teacher-written content. */
+.fc-prose {
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+
+dialog::backdrop {
+  background: rgb(16 24 40 / 0.45);
+}
+
+@media print {
+  header,
+  nav,
+  .no-print {
+    display: none !important;
+  }
+  body {
+    background: white;
+  }
+}
