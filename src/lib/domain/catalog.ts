@@ -77,20 +77,6 @@ export const HINT_LEVELS = [1, 2, 3, 4, 5] as const;
 export type HintLevel = (typeof HINT_LEVELS)[number];
 export const MAX_AUTHORED_HINTS = 4;
 
-/**
- * Modules on the roadmap. They shape the architecture (subjects, activity
- * types, materials) but are intentionally not implemented in the MVP.
- */
-export const FUTURE_MODULES = [
-  "programming_lab",
-  "stem_lab",
-  "research_lab",
-  "critical_thinking_lab",
-  "school_library",
-  "career",
-] as const;
-export type FutureModule = (typeof FUTURE_MODULES)[number];
-
 export function isSubject(value: string): value is Subject {
   return (SUBJECTS as readonly string[]).includes(value);
 }

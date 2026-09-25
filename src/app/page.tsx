@@ -109,8 +109,8 @@ export default async function HomePage() {
 
         {/* Laboratories */}
         <section aria-labelledby="labs" className="py-10">
-          <h2 id="labs" className="text-2xl font-semibold tracking-tight">{l.roadmapTitle}</h2>
-          <p className="mt-1.5 text-ink-muted">{l.roadmapText}</p>
+          <h2 id="labs" className="text-2xl font-semibold tracking-tight">{l.labsTitle}</h2>
+          <p className="mt-1.5 text-ink-muted">{l.labsText}</p>
           <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {LAB_IDS.map((id) => (
               <Link key={id} href={LAB_ROUTES[id]} className="flex gap-4 rounded-2xl border border-line bg-surface p-5 shadow-[var(--shadow-card)] transition-colors hover:border-line-strong">
@@ -118,7 +118,7 @@ export default async function HomePage() {
                 <span className="min-w-0">
                   <span className="flex items-center gap-2">
                     <span className="font-semibold text-ink">{dict.labs.hub.rooms[id].name}</span>
-                    <Badge tone="success">{l.planned}</Badge>
+                    <Badge tone="success">{l.included}</Badge>
                   </span>
                   <span className="mt-1 block text-sm text-ink-muted">{dict.labs.hub.rooms[id].text}</span>
                 </span>

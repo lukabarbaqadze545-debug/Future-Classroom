@@ -239,9 +239,9 @@ export const en = {
       "Ask for a hint, submit, and watch the teacher's live results.",
       "Launch the next activity, then finish and open the session summary.",
     ],
-    roadmapTitle: "Six laboratories",
-    roadmapText: "Programming, STEM, research, critical thinking, the school library and career planning — all included, and all working without AI or an internet connection.",
-    planned: "Included",
+    labsTitle: "Six laboratories",
+    labsText: "Programming, STEM, research, critical thinking, the school library and career planning — all included, none of them needs AI, and they run from the school’s own server.",
+    included: "Included",
     footerNote: "Designed for classroom learning workstations and an interactive touchscreen.",
   },
   modules: {
