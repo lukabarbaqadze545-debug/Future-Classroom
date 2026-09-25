@@ -593,7 +593,7 @@ With few rolls, results jump around. With many rolls, the frequencies settle clo
         ),
         options: [l("Less than 1/2 — tails is \"due\"", "1/2-ზე ნაკლები — ახლა „საფასურის“ ჯერია"), l("Exactly 1/2", "ზუსტად 1/2"), l("More than 1/2 — heads is \"on a streak\"", "1/2-ზე მეტი — „გერბი“ სერიაშია"), l("It is impossible to say", "თქმა შეუძლებელია")],
         correct: 1,
-        hints: [l("Does the coin remember its earlier tosses?", "ახსოვს მონეტას წინა აგდებები?")],
+        hints: [l("Does the coin remember its earlier tosses?", "ახსოვს მონეტას წინა აგდებები?"), l("Each toss has the same two equally likely outcomes, whatever happened before.", "ყოველ აგდებას ერთი და იგივე ორი თანაბრად შესაძლებელი შედეგი აქვს, რაც არ უნდა მომხდარიყო მანამდე.")],
         explanation: l("Each toss is independent: the probability stays 1/2. Believing otherwise is called the gambler's fallacy.", "ყოველი აგდება დამოუკიდებელია: ალბათობა ისევ 1/2-ია. საწინააღმდეგოს დაჯერებას „მოთამაშის შეცდომა“ ჰქვია."),
       },
       {

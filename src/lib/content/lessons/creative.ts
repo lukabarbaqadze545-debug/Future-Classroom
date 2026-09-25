@@ -78,6 +78,10 @@ Also: leave empty space (white space), use no more than two typefaces, and check
         prompt: l("On a poster, the date, time and place are grouped together in one block. Which principle is this?", "პლაკატზე თარიღი, დრო და ადგილი ერთ ბლოკშია გაერთიანებული. რომელი პრინციპია ეს?"),
         options: [l("Proximity", "სიახლოვე"), l("Contrast", "კონტრასტი"), l("Repetition", "გამეორება"), l("Hierarchy", "იერარქია")],
         correct: 0,
+        hints: [
+          l("The items are close together because they belong together.", "ელემენტები ერთმანეთთან ახლოსაა, რადგან ერთმანეთს ეკუთვნის."),
+          l("Which principle is about closeness?", "რომელი პრინციპი ეხება სიახლოვეს?"),
+        ],
       },
       {
         type: "mc",
@@ -85,6 +89,10 @@ Also: leave empty space (white space), use no more than two typefaces, and check
         prompt: l("Which combination has the best contrast for reading?", "რომელ კომბინაციას აქვს წასაკითხად საუკეთესო კონტრასტი?"),
         options: [l("Dark blue text on a white background", "მუქი ლურჯი ტექსტი თეთრ ფონზე"), l("Yellow text on a white background", "ყვითელი ტექსტი თეთრ ფონზე"), l("Light grey text on a white background", "ღია ნაცრისფერი ტექსტი თეთრ ფონზე"), l("Red text on a green background", "წითელი ტექსტი მწვანე ფონზე")],
         correct: 0,
+        hints: [
+          l("Contrast is how different the text and the background are.", "კონტრასტი ტექსტისა და ფონის განსხვავებაა."),
+          l("Light text on a light background is hard to read.", "ღია ფონზე ღია ტექსტი ძნელად იკითხება."),
+        ],
       },
       { type: "discussion", prompt: l("Find a poster or advert near your school. Which principle does it use well, and which could be improved?", "მოძებნე პლაკატი ან რეკლამა სკოლის მახლობლად. რომელ პრინციპს იყენებს კარგად და რა შეიძლება გაუმჯობესდეს?") },
       { type: "exit", prompt: l("Explain \"hierarchy\" in your own words with an example.", "შენი სიტყვებით, მაგალითით ახსენი „იერარქია“.") },
@@ -184,6 +192,10 @@ Failure in testing is information, not defeat.`,
         prompt: l("\"You may use only 10 sheets of paper.\" Is this a criterion or a constraint?", "„შეგიძლია გამოიყენო მხოლოდ 10 ფურცელი.“ ეს კრიტერიუმია თუ შეზღუდვა?"),
         options: [l("A constraint", "შეზღუდვა"), l("A criterion", "კრიტერიუმი")],
         correct: 0,
+        hints: [
+          l("A criterion says what success looks like.", "კრიტერიუმი გეუბნება, როგორია წარმატება."),
+          l("A constraint is a limit you must work within.", "შეზღუდვა ზღვარია, რომლის ფარგლებშიც უნდა იმუშაო."),
+        ],
       },
       {
         type: "mc",
@@ -196,6 +208,10 @@ Failure in testing is information, not defeat.`,
           l("Use more tape than allowed", "ნებადართულზე მეტი ლენტი გამოიყენო"),
         ],
         correct: 0,
+        hints: [
+          l("Testing is about learning why something failed.", "გამოცდის მიზანია გაიგო, რატომ ჩავარდა რამე."),
+          l("If you change many things at once, can you tell which change helped?", "თუ ბევრ რამეს ერთად შეცვლი, გაიგებ, რომელმა ცვლილებამ იმოქმედა?"),
+        ],
       },
       { type: "discussion", prompt: l("Which step of the process do you think people most often skip? What happens when they do?", "როგორ ფიქრობ, პროცესის რომელ ეტაპს ტოვებენ ადამიანები ყველაზე ხშირად? რა ხდება ასეთ დროს?") },
       { type: "exit", prompt: l("Write one criterion and one constraint for a school bag designed for Grade 5 students.", "დაწერე ერთი კრიტერიუმი და ერთი შეზღუდვა V კლასის მოსწავლეებისთვის განკუთვნილი ზურგჩანთის დიზაინისთვის.") },
@@ -322,6 +338,10 @@ Be honest about what you do not know yet — investors and teachers trust that m
         ],
         correct: 0,
         explanation: l("It asks about real past behaviour and does not lead the person to the answer you want.", "ის რეალურ წარსულ ქცევას ეკითხება და ადამიანს შენთვის სასურველ პასუხს არ კარნახობს."),
+        hints: [
+          l("Good interviews ask what people actually did.", "კარგი ინტერვიუ ეკითხება, რა გააკეთეს ადამიანებმა სინამდვილეში."),
+          l("Avoid questions that suggest the answer you want.", "მოერიდე კითხვებს, რომლებიც სასურველ პასუხს კარნახობს."),
+        ],
       },
       {
         type: "discussion",
@@ -333,6 +353,10 @@ Be honest about what you do not know yet — investors and teachers trust that m
         prompt: l("Why talk to users before building a product?", "რატომ უნდა ესაუბრო მომხმარებლებს პროდუქტის შექმნამდე?"),
         options: [l("To check that the problem is real and understand it", "რომ შეამოწმო, პრობლემა რეალურია თუ არა, და უკეთ გაიგო"), l("To sell to them immediately", "რომ მაშინვე მიჰყიდო"), l("Because it is required by law", "რადგან კანონი ითხოვს")],
         correct: 0,
+        hints: [
+          l("Many products fail because nobody needed them.", "ბევრი პროდუქტი იმიტომ მარცხდება, რომ ის არავის სჭირდებოდა."),
+          l("What do you learn by listening first?", "რას იგებ, თუ ჯერ მოუსმენ?"),
+        ],
       },
       { type: "exit", prompt: l("Give your one-sentence value proposition.", "ჩამოაყალიბე შენი ღირებულების შეთავაზება ერთი წინადადებით.") },
     ],

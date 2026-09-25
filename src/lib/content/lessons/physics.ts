@@ -128,7 +128,7 @@ The speed is the slope: distance gained ÷ time taken. The graph below shows a s
         prompt: l("On a distance–time graph, part of the line is horizontal. What was the object doing then?", "მანძილი-დროის გრაფიკზე ხაზის ნაწილი ჰორიზონტალურია. რას აკეთებდა სხეული ამ დროს?"),
         options: [l("Standing still", "იდგა ადგილზე"), l("Moving at a steady speed", "თანაბრად მოძრაობდა"), l("Speeding up", "აჩქარდებოდა"), l("Moving backwards", "უკან მოძრაობდა")],
         correct: 0,
-        hints: [l("What happens to the distance while the line is horizontal?", "რა ემართება მანძილს, სანამ ხაზი ჰორიზონტალურია?")],
+        hints: [l("What happens to the distance while the line is horizontal?", "რა ემართება მანძილს, სანამ ხაზი ჰორიზონტალურია?"), l("If the distance stays the same while time passes, is the object moving?", "თუ დრო გადის, მანძილი კი არ იცვლება, მოძრაობს სხეული?")],
         explanation: l("Time passes but the distance stays the same, so the object is at rest.", "დრო გადის, მანძილი კი არ იცვლება — სხეული უძრავია."),
       },
       {
@@ -473,7 +473,7 @@ Safety: use only batteries or low-voltage kits (up to about 12 V). Never experim
         prompt: l("How is a voltmeter connected to measure the voltage across a lamp?", "როგორ უნდა შევაერთოთ ვოლტმეტრი ნათურაზე ძაბვის გასაზომად?"),
         options: [l("In parallel with the lamp", "ნათურის პარალელურად"), l("In series with the lamp", "ნათურასთან მიმდევრობით"), l("Instead of the battery", "ბატარეის ნაცვლად"), l("It does not matter", "მნიშვნელობა არ აქვს")],
         correct: 0,
-        hints: [l("A voltmeter compares two points of the circuit.", "ვოლტმეტრი წრედის ორ წერტილს ადარებს.")],
+        hints: [l("A voltmeter compares two points of the circuit.", "ვოლტმეტრი წრედის ორ წერტილს ადარებს."), l("Connect it across the lamp, one lead on each side — it does not replace a wire in the loop.", "შეაერთე ნათურის ორივე ბოლოზე, თითო სადენი თითო მხარეს — ის შეკრულ წრედში სადენს არ ანაცვლებს.")],
         explanation: l("A voltmeter goes across (in parallel with) the component; an ammeter goes in series.", "ვოლტმეტრი ელემენტს პარალელურად უერთდება, ამპერმეტრი კი მიმდევრობით."),
       },
       {
@@ -488,6 +488,10 @@ Safety: use only batteries or low-voltage kits (up to about 12 V). Never experim
         ],
         correct: 0,
         explanation: l("In parallel every branch has the full voltage and works independently.", "პარალელური შეერთებისას ყოველ განშტოებაზე სრული ძაბვაა და თითოეული დამოუკიდებლად მუშაობს."),
+        hints: [
+          l("Think about what happens at home when you switch off one lamp.", "იფიქრე, რა ხდება სახლში, როცა ერთ ნათურას გამორთავ."),
+          l("In which kind of connection does each branch get the full voltage and work on its own?", "რომელი შეერთებისას იღებს ყოველი განშტოება სრულ ძაბვას და მუშაობს დამოუკიდებლად?"),
+        ],
       },
       {
         type: "discussion",

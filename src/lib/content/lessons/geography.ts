@@ -88,6 +88,10 @@ Western Georgia is open to moist air from the Black Sea and is protected from co
         prompt: l("Which range divides Georgia into western and eastern parts?", "რომელი ქედი ყოფს საქართველოს დასავლეთ და აღმოსავლეთ ნაწილებად?"),
         options: [l("The Likhi Range", "ლიხის ქედი"), l("The Greater Caucasus", "დიდი კავკასიონი"), l("The Lesser Caucasus", "მცირე კავკასიონი"), l("The Javakheti Plateau", "ჯავახეთის ზეგანი")],
         correct: 0,
+        hints: [
+          l("It connects the Greater and the Lesser Caucasus.", "ის დიდ და მცირე კავკასიონს აერთებს."),
+          l("It runs from north to south across the middle of the country.", "ის ქვეყნის შუა ნაწილში ჩრდილოეთიდან სამხრეთისკენაა გადაჭიმული."),
+        ],
       },
       {
         type: "mc",
@@ -95,6 +99,10 @@ Western Georgia is open to moist air from the Black Sea and is protected from co
         prompt: l("Into which sea does the Mtkvari flow?", "რომელ ზღვაში ჩაედინება მტკვარი?"),
         options: [l("The Caspian Sea", "კასპიის ზღვაში"), l("The Black Sea", "შავ ზღვაში"), l("The Mediterranean Sea", "ხმელთაშუა ზღვაში"), l("The Sea of Azov", "აზოვის ზღვაში")],
         correct: 0,
+        hints: [
+          l("The Mtkvari flows east through Tbilisi.", "მტკვარი აღმოსავლეთისკენ, თბილისის გავლით მიედინება."),
+          l("Which sea lies east of the Caucasus?", "რომელი ზღვაა კავკასიის აღმოსავლეთით?"),
+        ],
       },
       {
         type: "short",
@@ -113,6 +121,10 @@ Western Georgia is open to moist air from the Black Sea and is protected from co
           l("There are no mountains in the west", "დასავლეთში მთები არ არის"),
         ],
         correct: 0,
+        hints: [
+          l("Where does moist air come from in the west?", "საიდან მოდის დასავლეთში ნოტიო ჰაერი?"),
+          l("What stands between western and eastern Georgia?", "რა დგას დასავლეთ და აღმოსავლეთ საქართველოს შორის?"),
+        ],
       },
       { type: "discussion", prompt: l("How do landforms and climate influence farming in different regions of Georgia? Give two examples.", "როგორ მოქმედებს რელიეფი და კლიმატი მიწათმოქმედებაზე საქართველოს სხვადასხვა რეგიონში? მოიყვანე ორი მაგალითი.") },
       { type: "exit", prompt: l("Describe the route of the Mtkvari through Georgia using at least two compass directions.", "აღწერე მტკვრის დინება საქართველოში, სულ მცირე ორი მიმართულების გამოყენებით.") },
@@ -237,6 +249,10 @@ Range = 24 − 1 = 23 °C. Total = 450 mm.`,
         title: l("Wettest month", "ყველაზე ნალექიანი თვე"),
         prompt: l("In the Town A practice data, how many mm of precipitation fall in the wettest month?", "„ქალაქი A“-ს სავარჯიშო მონაცემებში რამდენი მმ ნალექი მოდის ყველაზე ნალექიან თვეში?"),
         accepted: ["70", "70 mm", "70 მმ"],
+        hints: [
+          l("Look for the largest number in the precipitation list.", "მოძებნე უდიდესი რიცხვი ნალექების სიაში."),
+          l("It falls in May.", "ის მაისში მოდის."),
+        ],
       },
       {
         type: "mc",
@@ -249,6 +265,10 @@ Range = 24 − 1 = 23 °C. Total = 450 mm.`,
           l("It snowed last night.", "გუშინ ღამით თოვდა."),
         ],
         correct: 0,
+        hints: [
+          l("Climate describes what is usual over many years.", "კლიმატი აღწერს, რა არის ჩვეული მრავალი წლის განმავლობაში."),
+          l("Words like \"usually\" point to climate; \"today\" and \"tomorrow\" point to weather.", "სიტყვები „როგორც წესი“ კლიმატზე მიუთითებს, „დღეს“ და „ხვალ“ — ამინდზე."),
+        ],
       },
       { type: "discussion", prompt: l("Why is one hot summer not enough to say that the climate has changed?", "რატომ არ არის ერთი ცხელი ზაფხული საკმარისი იმის სათქმელად, რომ კლიმატი შეიცვალა?") },
       { type: "exit", prompt: l("Write two sentences comparing two climate graphs using numbers.", "ორი წინადადებით შეადარე ორი კლიმატური გრაფიკი რიცხვების გამოყენებით.") },
@@ -258,7 +278,7 @@ Range = 24 − 1 = 23 °C. Total = 450 mm.`,
     homework: [l("Find official climate data for your town and draw its climate graph by hand or in the Research Laboratory. Name the source and the years.", "მოიძიე შენი ქალაქის ოფიციალური კლიმატური მონაცემები და ააგე კლიმატური გრაფიკი ხელით ან კვლევით ლაბორატორიაში. მიუთითე წყარო და წლები.")],
     teacherNotes: l(
       "\"Town A\" data are invented for practice and labelled as such — do not present them as a real place. Use official climate normals (with the reference period) for real comparisons.",
-      "„ქალაქი A“-ს მონაცემები სავარჯიშოდაა მოგონილი და ასეცაა აღნიშნული — ნუ წარმოადგენთ მას რეალურ ადგილად. რეალური შედარებისთვის გამოიყენეთ ოფიციალური კლიმატური ნორმები (საბაზისო პერიოდის მითითებით).",
+      "„ქალაქი A“-ს მონაცემები სავარჯიშოდაა მოგონილი და მოსწავლეებსაც ასე უთხარით — ნუ წარმოადგენთ მას რეალურ ადგილად. რეალური შედარებისთვის გამოიყენეთ ოფიციალური კლიმატური ნორმები (საბაზისო პერიოდის მითითებით).",
     ),
     quiz: {
       title: l("Climate graphs — check yourself", "კლიმატური გრაფიკები — შეამოწმე თავი"),

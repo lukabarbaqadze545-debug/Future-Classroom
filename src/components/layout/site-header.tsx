@@ -14,6 +14,7 @@ export async function SiteHeader() {
   const items = staff
     ? [
         { href: "/teacher", label: dict.nav.dashboard, exact: true },
+        { href: "/subjects", label: dict.nav.subjects },
         { href: "/teacher/lessons", label: dict.nav.lessons },
         { href: "/teacher/sessions", label: dict.nav.sessions },
         { href: "/teacher/quizzes", label: dict.nav.quizzes },
@@ -27,7 +28,7 @@ export async function SiteHeader() {
     : user
       ? [
           { href: "/student", label: dict.nav.home, exact: true },
-          { href: "/student/learn", label: dict.nav.learn },
+          { href: "/subjects", label: dict.nav.subjects },
           { href: "/labs", label: dict.nav.labs },
           { href: "/student/assignments", label: dict.nav.assignments },
           { href: "/library", label: dict.nav.library },

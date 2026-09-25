@@ -102,12 +102,20 @@ Rights can be limited only in specific ways set by law — for example, freedom 
         prompt: l("Who do human rights belong to?", "ვის ეკუთვნის ადამიანის უფლებები?"),
         options: [l("Every person", "ყველა ადამიანს"), l("Only citizens over 18", "მხოლოდ 18 წელს გადაცილებულ მოქალაქეებს"), l("Only people who pay taxes", "მხოლოდ გადასახადის გადამხდელებს"), l("Only people who follow all rules", "მხოლოდ მათ, ვინც ყველა წესს იცავს")],
         correct: 0,
+        hints: [
+          l("Human rights come from being human.", "ადამიანის უფლებები ადამიანად ყოფნიდან მომდინარეობს."),
+          l("Do they depend on age, money or behaviour?", "დამოკიდებულია ისინი ასაკზე, ფულზე ან ქცევაზე?"),
+        ],
       },
       {
         type: "exercise",
         title: l("The Convention", "კონვენცია"),
         prompt: l("In which year was the UN Convention on the Rights of the Child adopted?", "რომელ წელს მიიღეს გაეროს ბავშვის უფლებების კონვენცია?"),
         accepted: ["1989"],
+        hints: [
+          l("It was adopted in the late 1980s.", "ის 1980-იანი წლების ბოლოს მიიღეს."),
+          l("Georgia joined five years later, in 1994.", "საქართველო მას ხუთი წლის შემდეგ, 1994 წელს შეუერთდა."),
+        ],
       },
       {
         type: "discussion",
@@ -236,6 +244,10 @@ Much of daily life — roads, kindergartens, public transport, parks — is deci
         prompt: l("Which institution passes laws in Georgia?", "რომელი ინსტიტუტი იღებს კანონებს საქართველოში?"),
         options: [l("The Parliament", "პარლამენტი"), l("The Government", "მთავრობა"), l("The Supreme Court", "უზენაესი სასამართლო"), l("The city council", "საკრებულო")],
         correct: 0,
+        hints: [
+          l("Which branch of power is legislative?", "რომელია საკანონმდებლო ხელისუფლება?"),
+          l("Making laws is the job of the elected national body of 150 members.", "კანონების მიღება 150-წევრიანი არჩეული ეროვნული ორგანოს საქმეა."),
+        ],
       },
       {
         type: "mc",
@@ -243,12 +255,20 @@ Much of daily life — roads, kindergartens, public transport, parks — is deci
         prompt: l("Which institution decides whether a law complies with the Constitution?", "რომელი ინსტიტუტი წყვეტს, შეესაბამება თუ არა კანონი კონსტიტუციას?"),
         options: [l("The Constitutional Court", "საკონსტიტუციო სასამართლო"), l("The Prime Minister", "პრემიერ-მინისტრი"), l("The Public Defender", "სახალხო დამცველი"), l("The mayor", "მერი")],
         correct: 0,
+        hints: [
+          l("This is a court, not a politician.", "ეს სასამართლოა და არა პოლიტიკოსი."),
+          l("Its name contains the name of the highest law.", "მის სახელში უზენაესი კანონის სახელია."),
+        ],
       },
       {
         type: "exercise",
         title: l("Members of Parliament", "პარლამენტის წევრები"),
         prompt: l("How many members does the Parliament of Georgia have?", "რამდენი წევრისგან შედგება საქართველოს პარლამენტი?"),
         accepted: ["150"],
+        hints: [
+          l("It is a three-digit number.", "ეს სამნიშნა რიცხვია."),
+          l("It is between 100 and 200 and ends in 0.", "ის 100-სა და 200-ს შორისაა და 0-ით მთავრდება."),
+        ],
       },
       { type: "discussion", prompt: l("Why is it important that courts are independent from the government?", "რატომ არის მნიშვნელოვანი, რომ სასამართლო მთავრობისგან დამოუკიდებელი იყოს?") },
       { type: "exit", prompt: l("Name one way a 15-year-old can take part in decisions in their town.", "დაასახელე ერთი გზა, რომლითაც 15 წლის მოზარდს შეუძლია თავის ქალაქში გადაწყვეტილებების მიღებაში მონაწილეობა.") },

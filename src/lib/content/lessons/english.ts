@@ -118,7 +118,7 @@ B: We walked to the Chalaadi glacier. I've never seen so much ice!
         prompt: l("I ___ my homework yesterday evening.", "I ___ my homework yesterday evening."),
         options: ["did", "have done", "have did", "done"],
         correct: 0,
-        hints: [l("\"Yesterday evening\" is a finished time.", "„Yesterday evening“ დასრულებული დროა.")],
+        hints: [l("\"Yesterday evening\" is a finished time.", "„Yesterday evening“ დასრულებული დროა."), l("Finished time → past simple. What is the past simple of \"do\"?", "დასრულებული დრო → Past Simple. რა არის „do“-ს Past Simple ფორმა?")],
         explanation: l("A finished time needs the past simple: I did my homework yesterday evening.", "დასრულებულ დროს Past Simple სჭირდება: I did my homework yesterday evening."),
       },
       {
@@ -127,7 +127,7 @@ B: We walked to the Chalaadi glacier. I've never seen so much ice!
         prompt: l("___ you ever ___ a horse?", "___ you ever ___ a horse?"),
         options: ["Have … ridden", "Did … rode", "Have … rode", "Do … ridden"],
         correct: 0,
-        hints: [l("\"Ever\" asks about experience up to now.", "„Ever“ დღემდე გამოცდილებას ეკითხება.")],
+        hints: [l("\"Ever\" asks about experience up to now.", "„Ever“ დღემდე გამოცდილებას ეკითხება."), l("Experience → have + past participle. The past participle of \"ride\" is \"ridden\".", "გამოცდილება → have + past participle. „ride“-ის past participle არის „ridden“.")],
       },
       {
         type: "short",
@@ -270,6 +270,10 @@ Then swap with a partner and check: subject line? formal greeting? three paragra
         prompt: l("You don't know the name of the person. Which greeting is best?", "ადრესატის სახელი არ იცი. რომელი მიმართვაა საუკეთესო?"),
         options: ["Dear Sir or Madam,", "Hey there,", "Hi!", "To whoever reads this,"],
         correct: 0,
+        hints: [
+          l("Formal emails start with \"Dear…\".", "ოფიციალური ელწერილი „Dear…“-ით იწყება."),
+          l("If you do not know the name, you address the role rather than a person.", "თუ სახელი არ იცი, კონკრეტულ ადამიანს კი არა, ადრესატს ზოგადად მიმართავ."),
+        ],
       },
       {
         type: "mc",
@@ -277,6 +281,10 @@ Then swap with a partner and check: subject line? formal greeting? three paragra
         prompt: l("Which request is the most formal?", "რომელი თხოვნაა ყველაზე ფორმალური?"),
         options: ["I would be grateful if you could send me the timetable.", "Send me the timetable.", "Can u send the timetable?", "I want the timetable now."],
         correct: 0,
+        hints: [
+          l("Look for \"would\" and \"could\" — they make requests polite.", "მოძებნე „would“ და „could“ — ისინი თხოვნას თავაზიანს ხდის."),
+          l("Avoid commands and short forms such as \"u\".", "მოერიდე ბრძანებით ფორმას და შემოკლებებს, როგორიცაა „u“."),
+        ],
       },
       {
         type: "short",

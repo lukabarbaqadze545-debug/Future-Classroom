@@ -95,13 +95,17 @@ Digital wellbeing is not about never using technology; it is about using it on p
         prompt: l("Which study method is usually most effective for remembering?", "სწავლის რომელი მეთოდია დასამახსოვრებლად ჩვეულებრივ ყველაზე ეფექტიანი?"),
         options: [l("Closing the book and answering questions from memory", "წიგნის დახურვა და კითხვებზე მეხსიერებით პასუხის გაცემა"), l("Rereading the chapter many times", "თავის მრავალჯერ გადაკითხვა"), l("Highlighting every line", "ყველა სტრიქონის მარკერით გამოყოფა"), l("Studying everything the night before", "ყველაფრის წინა ღამეს სწავლა")],
         correct: 0,
+        hints: [
+          l("Which method makes you recall actively?", "რომელი მეთოდი გაიძულებს აქტიურად გაიხსენო?"),
+          l("Rereading feels easy — that is why it teaches less.", "გადაკითხვა ადვილია — სწორედ ამიტომ ნაკლებს გასწავლის."),
+        ],
       },
       {
         type: "exercise",
         title: l("Bedtime", "დაძინების დრო"),
         prompt: l("You must wake up at 7:00 and want 9 hours of sleep. What time should you be asleep? (hh:mm)", "7:00-ზე უნდა გაიღვიძო და 9 საათი ძილი გინდა. რომელ საათზე უნდა გეძინოს? (სს:წწ)"),
         accepted: ["22:00", "22.00", "10 pm", "10:00 pm", "22"],
-        hints: [l("Count back 9 hours from 7:00.", "7:00-დან 9 საათი უკან გადაითვალე.")],
+        hints: [l("Count back 9 hours from 7:00.", "7:00-დან 9 საათი უკან გადაითვალე."), l("Going back 9 hours from 7:00 takes you past midnight.", "7:00-დან 9 საათით უკან შუაღამეს გადაცდები.")],
         solution: l("22:00", "22:00"),
       },
       {
@@ -225,6 +229,10 @@ Small cuts: press on the wound with a clean cloth to stop bleeding, wash hands, 
         title: l("The number", "ნომერი"),
         prompt: l("What is the single emergency number in Georgia?", "რომელია საქართველოში გადაუდებელი დახმარების ერთიანი ნომერი?"),
         accepted: ["112"],
+        hints: [
+          l("It is one short number for ambulance, fire and police.", "ეს ერთი მოკლე ნომერია სასწრაფოს, სახანძროსა და პოლიციისთვის."),
+          l("It is the same emergency number used across Europe.", "ეს იგივე ნომერია, რომელიც მთელ ევროპაში გამოიყენება."),
+        ],
       },
       {
         type: "mc",
@@ -232,6 +240,10 @@ Small cuts: press on the wound with a clean cloth to stop bleeding, wash hands, 
         prompt: l("You see someone lying on the road after a bicycle accident. What do you do first?", "ველოსიპედით ავარიის შემდეგ გზაზე მწოლიარე ადამიანს ხედავ. რას გააკეთებ პირველ რიგში?"),
         options: [l("Check that it is safe for you (traffic) before approaching", "მიახლოებამდე შეამოწმებ, უსაფრთხოა თუ არა შენთვის (მოძრავი მანქანები)"), l("Run straight into the road", "პირდაპირ გზაზე გავარდები"), l("Take a photo", "ფოტოს გადაიღებ"), l("Walk away", "წახვალ")],
         correct: 0,
+        hints: [
+          l("Remember the order: danger, help, call.", "გაიხსენე თანმიმდევრობა: საფრთხე, დახმარება, დარეკვა."),
+          l("You cannot help if you get hurt yourself.", "ვერ დაეხმარები, თუ თავად დაშავდები."),
+        ],
       },
       {
         type: "mc",
@@ -239,6 +251,10 @@ Small cuts: press on the wound with a clean cloth to stop bleeding, wash hands, 
         prompt: l("What should you put on a small burn first?", "რა უნდა გააკეთო პირველ რიგში მცირე დამწვრობის დროს?"),
         options: [l("Cool running water for about 20 minutes", "დაახლოებით 20 წუთი გრილი გამდინარე წყალი"), l("Butter", "კარაქი"), l("Toothpaste", "კბილის პასტა"), l("Ice directly on the skin", "ყინული პირდაპირ კანზე")],
         correct: 0,
+        hints: [
+          l("The first aim is to cool the burn.", "პირველი მიზანი დამწვრობის გაგრილებაა."),
+          l("Home remedies can trap heat or cause infection.", "სახალხო საშუალებებმა შეიძლება სითბო შეაკავოს ან ინფექცია გამოიწვიოს."),
+        ],
       },
       { type: "exit", prompt: l("List the information you give when you call 112.", "ჩამოწერე ინფორმაცია, რომელსაც 112-ზე დარეკვისას გადასცემ.") },
     ],
@@ -350,6 +366,10 @@ In the Career & University laboratory, a university card stores exactly this: pr
         prompt: l("Where should you check the exam requirements for a programme?", "სად უნდა გადაამოწმო პროგრამაზე მისაღები გამოცდების მოთხოვნები?"),
         options: [l("On the university's official website and naec.ge", "უნივერსიტეტის ოფიციალურ ვებგვერდზე და naec.ge-ზე"), l("In a two-year-old forum post", "ორი წლის წინანდელ ფორუმის პოსტში"), l("By asking a friend's older brother", "მეგობრის უფროსი ძმის კითხვით"), l("It never changes, so anywhere", "არასოდეს იცვლება, ამიტომ — ნებისმიერ ადგილას")],
         correct: 0,
+        hints: [
+          l("Requirements change every year.", "მოთხოვნები ყოველწლიურად იცვლება."),
+          l("Who publishes the official rules?", "ვინ აქვეყნებს ოფიციალურ წესებს?"),
+        ],
       },
       {
         type: "mc",
@@ -357,6 +377,10 @@ In the Career & University laboratory, a university card stores exactly this: pr
         prompt: l("Why should you write down the date when you checked admission information?", "რატომ უნდა ჩაიწერო მიღების შესახებ ინფორმაციის შემოწმების თარიღი?"),
         options: [l("Because requirements, fees and deadlines can change every year", "რადგან მოთხოვნები, საფასური და ვადები შეიძლება ყოველწლიურად შეიცვალოს"), l("It is not important", "მნიშვნელოვანი არ არის"), l("Universities require it", "ამას უნივერსიტეტები ითხოვენ")],
         correct: 0,
+        hints: [
+          l("What could happen to the information by next year?", "რა შეიძლება მოუვიდეს ინფორმაციას მომავალ წლამდე?"),
+          l("A date tells you when to check again.", "თარიღი გეუბნება, როდის გადაამოწმო ხელახლა."),
+        ],
       },
       { type: "discussion", prompt: l("Name one field of study and three different careers it could lead to.", "დაასახელე ერთი სწავლის სფერო და სამი სხვადასხვა კარიერა, რომლებამდეც ის შეიძლება მიგიყვანოს.") },
       { type: "exit", prompt: l("Write one interest, one skill and one value that matter for your future work.", "დაწერე ერთი ინტერესი, ერთი უნარი და ერთი ღირებულება, რომლებიც შენი მომავალი საქმისთვის მნიშვნელოვანია.") },

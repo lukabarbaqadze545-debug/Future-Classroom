@@ -105,6 +105,10 @@ A hypothesis is not a fact and it is fine if the data contradict it — that is 
         ],
         correct: 0,
         explanation: l("It is focused, specific (who, where, what) and answerable with a short survey.", "ის ფოკუსირებული და კონკრეტულია (ვინ, სად, რა) და მოკლე გამოკითხვით პასუხგაცემადია."),
+        hints: [
+          l("A good question is focused, specific and answerable.", "კარგი კითხვა ფოკუსირებული, კონკრეტული და პასუხგაცემადია."),
+          l("Which option says who, where and what is measured?", "რომელი ვარიანტი ამბობს, ვინ, სად და რა იზომება?"),
+        ],
       },
       {
         type: "mc",
@@ -112,6 +116,10 @@ A hypothesis is not a fact and it is fine if the data contradict it — that is 
         prompt: l("\"Do students who eat breakfast get higher test scores than those who do not?\" — what type of question is this?", "„უფრო მაღალ ქულებს იღებენ თუ არა ის მოსწავლეები, ვინც საუზმობს, ვიდრე ისინი, ვინც არ საუზმობს?“ — რა ტიპის კითხვაა?"),
         options: [l("Comparative", "შედარებითი"), l("Descriptive", "აღწერითი"), l("Evaluative", "შეფასებითი")],
         correct: 0,
+        hints: [
+          l("The question compares two groups.", "კითხვა ორ ჯგუფს ადარებს."),
+          l("Descriptive questions ask \"how many\"; evaluative ones ask \"how well\".", "აღწერითი კითხვა ეკითხება „რამდენი“, შეფასებითი — „რამდენად კარგად“."),
+        ],
       },
       {
         type: "discussion",
@@ -210,6 +218,10 @@ Lateral reading: instead of studying one website for a long time, open new tabs 
         prompt: l("You need the number of students in Georgian schools. Which source is best?", "გჭირდება საქართველოს სკოლებში მოსწავლეების რაოდენობა. რომელი წყაროა საუკეთესო?"),
         options: [l("Official statistics from Geostat or the Ministry of Education, with the year", "საქსტატის ან განათლების სამინისტროს ოფიციალური სტატისტიკა, წლის მითითებით"), l("A comment under a news video", "კომენტარი საინფორმაციო ვიდეოს ქვეშ"), l("A friend's guess", "მეგობრის ვარაუდი"), l("An advertisement for a private school", "კერძო სკოლის რეკლამა")],
         correct: 0,
+        hints: [
+          l("Who collects this kind of data officially?", "ვინ აგროვებს ასეთ მონაცემებს ოფიციალურად?"),
+          l("Look for an identifiable author and a date.", "მოძებნე იდენტიფიცირებადი ავტორი და თარიღი."),
+        ],
       },
       {
         type: "mc",
@@ -217,6 +229,10 @@ Lateral reading: instead of studying one website for a long time, open new tabs 
         prompt: l("A website selling a vitamin says the vitamin improves memory \"by 80%\". Which check matters most first?", "ვიტამინის გამყიდველი ვებგვერდი ამბობს, რომ ვიტამინი მეხსიერებას „80%-ით“ აუმჯობესებს. რომელი შემოწმებაა პირველ რიგში ყველაზე მნიშვნელოვანი?"),
         options: [l("Balance — the seller benefits if you believe it; look for independent evidence", "მიუკერძოებლობა — გამყიდველს აწყობს, რომ დაიჯერო; მოძებნე დამოუკიდებელი მტკიცებულება"), l("The colour of the website", "ვებგვერდის ფერი"), l("How many pictures it has", "რამდენი სურათია"), l("Nothing — numbers are always true", "არაფერი — რიცხვები ყოველთვის სწორია")],
         correct: 0,
+        hints: [
+          l("Who benefits if you believe the claim?", "ვის აწყობს, რომ განცხადებას დაუჯერო?"),
+          l("Would an independent study say the same?", "იგივეს იტყოდა დამოუკიდებელი კვლევა?"),
+        ],
       },
       {
         type: "short",
@@ -334,6 +350,10 @@ Paruthi, S. et al. (2016). Recommended Amount of Sleep for Pediatric Populations
           l("Your own survey results", "შენი საკუთარი გამოკითხვის შედეგები"),
         ],
         correct: 0,
+        hints: [
+          l("Plagiarism means presenting someone else's work as your own.", "პლაგიატი სხვისი ნაშრომის საკუთარად წარმოდგენაა."),
+          l("Which option gives no source at all?", "რომელ ვარიანტში არ არის წყარო საერთოდ მითითებული?"),
+        ],
       },
       {
         type: "mc",
@@ -341,6 +361,10 @@ Paruthi, S. et al. (2016). Recommended Amount of Sleep for Pediatric Populations
         prompt: l("A web page shows no publication date. What do you write in the reference?", "ვებგვერდზე გამოქვეყნების თარიღი არ არის. რას დაწერ მითითებაში?"),
         options: [l("n.d. (no date)", "თ. გ. (თარიღის გარეშე)"), l("The current year", "მიმდინარე წელს"), l("A likely year", "სავარაუდო წელს"), l("Leave the source out", "წყაროს საერთოდ არ მივუთითებ")],
         correct: 0,
+        hints: [
+          l("Never guess missing details.", "გამოტოვებული დეტალები არასოდეს გამოიცნო."),
+          l("There is a standard short note meaning \"no date\".", "არსებობს სტანდარტული მოკლე აღნიშვნა, რომელიც „თარიღის გარეშე“-ს ნიშნავს."),
+        ],
       },
       {
         type: "discussion",
@@ -449,6 +473,10 @@ Hidden assumptions are unstated ideas the argument needs. "We should ban phones 
         ),
         options: [l("200 kg of vegetables and 40 club members", "200 კგ ბოსტნეული და კლუბის 40 წევრი"), l("The garden should get more funding", "ბაღს მეტი დაფინანსება უნდა მიეცეს"), l("Both parts", "ორივე ნაწილი"), l("Neither", "არცერთი")],
         correct: 0,
+        hints: [
+          l("Evidence is facts or data offered as support.", "მტკიცებულება ფაქტები ან მონაცემებია, რომლებიც მხარდასაჭერად მოჰყავთ."),
+          l("Which part contains numbers you could check?", "რომელი ნაწილი შეიცავს რიცხვებს, რომელთა გადამოწმებაც შეგიძლია?"),
+        ],
       },
       {
         type: "mc",
@@ -456,6 +484,10 @@ Hidden assumptions are unstated ideas the argument needs. "We should ban phones 
         prompt: l("Claim: \"This phone has the best camera.\" Which evidence is most relevant?", "მტკიცება: „ამ ტელეფონს საუკეთესო კამერა აქვს.“ რომელი მტკიცებულებაა ყველაზე შესაბამისი?"),
         options: [l("Independent tests comparing photos from several phones", "დამოუკიდებელი ტესტები, რომლებიც რამდენიმე ტელეფონის ფოტოებს ადარებს"), l("A famous singer uses it", "მას ცნობილი მომღერალი იყენებს"), l("It is the most expensive", "ის ყველაზე ძვირია"), l("The advert says so", "ასე რეკლამა ამბობს")],
         correct: 0,
+        hints: [
+          l("Relevant evidence is about the camera itself.", "შესაბამისი მტკიცებულება თავად კამერას ეხება."),
+          l("Fame and price do not show picture quality.", "პოპულარობა და ფასი ფოტოს ხარისხს არ აჩვენებს."),
+        ],
       },
       {
         type: "discussion",
@@ -555,6 +587,10 @@ For each, ask: what is the real point, and how could it be argued fairly?`,
         options: [l("False dilemma", "ცრუ დილემა"), l("Ad hominem", "Ad hominem"), l("Straw man", "„ჩალის კაცი“"), l("Hasty generalisation", "ნაჩქარევი განზოგადება")],
         correct: 0,
         explanation: l("There are more than two options — for example, planning study time around the trip.", "ორზე მეტი ვარიანტი არსებობს — მაგალითად, მეცადინეობის დროის ექსკურსიასთან შეთანხმებით დაგეგმვა."),
+        hints: [
+          l("How many options does the speaker offer?", "რამდენ ვარიანტს გვთავაზობს მოსაუბრე?"),
+          l("Are there really only two possibilities?", "მართლა მხოლოდ ორი შესაძლებლობაა?"),
+        ],
       },
       {
         type: "mc",
@@ -562,6 +598,10 @@ For each, ask: what is the real point, and how could it be argued fairly?`,
         prompt: l("\"My classmate says we should recycle, but she doesn't even get good grades.\"", "„თანაკლასელი ამბობს, რომ ნარჩენები უნდა გადავამუშაოთ, მაგრამ თვითონ კარგ ნიშნებსაც კი ვერ იღებს.“"),
         options: [l("Ad hominem", "Ad hominem (პიროვნებაზე თავდასხმა)"), l("Slippery slope", "„მოლიპული ფერდობი“"), l("False dilemma", "ცრუ დილემა")],
         correct: 0,
+        hints: [
+          l("Does the reply discuss recycling at all?", "პასუხი საერთოდ ეხება ნარჩენების გადამუშავებას?"),
+          l("It attacks the person instead of the idea.", "ის იდეის ნაცვლად ადამიანს ესხმის თავს."),
+        ],
       },
       {
         type: "discussion",
@@ -673,6 +713,10 @@ If you cannot verify it, do not share it.`,
         prompt: l("A post makes you very angry and asks you to share it immediately. What should you do first?", "პოსტი ძალიან გაბრაზებს და დაუყოვნებლივ გაზიარებას გთხოვს. რა უნდა გააკეთო პირველ რიგში?"),
         options: [l("Stop and notice the emotion before checking", "გაჩერდე და შეამჩნიო ემოცია, სანამ შეამოწმებ"), l("Share it quickly so friends know", "სწრაფად გააზიარო, რომ მეგობრებმაც გაიგონ"), l("Comment angrily", "გაბრაზებული კომენტარი დაწერო"), l("Screenshot it", "სქრინშოტი გადაიღო")],
         correct: 0,
+        hints: [
+          l("Posts made to spread often play on strong emotions.", "გასავრცელებლად შექმნილი პოსტები ხშირად ძლიერ ემოციებზე თამაშობს."),
+          l("The first of the four steps comes before any checking.", "ოთხიდან პირველი ნაბიჯი ნებისმიერ შემოწმებამდე დგას."),
+        ],
       },
       {
         type: "mc",
@@ -680,6 +724,10 @@ If you cannot verify it, do not share it.`,
         prompt: l("How can you check whether a photo is really from today's event?", "როგორ შეამოწმებ, ნამდვილად დღევანდელი მოვლენის ფოტოა თუ არა?"),
         options: [l("Reverse image search to find where it first appeared", "სურათით ძიებით გაარკვიო, სად გამოჩნდა პირველად"), l("Count the likes", "მოწონებები დაითვალო"), l("Trust the caption", "წარწერას ენდო"), l("Zoom in", "სურათი გაადიდო")],
         correct: 0,
+        hints: [
+          l("You want to know where and when the photo first appeared.", "გინდა გაიგო, სად და როდის გამოჩნდა ფოტო პირველად."),
+          l("Search engines can search with a picture instead of words.", "საძიებო სისტემებს სიტყვების ნაცვლად სურათით ძებნაც შეუძლიათ."),
+        ],
       },
       {
         type: "short",

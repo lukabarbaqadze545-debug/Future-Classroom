@@ -20,11 +20,21 @@ interface MaterialOption {
 
 type Source = { kind: "ai"; model: string } | { kind: "template"; reason: "ai_offline" | "ai_failed"; curated: boolean };
 
-export function CreateLessonForm({ aiAvailable, materials, builtInTopics }: { aiAvailable: boolean; materials: MaterialOption[]; builtInTopics: string }) {
+export function CreateLessonForm({
+  aiAvailable,
+  materials,
+  builtInTopics,
+  initialSubject,
+}: {
+  aiAvailable: boolean;
+  materials: MaterialOption[];
+  builtInTopics: { subject: Subject; title: string }[];
+  initialSubject: Subject;
+}) {
   const { dict, locale } = useI18n();
   const c = dict.teacher.create;
   const router = useRouter();
-  const [subject, setSubject] = useState<Subject>("mathematics");
+  const [subject, setSubject] = useState<Subject>(initialSubject);
   const [grade, setGrade] = useState(11);
   const [topic, setTopic] = useState("");
   const [duration, setDuration] = useState(45);
@@ -34,6 +44,7 @@ export function CreateLessonForm({ aiAvailable, materials, builtInTopics }: { ai
   const [selected, setSelected] = useState<string[]>([]);
   const [busy, setBusy] = useState<"generate" | "manual" | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const subjectTopics = builtInTopics.filter((t) => t.subject === subject).map((t) => t.title);
   const subjectMaterials = useMemo(() => materials.filter((m) => m.subject === subject), [materials, subject]);
 
   const generate = async (event: FormEvent) => {
@@ -81,7 +92,8 @@ export function CreateLessonForm({ aiAvailable, materials, builtInTopics }: { ai
       {error ? <Notice tone="danger">{error}</Notice> : null}
       {!aiAvailable ? (
         <Notice tone="info" title={dict.ai.offline}>
-          {c.aiOffline} {fmt(c.builtInTopics, { topics: builtInTopics })}
+          {c.aiOffline}
+          {subjectTopics.length ? ` ${fmt(c.builtInTopics, { topics: subjectTopics.join(", ") })}` : ""}
         </Notice>
       ) : null}
       <div className="grid gap-5 sm:grid-cols-2">

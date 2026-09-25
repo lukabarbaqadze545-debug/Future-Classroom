@@ -98,13 +98,17 @@ Tracking expenses for one month (a notebook or a spreadsheet) usually shows smal
         prompt: l("For most students, which is a need?", "მოსწავლეების უმეტესობისთვის რომელია საჭიროება?"),
         options: [l("A bus ticket to school", "ავტობუსის ბილეთი სკოლამდე"), l("A new phone case", "ტელეფონის ახალი ქეისი"), l("A cinema ticket", "კინოს ბილეთი"), l("A video game", "ვიდეოთამაში")],
         correct: 0,
+        hints: [
+          l("A need is something you must have.", "საჭიროება ისაა, რაც აუცილებლად გჭირდება."),
+          l("Which option is necessary to get to school?", "რომელი ვარიანტია აუცილებელი სკოლამდე მისასვლელად?"),
+        ],
       },
       {
         type: "exercise",
         title: l("Months to save", "დაზოგვის თვეები"),
         prompt: l("You save 25 GEL a month. How many months do you need for a 200 GEL bicycle?", "თვეში 25 ლარს ზოგავ. რამდენი თვე დაგჭირდება 200 ლარიანი ველოსიპედისთვის?"),
         accepted: ["8"],
-        hints: [l("Divide the goal by the monthly saving.", "მიზანი თვიურ დანაზოგზე გაყავი.")],
+        hints: [l("Divide the goal by the monthly saving.", "მიზანი თვიურ დანაზოგზე გაყავი."), l("200 ÷ 25", "200 ÷ 25")],
         solution: l("200 ÷ 25 = 8 months", "200 ÷ 25 = 8 თვე"),
       },
       {
@@ -112,7 +116,7 @@ Tracking expenses for one month (a notebook or a spreadsheet) usually shows smal
         title: l("Twenty percent", "ოცი პროცენტი"),
         prompt: l("Following the 20% savings idea, how much should you save from 150 GEL?", "20%-იანი დაზოგვის პრინციპით რამდენი უნდა დაზოგო 150 ლარიდან?"),
         accepted: { en: ["30", "30 GEL"], ka: ["30", "30 ლარი"] },
-        hints: [l("20% = 0.2", "20% = 0,2")],
+        hints: [l("20% = 0.2", "20% = 0,2"), l("0.2 × 150", "0,2 × 150")],
         solution: l("0.2 × 150 = 30 GEL", "0,2 × 150 = 30 ლარი"),
       },
       { type: "discussion", prompt: l("Advertisements often turn wants into \"needs\". Give an example and explain the technique.", "რეკლამა ხშირად სურვილებს „საჭიროებად“ აქცევს. მოიყვანე მაგალითი და ახსენი ხერხი.") },
@@ -247,6 +251,10 @@ Buying a 1000 GEL phone "in instalments" may mean paying back noticeably more th
         prompt: l("Over 30 years, which gives more money at the same rate?", "30 წლის განმავლობაში, იმავე განაკვეთით, რომელი მოგცემს მეტ ფულს?"),
         options: [l("Compound interest", "რთული პროცენტი"), l("Simple interest", "მარტივი პროცენტი"), l("They are always equal", "ყოველთვის თანაბარია")],
         correct: 0,
+        hints: [
+          l("With compound interest, the interest itself earns interest.", "რთული პროცენტისას პროცენტს თავადაც ერიცხება პროცენტი."),
+          l("Look at the graph in the lesson: how does the curve grow over time?", "შეხედე გაკვეთილის გრაფიკს: როგორ იზრდება მრუდი დროთა განმავლობაში?"),
+        ],
       },
       { type: "discussion", prompt: l("A shop advertises \"0% instalments\". What questions would you ask before agreeing?", "მაღაზია „0%-იან განვადებას“ ავრცელებს. რა კითხვებს დასვამდი დათანხმებამდე?") },
       { type: "exit", prompt: l("Explain compound interest to a younger student in two sentences.", "ორ წინადადებაში აუხსენი რთული პროცენტი უმცროს მოსწავლეს.") },
@@ -358,7 +366,7 @@ The National Bank of Georgia (NBG) aims to keep inflation low and stable. Its ma
         title: l("Percentage change", "პროცენტული ცვლილება"),
         prompt: l("A notebook's price rose from 4 GEL to 5 GEL. By what percentage did it rise?", "რვეულის ფასი 4 ლარიდან 5 ლარამდე გაიზარდა. რამდენი პროცენტით გაძვირდა?"),
         accepted: ["25", "25%"],
-        hints: [l("(5 − 4) ÷ 4 × 100%", "(5 − 4) ÷ 4 × 100%")],
+        hints: [l("(5 − 4) ÷ 4 × 100%", "(5 − 4) ÷ 4 × 100%"), l("1 ÷ 4 = 0.25", "1 ÷ 4 = 0,25")],
         solution: l("1 ÷ 4 × 100% = 25%", "1 ÷ 4 × 100% = 25%"),
       },
       {
@@ -366,7 +374,7 @@ The National Bank of Georgia (NBG) aims to keep inflation low and stable. Its ma
         title: l("Real return", "რეალური სარგებელი"),
         prompt: l("Savings earn 6% a year and inflation is 4%. Approximately what is the real return in %?", "დანაზოგს წელიწადში 6% ერიცხება, ინფლაცია კი 4%-ია. დაახლოებით რისი ტოლია რეალური სარგებელი (%)?"),
         accepted: ["2", "2%"],
-        hints: [l("Real ≈ interest − inflation", "რეალური ≈ პროცენტი − ინფლაცია")],
+        hints: [l("Real ≈ interest − inflation", "რეალური ≈ პროცენტი − ინფლაცია"), l("6 − 4", "6 − 4")],
         solution: l("6% − 4% ≈ 2%", "6% − 4% ≈ 2%"),
       },
       {
@@ -375,6 +383,10 @@ The National Bank of Georgia (NBG) aims to keep inflation low and stable. Its ma
         prompt: l("To slow down high inflation, what does a central bank usually do?", "მაღალი ინფლაციის შესანელებლად რას აკეთებს ცენტრალური ბანკი ჩვეულებრივ?"),
         options: [l("Raises the policy rate", "ზრდის მონეტარული პოლიტიკის განაკვეთს"), l("Lowers all prices by law", "კანონით ამცირებს ყველა ფასს"), l("Prints more money", "მეტ ფულს ბეჭდავს"), l("Closes shops", "მაღაზიებს ხურავს")],
         correct: 0,
+        hints: [
+          l("A higher interest rate makes borrowing more expensive.", "მაღალი განაკვეთი სესხს აძვირებს."),
+          l("When borrowing is expensive, people spend less and prices rise more slowly.", "როცა სესხი ძვირია, ადამიანები ნაკლებს ხარჯავენ და ფასები უფრო ნელა იზრდება."),
+        ],
       },
       { type: "discussion", prompt: l("Who is hurt most by high inflation: a pensioner, a worker whose wage rises with prices, or a person with a large fixed-rate loan? Why?", "ვის აზარალებს მაღალი ინფლაცია ყველაზე მეტად: პენსიონერს, მუშაკს, რომლის ხელფასიც ფასებთან ერთად იზრდება, თუ ადამიანს დიდი ფიქსირებულგანაკვეთიანი სესხით? რატომ?") },
       { type: "exit", prompt: l("Explain \"purchasing power\" using one example from your life.", "ახსენი „მსყიდველობითი უნარი“ შენი ცხოვრებიდან აღებული ერთი მაგალითით.") },

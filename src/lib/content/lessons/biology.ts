@@ -118,7 +118,7 @@ Onion skin is a classic first specimen: a thin layer on a slide with a drop of i
         prompt: l("Which part is found in plant cells but NOT in animal cells?", "რომელი ნაწილია მცენარეულ უჯრედში და არ არის ცხოველურში?"),
         options: [l("Chloroplast", "ქლოროპლასტი"), l("Nucleus", "ბირთვი"), l("Cell membrane", "უჯრედის მემბრანა"), l("Mitochondrion", "მიტოქონდრია")],
         correct: 0,
-        hints: [l("Which part carries out photosynthesis?", "რომელი ნაწილი ახორციელებს ფოტოსინთეზს?")],
+        hints: [l("Which part carries out photosynthesis?", "რომელი ნაწილი ახორციელებს ფოტოსინთეზს?"), l("Animals cannot make their own food from light.", "ცხოველებს სინათლით საკვების შექმნა არ შეუძლიათ.")],
         explanation: l("Chloroplasts (and the cell wall and large vacuole) are found only in plant cells.", "ქლოროპლასტები (ასევე უჯრედის კედელი და დიდი ვაკუოლი) მხოლოდ მცენარეულ უჯრედშია."),
       },
       {
@@ -126,7 +126,7 @@ Onion skin is a classic first specimen: a thin layer on a slide with a drop of i
         title: l("Magnification", "გადიდება"),
         prompt: l("A microscope has a 10× eyepiece and a 40× objective. What is the total magnification?", "მიკროსკოპს აქვს 10× ოკულარი და 40× ობიექტივი. რისი ტოლია საერთო გადიდება?"),
         accepted: ["400", "400x", "400×"],
-        hints: [l("Multiply the two lens magnifications.", "გადაამრავლე ორი ლინზის გადიდება.")],
+        hints: [l("Multiply the two lens magnifications.", "გადაამრავლე ორი ლინზის გადიდება."), l("10 × 40 = ?", "10 × 40 = ?")],
         solution: l("10 × 40 = 400×", "10 × 40 = 400×"),
       },
       {
@@ -135,6 +135,10 @@ Onion skin is a classic first specimen: a thin layer on a slide with a drop of i
         prompt: l("Which part contains the genetic material and controls the cell?", "რომელი ნაწილი შეიცავს გენეტიკურ მასალას და მართავს უჯრედს?"),
         options: [l("Nucleus", "ბირთვი"), l("Vacuole", "ვაკუოლი"), l("Cell wall", "უჯრედის კედელი"), l("Cytoplasm", "ციტოპლაზმა")],
         correct: 0,
+        hints: [
+          l("Where is the DNA kept in animal and plant cells?", "სად ინახება დნმ ცხოველურ და მცენარეულ უჯრედებში?"),
+          l("Bacteria do not have this part — their DNA floats in the cytoplasm.", "ბაქტერიებს ეს ნაწილი არ აქვთ — მათი დნმ ციტოპლაზმაში თავისუფლად მდებარეობს."),
+        ],
       },
       {
         type: "short",
@@ -285,7 +289,7 @@ a     Aa     aa
         prompt: l("White flowers are recessive (a). Which genotype gives white flowers?", "თეთრი ყვავილი რეცესიული ნიშანია (a). რომელი გენოტიპი იძლევა თეთრ ყვავილს?"),
         options: ["aa", "Aa", "AA", "A"],
         correct: 0,
-        hints: [l("A recessive allele only shows when there is no dominant allele.", "რეცესიული ალელი მხოლოდ მაშინ ვლინდება, როცა დომინანტური ალელი არ არის.")],
+        hints: [l("A recessive allele only shows when there is no dominant allele.", "რეცესიული ალელი მხოლოდ მაშინ ვლინდება, როცა დომინანტური ალელი არ არის."), l("Capital A is dominant. Which option has no capital A?", "დიდი A დომინანტურია. რომელ ვარიანტში არ არის დიდი A?")],
       },
       {
         type: "exercise",
@@ -310,7 +314,7 @@ a     Aa     aa
         title: l("Chromosomes", "ქრომოსომები"),
         prompt: l("How many chromosomes are there in a human body cell?", "რამდენი ქრომოსომაა ადამიანის სხეულის უჯრედში?"),
         accepted: ["46"],
-        hints: [l("There are 23 pairs.", "23 წყვილია.")],
+        hints: [l("There are 23 pairs.", "23 წყვილია."), l("23 pairs × 2 = ?", "23 წყვილი × 2 = ?")],
         solution: l("46 (23 pairs).", "46 (23 წყვილი)."),
       },
       { type: "discussion", prompt: l("Genetic tests can tell people about some risks for their health. Who should be allowed to see this information, and why?", "გენეტიკურ ტესტებს შეუძლია ადამიანს ჯანმრთელობის ზოგიერთი რისკის შესახებ უთხრას. ვის უნდა ჰქონდეს ამ ინფორმაციის ნახვის უფლება და რატომ?") },

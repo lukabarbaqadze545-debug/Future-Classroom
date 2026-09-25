@@ -98,6 +98,10 @@ Consequences:
         prompt: l("In which year was the Battle of Didgori?", "რომელ წელს მოხდა დიდგორის ბრძოლა?"),
         accepted: ["1121"],
         solution: l("1121 (12 August).", "1121 (12 აგვისტო)."),
+        hints: [
+          l("It happened in the 12th century, during David IV's reign (1089–1125).", "ეს XII საუკუნეში, დავით IV-ის მეფობისას (1089–1125) მოხდა."),
+          l("Tbilisi was taken one year after the battle, in 1122.", "თბილისი ბრძოლიდან ერთი წლის შემდეგ, 1122 წელს აიღეს."),
+        ],
       },
       {
         type: "mc",
@@ -105,7 +109,7 @@ Consequences:
         prompt: l("Which was a direct consequence of Didgori in the following year?", "რომელი იყო დიდგორის პირდაპირი შედეგი მომდევნო წელს?"),
         options: [l("David took Tbilisi (1122)", "დავითმა თბილისი აიღო (1122)"), l("The Council of Ruisi-Urbnisi", "რუის-ურბნისის კრება"), l("The founding of Gelati", "გელათის დაარსება"), l("David became king", "დავითი მეფე გახდა")],
         correct: 0,
-        hints: [l("Check the dates: which event came after 1121?", "შეამოწმე თარიღები: რომელი მოვლენა მოხდა 1121 წლის შემდეგ?")],
+        hints: [l("Check the dates: which event came after 1121?", "შეამოწმე თარიღები: რომელი მოვლენა მოხდა 1121 წლის შემდეგ?"), l("Only one option happened in 1122.", "მხოლოდ ერთი ვარიანტი მოხდა 1122 წელს.")],
       },
       {
         type: "mc",
@@ -118,6 +122,10 @@ Consequences:
           l("Armies were forbidden before", "მანამდე ლაშქარი აკრძალული იყო"),
         ],
         correct: 0,
+        hints: [
+          l("Before the reform, whose troops did the king depend on?", "რეფორმამდე ვისი ლაშქარზე იყო მეფე დამოკიდებული?"),
+          l("Powerful nobles did not always obey the king.", "ძლიერი დიდებულები მეფეს ყოველთვის არ ემორჩილებოდნენ."),
+        ],
       },
       {
         type: "discussion",
@@ -243,6 +251,10 @@ On 9 April 1991 the Supreme Council of Georgia adopted the Act of Restoration of
         title: l("Independence Day", "დამოუკიდებლობის დღე"),
         prompt: l("Georgia's Independence Day is 26 May. In which year was independence first declared?", "საქართველოს დამოუკიდებლობის დღე 26 მაისია. რომელ წელს გამოცხადდა დამოუკიდებლობა პირველად?"),
         accepted: ["1918"],
+        hints: [
+          l("It happened near the end of the First World War.", "ეს პირველი მსოფლიო ომის დასასრულს მოხდა."),
+          l("The Republic existed until the Soviet invasion of 1921 — less than three years.", "რესპუბლიკა 1921 წლის საბჭოთა შემოჭრამდე არსებობდა — სამ წელზე ნაკლები."),
+        ],
       },
       {
         type: "mc",
@@ -250,12 +262,20 @@ On 9 April 1991 the Supreme Council of Georgia adopted the Act of Restoration of
         prompt: l("What was notable about the 1919 Constituent Assembly elections?", "რით იყო აღსანიშნავი 1919 წლის დამფუძნებელი კრების არჩევნები?"),
         options: [l("Women could vote and be elected", "ქალებს ხმის მიცემაც შეეძლოთ და არჩევაც"), l("Only landowners could vote", "ხმის მიცემა მხოლოდ მიწათმფლობელებს შეეძლოთ"), l("There was only one party", "მხოლოდ ერთი პარტია იყო"), l("There were no elections", "არჩევნები არ ჩატარებულა")],
         correct: 0,
+        hints: [
+          l("Who could vote in these elections?", "ვის შეეძლო ხმის მიცემა ამ არჩევნებზე?"),
+          l("Universal suffrage means women and men alike.", "საყოველთაო საარჩევნო უფლება ქალებსაც და კაცებსაც მოიცავს."),
+        ],
       },
       {
         type: "exercise",
         title: l("Restoration", "აღდგენა"),
         prompt: l("On which date in 1991 was the Act of Restoration of State Independence adopted? (day and month)", "1991 წლის რომელ თარიღს მიიღეს სახელმწიფოებრივი დამოუკიდებლობის აღდგენის აქტი? (დღე და თვე)"),
         accepted: { en: ["9 April", "April 9", "9 april"], ka: ["9 აპრილი", "9 აპრილს", "9 აპრილს."] },
+        hints: [
+          l("It is a spring date that Georgia remembers every year.", "ეს გაზაფხულის თარიღია, რომელსაც საქართველო ყოველწლიურად იხსენებს."),
+          l("The month is April.", "თვე აპრილია."),
+        ],
       },
       { type: "discussion", prompt: l("The First Republic lasted less than three years. Was it a failure? Give arguments for and against.", "პირველი რესპუბლიკა სამ წელზე ნაკლებ ხანს არსებობდა. იყო ეს მარცხი? მოიყვანე არგუმენტები მომხრედაც და საწინააღმდეგოდაც.") },
       { type: "exit", prompt: l("Explain in two sentences how 26 May 1918 and 9 April 1991 are connected.", "ორ წინადადებაში ახსენი, როგორ უკავშირდება ერთმანეთს 1918 წლის 26 მაისი და 1991 წლის 9 აპრილი.") },
@@ -374,6 +394,10 @@ Then compare: do other sources agree? Where they disagree, the historian says so
         prompt: l("Which is a primary source about life in Tbilisi in 1920?", "რომელია პირველწყარო 1920 წლის თბილისის ცხოვრების შესახებ?"),
         options: [l("A newspaper printed in Tbilisi in 1920", "1920 წელს თბილისში დაბეჭდილი გაზეთი"), l("A 2019 history textbook", "2019 წლის ისტორიის სახელმძღვანელო"), l("A documentary made in 2005", "2005 წელს გადაღებული დოკუმენტური ფილმი"), l("An encyclopedia article", "ენციკლოპედიის სტატია")],
         correct: 0,
+        hints: [
+          l("A primary source was made at the time of the events.", "პირველწყარო მოვლენების დროს შეიქმნა."),
+          l("Which option was made in 1920?", "რომელი ვარიანტი შეიქმნა 1920 წელს?"),
+        ],
       },
       {
         type: "mc",
@@ -386,6 +410,10 @@ Then compare: do other sources agree? Where they disagree, the historian says so
           l("Chronicles cannot be used at all", "მატიანეების გამოყენება საერთოდ არ შეიძლება"),
         ],
         correct: 0,
+        hints: [
+          l("Why was the chronicle written, and for whom?", "რატომ დაიწერა მატიანე და ვისთვის?"),
+          l("A one-sided source can still be useful if you compare it with others.", "ცალმხრივი წყაროც შეიძლება სასარგებლო იყოს, თუ მას სხვებს შეადარებ."),
+        ],
       },
       {
         type: "discussion",

@@ -129,6 +129,10 @@ Isotopes are atoms of the same element with different numbers of neutrons. Carbo
         options: [l("The number of protons", "პროტონების რაოდენობა"), l("The number of neutrons", "ნეიტრონების რაოდენობა"), l("The mass number", "მასური რიცხვი"), l("The number of shells", "შრეების რაოდენობა")],
         correct: 0,
         explanation: l("The atomic number (protons) defines the element; neutrons can vary (isotopes).", "ელემენტს რიგითი ნომერი (პროტონები) განსაზღვრავს; ნეიტრონების რაოდენობა შეიძლება განსხვავდებოდეს (იზოტოპები)."),
+        hints: [
+          l("Every carbon atom has the same number of one kind of particle. Which one?", "ნახშირბადის ყველა ატომს ერთი სახის ნაწილაკის ერთნაირი რაოდენობა აქვს. რომლის?"),
+          l("The atomic number counts this particle.", "რიგითი ნომერი სწორედ ამ ნაწილაკებს ითვლის."),
+        ],
       },
       {
         type: "mc",
@@ -136,7 +140,7 @@ Isotopes are atoms of the same element with different numbers of neutrons. Carbo
         prompt: l("Chlorine-35 and chlorine-37 are isotopes. What is different?", "ქლორი-35 და ქლორი-37 იზოტოპებია. რით განსხვავდებიან?"),
         options: [l("The number of neutrons", "ნეიტრონების რაოდენობით"), l("The number of protons", "პროტონების რაოდენობით"), l("The number of electrons in a neutral atom", "ნეიტრალურ ატომში ელექტრონების რაოდენობით"), l("Their chemical symbol", "ქიმიური სიმბოლოთი")],
         correct: 0,
-        hints: [l("Both are chlorine, so Z is the same.", "ორივე ქლორია, ანუ Z ერთნაირია.")],
+        hints: [l("Both are chlorine, so Z is the same.", "ორივე ქლორია, ანუ Z ერთნაირია."), l("35 and 37 are mass numbers: protons + neutrons. Which part can differ?", "35 და 37 მასური რიცხვებია: პროტონები + ნეიტრონები. რომელი ნაწილი შეიძლება განსხვავდებოდეს?")],
         explanation: l("Both have 17 protons; chlorine-35 has 18 neutrons and chlorine-37 has 20.", "ორივეს 17 პროტონი აქვს; ქლორ-35-ს 18 ნეიტრონი აქვს, ქლორ-37-ს — 20."),
       },
       { type: "discussion", prompt: l("Scientists changed their model of the atom several times. Why is it normal for a scientific model to change?", "მეცნიერებმა ატომის მოდელი რამდენჯერმე შეცვალეს. რატომ არის ნორმალური, რომ მეცნიერული მოდელი იცვლება?") },
@@ -286,13 +290,17 @@ In 1869 Dmitri Mendeleev published a table in which he left gaps for elements no
         options: [l("It is very unreactive, so the hot filament does not burn", "თითქმის არ შედის რეაქციაში, ამიტომ გავარვარებული ძაფი არ იწვის"), l("It glows by itself", "თავისით ანათებს"), l("It is a metal", "ლითონია"), l("It is heavier than lead", "ტყვიაზე მძიმეა")],
         correct: 0,
         explanation: l("Noble gases have full outer shells and do not react with the hot metal filament.", "კეთილშობილ აირებს გარე შრე შევსებული აქვთ და გავარვარებულ ლითონის ძაფთან რეაქციაში არ შედიან."),
+        hints: [
+          l("Which group of the periodic table does argon belong to?", "პერიოდული სისტემის რომელ ჯგუფს ეკუთვნის არგონი?"),
+          l("Noble gases have full outer shells. What does that mean for their reactions?", "კეთილშობილ აირებს გარე შრე შევსებული აქვთ. რას ნიშნავს ეს რეაქციებისთვის?"),
+        ],
       },
       {
         type: "exercise",
         title: l("Outer electrons", "გარე ელექტრონები"),
         prompt: l("How many outer electrons does an element in group 17 have?", "რამდენი გარე ელექტრონი აქვს მე-17 ჯგუფის ელემენტს?"),
         accepted: ["7"],
-        hints: [l("Look at chlorine: 2, 8, 7.", "შეხედე ქლორს: 2, 8, 7.")],
+        hints: [l("For groups 13–18, the number of outer electrons is the group number minus ten.", "13–18 ჯგუფებში გარე ელექტრონების რაოდენობა ჯგუფის ნომერს გამოკლებული ათია."), l("Check with chlorine, which is in group 17: its arrangement is 2, 8, …", "შეამოწმე ქლორით, რომელიც მე-17 ჯგუფშია: მისი განაწილებაა 2, 8, …")],
         solution: l("7 outer electrons.", "7 გარე ელექტრონი."),
       },
       { type: "discussion", prompt: l("Mendeleev left gaps in his table. Why was that a brave scientific decision?", "მენდელეევმა თავის სისტემაში ცარიელი უჯრები დატოვა. რატომ იყო ეს გაბედული მეცნიერული გადაწყვეტილება?") },
@@ -455,7 +463,7 @@ Safety: wear eye protection, never taste substances in the lab, and follow your 
         prompt: l("Which is a chemical change?", "რომელია ქიმიური ცვლილება?"),
         options: [l("Rusting iron", "რკინის დაჟანგვა"), l("Melting butter", "კარაქის დნობა"), l("Dissolving sugar in tea", "ჩაიში შაქრის გახსნა"), l("Boiling water", "წყლის დუღილი")],
         correct: 0,
-        hints: [l("Is a new substance formed?", "წარმოიქმნება ახალი ნივთიერება?")],
+        hints: [l("Is a new substance formed?", "წარმოიქმნება ახალი ნივთიერება?"), l("Melting, dissolving and boiling are easy to reverse. Which change makes a different substance?", "დნობა, გახსნა და დუღილი ადვილად შექცევადია. რომელი ცვლილება ქმნის სხვა ნივთიერებას?")],
         explanation: l("Rust is a new substance (iron oxide). The others change state or mix but stay the same substances.", "ჟანგი ახალი ნივთიერებაა (რკინის ოქსიდი). დანარჩენ შემთხვევებში იცვლება აგრეგატული მდგომარეობა ან ხდება შერევა, ნივთიერებები კი იგივე რჩება."),
       },
       {
@@ -480,6 +488,10 @@ Safety: wear eye protection, never taste substances in the lab, and follow your 
         prompt: l("An acid reacts with a base. What forms?", "მჟავა ფუძესთან რეაგირებს. რა წარმოიქმნება?"),
         options: [l("A salt and water", "მარილი და წყალი"), l("Only a gas", "მხოლოდ აირი"), l("A metal", "ლითონი"), l("Another acid", "სხვა მჟავა")],
         correct: 0,
+        hints: [
+          l("Look back at the example HCl + NaOH → … in the lesson.", "გაიხსენე გაკვეთილის მაგალითი HCl + NaOH → …"),
+          l("NaCl is a salt. What is the other product?", "NaCl მარილია. რა არის მეორე პროდუქტი?"),
+        ],
       },
       { type: "discussion", prompt: l("Why is it wrong to balance H₂ + O₂ → H₂O by writing H₂O₂ on the right?", "რატომ არის არასწორი H₂ + O₂ → H₂O-ს გატოლება მარჯვენა მხარეს H₂O₂-ის დაწერით?") },
       { type: "exit", prompt: l("Name one reaction you have seen at home and one sign that told you it was a reaction.", "დაასახელე ერთი რეაქცია, რომელიც სახლში გინახავს, და ერთი ნიშანი, რომლითაც მიხვდი, რომ რეაქცია იყო.") },

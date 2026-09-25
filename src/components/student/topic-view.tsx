@@ -41,7 +41,7 @@ export function TopicView({ lesson, aiAvailable, initialTab }: { lesson: Student
   const [tab, setTab] = useState<TabId>(initialTab);
   return (
     <div>
-      <Link href={`/student/learn?subject=${lesson.subject}`} className="mb-2 inline-flex items-center gap-1.5 text-sm text-ink-muted hover:text-ink">
+      <Link href={`/subjects/${lesson.subject}`} className="mb-2 inline-flex items-center gap-1.5 text-sm text-ink-muted hover:text-ink">
         <ArrowLeft aria-hidden className="size-4" />
         {dict.subjects[lesson.subject]}
       </Link>
