@@ -115,7 +115,7 @@ export const SIMULATIONS: Simulation[] = [
     area: "electronics",
     difficulty: 2,
     grades: [8, 11],
-    title: l("Ohm’s law circuit", "ომის კანონის წრედი"),
+    title: l("Ohm’s law circuit", "ომის კანონი წრედში"),
     summary: l("Build a circuit with a battery and two resistors in series or in parallel; read the current, voltages and power.", "ააწყე წრედი ბატარეით და ორი რეზისტორით მიმდევრობით ან პარალელურად; წაიკითხე დენი, ძაბვები და სიმძლავრე."),
     explore: [
       l("In series, what happens to the current when you increase one resistor?", "მიმდევრობით შეერთებისას რა ემართება დენს, როცა ერთ რეზისტორს ზრდი?"),
@@ -204,7 +204,7 @@ export const SIMULATIONS: Simulation[] = [
     area: "simulation",
     difficulty: 2,
     grades: [9, 12],
-    title: l("Fitting a line to data", "მონაცემებისთვის წრფის მორგება"),
+    title: l("Fitting a line to data", "წრფის მორგება მონაცემებზე"),
     summary: l("Adjust the slope and intercept of a line to fit spring-stretch data, and watch the error shrink.", "დახრილობისა და თავისუფალი წევრის შეცვლით მოარგე წრფე ზამბარის გაჭიმვის მონაცემებს და უყურე, როგორ მცირდება ცდომილება."),
     explore: [
       l("Move the slope first, then the intercept. Which changes the error more?", "ჯერ დახრილობა შეცვალე, შემდეგ თავისუფალი წევრი. რომელი ცვლის ცდომილებას მეტად?"),

@@ -32,7 +32,7 @@ export const LEVEL_3_4: Problem[] = [
     level: 3,
     topic: "searching",
     difficulty: 2,
-    title: l("Is it in the list?", "არის სიაში?"),
+    title: l("Is it in the list?", "არის თუ არა სიაში?"),
     statement: l(
       "You are given n different numbers in increasing order and q questions. For each question x, print YES if x is in the list, otherwise NO. Use binary search.",
       "მოცემულია ზრდადობით დალაგებული n განსხვავებული რიცხვი და q შეკითხვა. თითოეული x-ისთვის დაბეჭდე YES, თუ x სიაშია, წინააღმდეგ შემთხვევაში — NO. გამოიყენე ორობითი ძებნა.",
@@ -330,7 +330,7 @@ export const LEVEL_3_4: Problem[] = [
     level: 4,
     topic: "contest",
     difficulty: 1,
-    title: l("Edge case: overflow", "კიდური შემთხვევა: გადავსება"),
+    title: l("Edge case: overflow", "ზღვრული შემთხვევა: გადავსება"),
     statement: l(
       "In C++ you add up to 2·10⁵ numbers, each up to 10⁹. Which type should the total have?",
       "C++-ში 2·10⁵-მდე რიცხვს კრებ, თითოეული 10⁹-მდე. რა ტიპის უნდა იყოს ჯამი?",

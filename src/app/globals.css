@@ -145,7 +145,8 @@
 
 /* Preserve line breaks in teacher-written content. */
 .fc-prose {
-  white-space: pre-line;
+  /* pre-wrap keeps indentation in code examples and aligned tables. */
+  white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
 

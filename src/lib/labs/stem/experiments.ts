@@ -271,7 +271,7 @@ export const EXPERIMENTS: Experiment[] = [
     difficulty: 2,
     grades: [8, 10],
     minutes: 50,
-    title: l("Keeping heat in: testing insulation", "სითბოს შენარჩუნება: იზოლაციის შემოწმება"),
+    title: l("Keeping heat in: testing insulation", "სითბოს შენარჩუნება: თბოიზოლაციის შემოწმება"),
     summary: l("Wrap cups of hot water in different materials and measure how fast they cool.", "ცხელი წყლით სავსე ჭიქები სხვადასხვა მასალაში შეახვიე და გაზომე, რა სისწრაფით ცივდება."),
     objectives: [
       l("Collect temperature data over time.", "ტემპერატურის მონაცემების შეგროვება დროის მიხედვით."),
