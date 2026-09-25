@@ -9,6 +9,7 @@ An AI-assisted digital learning environment for modern classrooms — built for 
 - **Teachers** draft a lesson (with AI, or from built-in lessons when AI is off), edit everything, and run it live: students join with a code like `FC-4821`, the teacher launches activities one by one and sees answers arrive in real time.
 - **Students** answer on their workstation and get **hint-first help**: a conceptual nudge first, more specific hints next, and the full solution only as the last step (and only if the teacher allows it). Outside class they practise, take quizzes, review mistakes and ask the school library questions.
 - **School materials** (PDF, DOCX, TXT, Markdown) are indexed so students can ask questions and get answers with cited passages.
+- **Six laboratories** that work without AI: Programming (Python and C++), STEM, Research, Critical Thinking, the School Library and Career & University — tied together by teacher assignments, a student portfolio and one learning profile per student.
 - **English and Georgian** throughout the interface.
 
 ---
@@ -41,7 +42,7 @@ cp .env.example .env.local
 # set ANTHROPIC_API_KEY=... (and optionally AI_MODEL, default claude-opus-5)
 ```
 
-Without a key everything still works in **offline mode**, and the UI says so everywhere it matters (header badge, lesson notices, hint labels, library notes). The app never presents template content as AI output.
+Without a key everything still works in **offline mode**, and the UI says so everywhere it matters (header badge, lesson notices, hint labels, library notes). The app never presents template content as AI output. The six laboratories use no AI at all: checking, feedback and hints are deterministic or teacher-written.
 
 ## The 5-minute demo
 
@@ -54,6 +55,21 @@ Without a key everything still works in **offline mode**, and the UI says so eve
 7. **End session** → the session summary (participation, correct %, common wrong answers, per-student table).
 
 Also worth showing: *Class overview* (teacher insights), the student dashboard/progress, and the student **Library** (“What does our physics material say about Newton’s second law?”).
+
+## The laboratories
+
+All six labs are reachable from **Labs** in the navigation (`/labs`), plus **Library** (`/library`) and **Career & portfolio** (`/career`).
+
+| Lab | What students do | How work is checked |
+| --- | --- | --- |
+| **Programming** (`/labs/programming`) | 30 bilingual problems in four levels (basics → algorithms), plus teacher-written ones: write code, predict output, find the bug. Python and C++. | Python runs in the student's browser (Pyodide/WebAssembly in a Web Worker, served from the school server — no internet needed). The server holds the test cases and compares outputs; hidden tests never reach the browser. C++ uses an optional [Judge0](https://judge0.com) sandbox (`JUDGE0_URL`), otherwise students compile locally and paste their outputs (labelled *self-checked*). |
+| **STEM** (`/labs/stem`) | 8 classroom experiments (materials, safety, procedure, data table, conclusion), 7 simulations (projectile, motion, circuits, probability, linear model, growth, grid robot), electronics and robotics guides, engineering design projects. | Challenge questions are graded on the server with tolerances; experiment records reveal the expected results only after submission. Every item is labelled *Simulation*, *Classroom experiment* or *Physical project*. |
+| **Research** (`/labs/research`) | Question → hypothesis → sources → notes → evidence → data → analysis → findings → conclusion → presentation. Source quality checklist, quotations with attribution, evidence table, datasets with statistics and charts, generated bibliography, presentation mode. | Teacher feedback; quotations must be linked to a source (enforced on the server). |
+| **Critical Thinking** (`/labs/critical-thinking`) | Claim analysis, argument builder, fallacy identification (10 fallacies, taught for recognition, not manipulation), media literacy, debate mode with timer, intellectual humility. | Deterministic rubric feedback; progress per fallacy. |
+| **School Library** (`/library`) | Catalogue with filters, digital (openly licensed or school-owned) and physical copies, bookmarks, reading progress, questions answered from school materials. | Librarians print QR labels (`/library/labels`); scanning one opens the book page for that copy. Loans are recorded by staff. |
+| **Career & University** (`/career`) | Career explorer, fields of study, university research cards, skills self-assessment, goals, portfolio. | University cards show when they were last checked and warn after a year — admission facts are never presented as permanent. |
+
+**Teachers** assign any lab item to a class or to students (`/teacher/assignments`), see who has started, handed in or finished, review work with feedback, and open each student's learning profile (`/teacher/students`). Lab items can also be run as a live classroom session (`/teacher/sessions/labs`).
 
 ## Running it in a classroom
 
@@ -69,6 +85,8 @@ npm run user:create -- --role teacher --username nbe --name "Nino Beridze"
 - Real-time updates use Server-Sent Events with automatic polling fallback, so sessions keep working behind proxies or on unstable Wi-Fi; student drafts are kept in the browser.
 - Serve over HTTPS if the network allows it (`COOKIE_SECURE=true`).
 - Run a single instance (the real-time channel and rate limiter are in-process).
+- Set `PUBLIC_BASE_URL` (e.g. `http://192.168.1.10:3000`) so printed library QR labels point to the address workstations and phones actually use.
+- C++ checking on the server needs a Judge0 instance you run yourself (`JUDGE0_URL`, optionally `JUDGE0_TOKEN`). Student code is never executed by the Future Classroom server itself.
 
 ## Architecture
 
@@ -80,7 +98,7 @@ npm run user:create -- --role teacher --username nbe --name "Nino Beridze"
 | Real-time | Server-Sent Events + in-process event bus; clients re-fetch their own view |
 | AI | Provider-neutral `AIProvider` interface; Anthropic implementation via the official SDK (structured outputs) |
 | Auth | Username/password (scrypt), server-side sessions in SQLite, httpOnly cookies; roles from the database only |
-| Tests | Vitest (unit + service tests on in-memory SQLite), Playwright (end-to-end demo flow) |
+| Tests | Vitest (unit + service tests on in-memory SQLite), Playwright (end-to-end flows for every lab, offline, multi-tab and screen widths) |
 
 ```
 src/
@@ -88,12 +106,18 @@ src/
     teacher/            dashboard, lessons, sessions (live console), quizzes, materials, insights
     student/            dashboard, learn (topic: learn/practice/quiz/ask), progress, library
     session/[id]        student live-session screen
-    present/            touchscreen presentation (live session, lesson slides)
+    present/            touchscreen presentation (live session, lesson slides, research)
+    labs/               lab hub, programming, stem, research, critical-thinking
+    library/, career/   School Library (catalogue, QR labels) and Career & University
+    portfolio/[userId]  portfolio overview for teachers and mentors
   components/           UI (ui/ primitives, lesson editor, session console, student views, …)
   lib/
     ai/                 AIProvider, Anthropic provider, lesson/quiz generators, hint service,
                         tutor, library Q&A, built-in lesson templates (EN + KA)
-    services/           lessons, quizzes, sessions, materials, progress, users
+    services/           lessons, quizzes, sessions, materials, progress, users,
+                        assignments, classes, portfolio, feedback, attachments, learning profile
+    labs/               one folder per lab (content catalogues, graders, services),
+                        session bridge and assignment registry
     domain/             zod schemas, grading, ids/join codes, safe math-expression parser
     db/                 connection, schema, demo seed
     i18n/               en.ts (source of truth), ka.ts (type-checked against en), helpers
@@ -118,18 +142,20 @@ tests/unit, tests/e2e
 | `npm run dev` / `build` / `start` | Next.js |
 | `npm run typecheck` / `lint` / `test` | TypeScript, ESLint, Vitest |
 | `npm run check` | All three of the above |
-| `npm run test:e2e` | Builds, starts a fresh demo server and runs the Playwright demo flow (set `PLAYWRIGHT_CHROMIUM_PATH` to use a system Chromium) |
+| `npm run test:e2e` | Builds, starts a fresh demo server with AI disabled and runs the Playwright suites (set `PLAYWRIGHT_CHROMIUM_PATH` to use a system Chromium, `E2E_SKIP_BUILD=1` to reuse the last build) |
 | `npm run db:reset` | Recreate the database with demo data (`-- --empty` for none) |
 | `npm run user:create` | Create a teacher/student/admin account |
 
 ## Configuration
 
-See `.env.example`: `ANTHROPIC_API_KEY`, `AI_MODEL`, `DATABASE_PATH`, `UPLOAD_DIR`, `SEED_DEMO`, `DEMO_MODE`, `COOKIE_SECURE`.
+See `.env.example`: `ANTHROPIC_API_KEY`, `AI_MODEL`, `DATABASE_PATH`, `UPLOAD_DIR`, `SEED_DEMO`, `DEMO_MODE`, `COOKIE_SECURE`, `PUBLIC_BASE_URL`, `JUDGE0_URL`, `JUDGE0_TOKEN`, `JUDGE0_PYTHON_ID`, `JUDGE0_CPP_ID`.
 
 ## Known limitations
 
 - Library search is keyword-based (FTS5); semantic search is prepared (`material_chunks.embedding`) but not implemented. Scanned PDFs without a text layer are stored but not searchable.
-- No class rosters or admin console yet: sessions carry a free-text class label, and accounts are created with `npm run user:create` or student self-registration.
+- Classes are simple named groups of students for assignments; there is no full admin console. Accounts are created with `npm run user:create` or student self-registration, and live sessions still carry a free-text class label.
+- Programming tests check output only (no memory or strict performance limits beyond a per-test time limit in the browser). Without Judge0, C++ results are self-reported and labelled as such.
+- STEM simulations are simplified models for teaching (no air resistance, ideal components); physical experiments and robotics projects need real materials and kits the school provides.
 - Single-process deployment (in-memory event bus and rate limits).
 - Georgian UI strings and the Georgian demo lesson should be reviewed by a native-speaking teacher.
-- Future modules (Programming Lab, STEM Lab, Research Lab, Critical Thinking Lab, School Library, Career) are shown as *planned* and not implemented.
+- University cards contain only what students and teachers enter; the four shared demo cards have no admission figures on purpose.

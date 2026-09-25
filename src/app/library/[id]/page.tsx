@@ -7,7 +7,7 @@ import { fmt, formatDate } from "@/lib/i18n/config";
 import { tr } from "@/lib/labs/localized";
 import { resolveActivity } from "@/lib/labs/activity-links";
 import { findCopyByCode, getReading, getResource, lessonsForResource, listCopies } from "@/lib/labs/library/service";
-import { copyUrl, publicOrigin, qrSvg } from "@/lib/labs/library/qr";
+import { publicOrigin, qrSvg } from "@/lib/labs/library/qr";
 import { canView, getMaterial } from "@/lib/services/materials";
 import { listLessonsForTeacher } from "@/lib/services/lessons";
 import { listStudents } from "@/lib/services/classes";
@@ -229,7 +229,7 @@ export default async function ResourcePage({ params, searchParams }: Props) {
                   {b.printLabels}
                 </Link>
               ) : null}
-              <p className="mt-1 hidden font-mono text-xs break-all text-ink-subtle print:block">{copyUrl(origin, copies[0]?.code ?? "")}</p>
+              <p className="mt-1 hidden font-mono text-xs break-all text-ink-subtle print:block">{`${origin}/library/${id}`}</p>
             </div>
           </Card>
         </div>

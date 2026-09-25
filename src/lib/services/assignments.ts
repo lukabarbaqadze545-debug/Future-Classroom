@@ -373,33 +373,32 @@ export function deleteAssignment(id: string, user: CurrentUser): void {
 function backfillFromExistingWork(assignmentId: string, kind: AssignmentKind, refId: string | null, studentId: string): void {
   if (!refId) return;
   const db = getDb();
-  let done: { score?: number; max?: number; workRef?: string } | null = null;
+  type Row = { id: string; score: number | null; max_score: number | null; at: number };
+  let row: Row | undefined;
   if (kind === "programming") {
-    const row = db
-      .prepare("SELECT id FROM programming_submissions WHERE user_id = ? AND problem_id = ? AND verdict IN ('accepted','correct') ORDER BY created_at DESC LIMIT 1")
-      .get(studentId, refId) as { id: string } | undefined;
-    if (row) done = { workRef: row.id, score: 1, max: 1 };
+    row = db
+      .prepare("SELECT id, 1 AS score, 1 AS max_score, created_at AS at FROM programming_submissions WHERE user_id = ? AND problem_id = ? AND verdict IN ('accepted','correct') ORDER BY created_at DESC LIMIT 1")
+      .get(studentId, refId) as Row | undefined;
   } else if (kind === "critical") {
-    const row = db
-      .prepare("SELECT id, score, max_score FROM ct_attempts WHERE user_id = ? AND exercise_id = ? ORDER BY CAST(score AS REAL) / MAX(max_score, 1) DESC LIMIT 1")
-      .get(studentId, refId) as { id: string; score: number; max_score: number } | undefined;
-    if (row) done = { workRef: row.id, score: row.score, max: row.max_score };
+    row = db
+      .prepare("SELECT id, score, max_score, created_at AS at FROM ct_attempts WHERE user_id = ? AND exercise_id = ? ORDER BY CAST(score AS REAL) / MAX(max_score, 1) DESC LIMIT 1")
+      .get(studentId, refId) as Row | undefined;
   } else if (kind === "quiz") {
-    const row = db
-      .prepare("SELECT id, score, max_score FROM quiz_attempts WHERE student_id = ? AND quiz_id = ? ORDER BY CAST(score AS REAL) / MAX(max_score, 1) DESC LIMIT 1")
-      .get(studentId, refId) as { id: string; score: number; max_score: number } | undefined;
-    if (row) done = { workRef: row.id, score: row.score, max: row.max_score };
+    row = db
+      .prepare("SELECT id, score, max_score, submitted_at AS at FROM quiz_attempts WHERE student_id = ? AND quiz_id = ? ORDER BY CAST(score AS REAL) / MAX(max_score, 1) DESC LIMIT 1")
+      .get(studentId, refId) as Row | undefined;
   } else if (kind === "simulation" || kind === "stem_challenge") {
-    const row = db
-      .prepare("SELECT id, score, max_score FROM stem_records WHERE user_id = ? AND item_kind = ? AND item_id = ?")
-      .get(studentId, kind === "simulation" ? "simulation" : "challenge", refId) as { id: string; score: number | null; max_score: number | null } | undefined;
-    if (row) done = { workRef: row.id, score: row.score ?? undefined, max: row.max_score ?? undefined };
+    row = db
+      .prepare("SELECT id, score, max_score, updated_at AS at FROM stem_records WHERE user_id = ? AND item_kind = ? AND item_id = ?")
+      .get(studentId, kind === "simulation" ? "simulation" : "challenge", refId) as Row | undefined;
   } else if (kind === "library") {
-    const row = db.prepare("SELECT 1 FROM reading_progress WHERE user_id = ? AND resource_id = ? AND status = 'finished'").get(studentId, refId);
-    if (row) done = { workRef: refId };
+    row = db
+      .prepare("SELECT resource_id AS id, NULL AS score, NULL AS max_score, updated_at AS at FROM reading_progress WHERE user_id = ? AND resource_id = ? AND status = 'finished'")
+      .get(studentId, refId) as Row | undefined;
   }
-  if (done) {
-    updateRecipient(assignmentId, studentId, { status: "completed", workRef: done.workRef ?? null, score: done.score ?? null, maxScore: done.max ?? null, submittedAt: now() });
+  if (row) {
+    // Keep the time the work was actually done, so the teacher is not told it was "handed in just now".
+    updateRecipient(assignmentId, studentId, { status: "completed", workRef: row.id, score: row.score, maxScore: row.max_score, submittedAt: row.at });
   }
 }
 

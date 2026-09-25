@@ -16,7 +16,9 @@ export async function publicOrigin(): Promise<string> {
   if (configured) return configured.replace(/\/$/, "");
   const h = await headers();
   const host = h.get("x-forwarded-host") ?? h.get("host") ?? "localhost:3000";
-  const proto = h.get("x-forwarded-proto") ?? (host.startsWith("localhost") || host.startsWith("127.") ? "http" : "https");
+  // Classroom servers usually run plain HTTP on the school network; a TLS
+  // proxy in front sets x-forwarded-proto. Set PUBLIC_BASE_URL to be sure.
+  const proto = h.get("x-forwarded-proto")?.split(",")[0].trim() || "http";
   return `${proto}://${host}`;
 }
 

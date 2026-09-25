@@ -50,6 +50,12 @@
     text-rendering: optimizeLegibility;
   }
 
+  /* Browsers give fieldsets min-width: min-content, which lets a wide table
+     inside push the whole page sideways on phones. */
+  fieldset {
+    min-width: 0;
+  }
+
   body {
     background: var(--color-canvas);
     color: var(--color-ink);

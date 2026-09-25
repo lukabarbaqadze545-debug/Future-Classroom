@@ -58,9 +58,9 @@ export default async function TeacherAssignmentsPage({ searchParams }: { searchP
                       </p>
                     </div>
                     <div className="w-full sm:w-56">
-                      <div className="flex justify-between text-sm">
+                      <div className="flex flex-wrap justify-between gap-x-2 gap-y-1 text-sm">
                         <span className="text-ink-muted">{fmt(a.progressCount, { done: x.done, total: x.total })}</span>
-                        <span className="flex gap-1.5">
+                        <span className="flex flex-wrap gap-1.5">
                           {x.toReview ? <Badge tone="warn">{fmt(a.toReview, { n: x.toReview })}</Badge> : null}
                           {x.overdue ? <Badge tone="danger">{fmt(a.overdueCount, { n: x.overdue })}</Badge> : null}
                         </span>

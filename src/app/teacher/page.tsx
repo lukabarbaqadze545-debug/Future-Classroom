@@ -102,10 +102,10 @@ export default async function TeacherDashboard() {
               </li>
             ))}
           </ul>
-          <ButtonLink href="/teacher/sessions/labs" variant="ghost" size="sm" className="mt-3">
-            <Radio aria-hidden className="size-4" />
+          <Link href="/teacher/sessions/labs" className="mt-3 inline-flex min-h-9 items-center gap-2 rounded-lg px-1 text-sm font-medium text-brand hover:underline">
+            <Radio aria-hidden className="size-4 shrink-0" />
             {dict.labs.bridge.title}
-          </ButtonLink>
+          </Link>
         </Card>
       </div>
 

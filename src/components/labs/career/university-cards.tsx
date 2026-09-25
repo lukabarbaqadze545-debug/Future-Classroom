@@ -99,7 +99,7 @@ export function UniversityCards({ own, shared, staff, initialField, now }: { own
             {stale ? <AlertTriangle aria-hidden className="size-4" /> : <CalendarCheck aria-hidden className="size-4" />}
             {card.checkedAt ? fmt(u.checkedOn, { date: formatDate(locale, card.checkedAt) }) : u.notChecked}
           </p>
-          <p className="mt-0.5 text-xs">{stale ? u.stale : u.timeSensitiveShort}</p>
+          <p className="mt-0.5 text-xs">{card.checkedAt !== null && stale ? u.stale : u.timeSensitiveShort}</p>
         </div>
         <div className="mt-auto flex flex-wrap items-center gap-2 pt-3">
           {card.website ? (

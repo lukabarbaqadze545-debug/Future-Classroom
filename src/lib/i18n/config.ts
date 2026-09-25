@@ -38,15 +38,26 @@ export function relativeTime(dict: Dictionary, timestamp: number, nowMs = Date.n
   return fmt(dict.common.daysAgo, { n: days });
 }
 
+/*
+ * Dates are formatted with our own month names rather than Intl: browsers ship
+ * different locale data (some have no Georgian at all), and a server/browser
+ * difference would break hydration of client components.
+ */
+const MONTHS: Record<Locale, readonly string[]> = {
+  en: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+  ka: ["იან", "თებ", "მარ", "აპრ", "მაი", "ივნ", "ივლ", "აგვ", "სექ", "ოქტ", "ნოე", "დეკ"],
+};
+
+const pad2 = (n: number) => String(n).padStart(2, "0");
+
+/** "5 Sep 2026" / "5 სექ. 2026" */
 export function formatDate(locale: Locale, timestamp: number): string {
-  return new Intl.DateTimeFormat(locale === "ka" ? "ka-GE" : "en-GB", { day: "numeric", month: "short", year: "numeric" }).format(timestamp);
+  const d = new Date(timestamp);
+  return `${d.getDate()} ${MONTHS[locale][d.getMonth()]}${locale === "ka" ? "." : ""} ${d.getFullYear()}`;
 }
 
+/** "5 Sep, 09:07" / "5 სექ, 09:07" */
 export function formatDateTime(locale: Locale, timestamp: number): string {
-  return new Intl.DateTimeFormat(locale === "ka" ? "ka-GE" : "en-GB", {
-    day: "numeric",
-    month: "short",
-    hour: "2-digit",
-    minute: "2-digit",
-  }).format(timestamp);
+  const d = new Date(timestamp);
+  return `${d.getDate()} ${MONTHS[locale][d.getMonth()]}, ${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
 }
