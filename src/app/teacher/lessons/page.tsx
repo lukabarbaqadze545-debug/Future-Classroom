@@ -3,7 +3,9 @@ import { Plus } from "lucide-react";
 import { getCurrentUser } from "@/lib/auth/session";
 import { getDictionary } from "@/lib/i18n/server";
 import { fmt, fmtCount, relativeTime } from "@/lib/i18n/config";
-import { listLessonsForTeacher, listPublishedLessons } from "@/lib/services/lessons";
+import { inLocale, listLessonsForTeacher, listPublishedLessons } from "@/lib/services/lessons";
+import { SYSTEM_USER_ID } from "@/lib/db/builtin";
+import { SUBJECTS } from "@/lib/domain/catalog";
 import { PageContainer } from "@/components/layout/site-header";
 import { EmptyState, PageHeader } from "@/components/ui/misc";
 import { ButtonLink } from "@/components/ui/button";
@@ -14,10 +16,14 @@ export const metadata = { title: "Lessons" };
 
 export default async function LessonsPage() {
   const user = (await getCurrentUser())!;
-  const { dict } = await getDictionary();
+  const { dict, locale } = await getDictionary();
   const l = dict.teacher.lessons;
-  const lessons = listLessonsForTeacher(user.id);
-  const shared = listPublishedLessons().filter((lesson) => lesson.teacherId !== user.id);
+  const lessons = inLocale(listLessonsForTeacher(user.id), locale);
+  const shared = inLocale(
+    listPublishedLessons().filter((lesson) => lesson.teacherId !== user.id),
+    locale,
+  );
+  const sharedBySubject = SUBJECTS.map((subject) => ({ subject, lessons: shared.filter((lesson) => lesson.subject === subject) })).filter((g) => g.lessons.length);
   return (
     <PageContainer>
       <PageHeader
@@ -39,9 +45,11 @@ export default async function LessonsPage() {
                   {dict.status[lesson.status]}
                 </Badge>
                 <Badge tone={lesson.origin === "ai" ? "ai" : lesson.origin === "template" ? "brand" : "neutral"}>{dict.origin[lesson.origin]}</Badge>
-                {lesson.language === "ka" ? <Badge>ქარ</Badge> : null}
+                {lesson.language !== locale ? <Badge>{dict.contentLanguages[lesson.language]}</Badge> : null}
               </div>
-              <h2 className="mt-3 text-lg font-semibold group-hover:text-brand">{lesson.title}</h2>
+              <h2 className="mt-3 text-lg font-semibold group-hover:text-brand" lang={lesson.language}>
+                {lesson.title}
+              </h2>
               <p className="mt-1 text-sm text-ink-muted">
                 {dict.subjects[lesson.subject]} · {fmt(dict.common.grade, { n: lesson.grade })} · {fmt(dict.common.minutes, { n: lesson.durationMin })}
               </p>
@@ -59,19 +67,29 @@ export default async function LessonsPage() {
         <section className="mt-12">
           <h2 className="text-xl font-semibold">{l.schoolLessons}</h2>
           <p className="mt-1 text-sm text-ink-muted">{l.schoolLessonsLead}</p>
-          <ul className="mt-4 divide-y divide-line rounded-2xl border border-line bg-surface">
-            {shared.map((lesson) => (
-              <li key={lesson.id} className="flex flex-wrap items-center justify-between gap-3 px-5 py-3">
-                <div className="min-w-0">
-                  <p className="font-medium">{lesson.title}</p>
-                  <p className="text-sm text-ink-muted">
-                    {dict.subjects[lesson.subject]} · {fmt(dict.common.grade, { n: lesson.grade })} · {fmt(dict.common.by, { name: lesson.teacherName })}
-                  </p>
-                </div>
-                <DuplicateLessonButton lessonId={lesson.id} />
-              </li>
+          <div className="mt-4 space-y-6">
+            {sharedBySubject.map((group) => (
+              <div key={group.subject}>
+                <h3 className="mb-2 text-sm font-semibold tracking-wide text-ink-subtle uppercase">{dict.subjects[group.subject]}</h3>
+                <ul className="divide-y divide-line rounded-2xl border border-line bg-surface">
+                  {group.lessons.map((lesson) => (
+                    <li key={lesson.id} className="flex flex-wrap items-center justify-between gap-3 px-5 py-3">
+                      <div className="min-w-0">
+                        <p className="font-medium" lang={lesson.language}>
+                          {lesson.title}
+                        </p>
+                        <p className="text-sm text-ink-muted">
+                          {fmt(dict.common.grade, { n: lesson.grade })} · {lesson.teacherId === SYSTEM_USER_ID ? dict.common.builtInLesson : fmt(dict.common.by, { name: lesson.teacherName })}
+                          {lesson.language !== locale ? ` · ${dict.contentLanguages[lesson.language]}` : ""}
+                        </p>
+                      </div>
+                      <DuplicateLessonButton lessonId={lesson.id} />
+                    </li>
+                  ))}
+                </ul>
+              </div>
             ))}
-          </ul>
+          </div>
         </section>
       ) : null}
     </PageContainer>

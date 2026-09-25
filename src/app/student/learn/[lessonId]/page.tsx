@@ -1,6 +1,7 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth/session";
-import { getPublishedLesson } from "@/lib/services/lessons";
+import { getPublishedLesson, lessonVersion } from "@/lib/services/lessons";
+import { getLocale } from "@/lib/i18n/server";
 import { listAttemptsForStudent, listQuizzesForLesson } from "@/lib/services/quizzes";
 import { listMaterialsForLesson } from "@/lib/services/materials";
 import { resourcesForLesson } from "@/lib/labs/library/service";
@@ -15,9 +16,9 @@ export const metadata = { title: "Topic" };
 
 const PRACTICE_TYPES = new Set(["multiple_choice", "short_answer", "exercise"]);
 
-export default async function TopicPage({ params, searchParams }: { params: Promise<{ lessonId: string }>; searchParams: Promise<{ tab?: string }> }) {
+export default async function TopicPage({ params, searchParams }: { params: Promise<{ lessonId: string }>; searchParams: Promise<{ tab?: string; version?: string }> }) {
   const user = (await getCurrentUser())!;
-  const [{ lessonId }, { tab }] = await Promise.all([params, searchParams]);
+  const [{ lessonId }, { tab, version }, locale] = await Promise.all([params, searchParams, getLocale()]);
   let lesson;
   try {
     lesson = getPublishedLesson(lessonId);
@@ -25,6 +26,12 @@ export default async function TopicPage({ params, searchParams }: { params: Prom
     if (error instanceof ApiError) notFound();
     throw error;
   }
+  // Built-in lessons follow the interface language unless the student chose a version.
+  if (lesson.contentGroup && lesson.language !== locale && !version) {
+    const localized = lessonVersion(lesson.contentGroup, locale);
+    if (localized) redirect(`/student/learn/${localized.id}${tab ? `?tab=${encodeURIComponent(tab)}` : ""}`);
+  }
+  const other = lesson.contentGroup ? lessonVersion(lesson.contentGroup, lesson.language === "en" ? "ka" : "en") : null;
   recordLessonView(user.id, lesson);
   const attempts = listAttemptsForStudent(user.id);
   // Only what a student may see: no answer keys, hints or solutions.
@@ -34,6 +41,7 @@ export default async function TopicPage({ params, searchParams }: { params: Prom
     subject: lesson.subject,
     grade: lesson.grade,
     language: lesson.language,
+    otherVersion: other ? { id: other.id, language: other.language } : null,
     objectives: lesson.content.objectives,
     sections: lesson.content.sections,
     discussionQuestions: lesson.content.discussionQuestions,

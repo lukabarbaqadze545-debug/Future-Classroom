@@ -3,7 +3,7 @@ import { ka } from "./ka";
 
 export const LOCALES = ["en", "ka"] as const;
 export type Locale = (typeof LOCALES)[number];
-export const DEFAULT_LOCALE: Locale = "en";
+export const DEFAULT_LOCALE: Locale = "ka";
 export const LOCALE_COOKIE = "fc_locale";
 
 export const dictionaries: Record<Locale, Dictionary> = { en, ka };

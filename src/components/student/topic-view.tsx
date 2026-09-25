@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { ArrowLeft, BookOpen, Download, Library, ListChecks, MessageCircleQuestion } from "lucide-react";
+import { ArrowLeft, BookOpen, Download, Languages, Library, ListChecks, MessageCircleQuestion } from "lucide-react";
 import { useI18n } from "@/lib/i18n/client";
 import { fmt, fmtCount } from "@/lib/i18n/config";
 import type { Section } from "@/lib/domain/schemas";
@@ -21,6 +21,8 @@ export interface StudentLesson {
   subject: Subject;
   grade: number;
   language: "en" | "ka";
+  /** The same built-in lesson in the other language. */
+  otherVersion: { id: string; language: "en" | "ka" } | null;
   objectives: string[];
   sections: Section[];
   discussionQuestions: string[];
@@ -49,6 +51,12 @@ export function TopicView({ lesson, aiAvailable, initialTab }: { lesson: Student
       <div className="mt-2 flex flex-wrap gap-2">
         <Badge tone="brand">{dict.subjects[lesson.subject]}</Badge>
         <Badge>{fmt(dict.common.grade, { n: lesson.grade })}</Badge>
+        {lesson.otherVersion ? (
+          <Link href={`/student/learn/${lesson.otherVersion.id}?version=chosen`} className="inline-flex items-center gap-1 text-sm font-medium text-brand hover:underline" lang={lesson.otherVersion.language}>
+            <Languages aria-hidden className="size-4" />
+            {l.readIn[lesson.otherVersion.language]}
+          </Link>
+        ) : null}
       </div>
       <Tabs
         className="mt-5"

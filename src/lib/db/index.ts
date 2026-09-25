@@ -3,6 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { MIGRATIONS } from "./schema";
 import { seedDemoSchool } from "./seed";
+import { syncBuiltInContent } from "./builtin";
 
 export type DB = Database.Database;
 
@@ -61,6 +62,8 @@ export function getDb(): DB {
       }
     }
   }
+  // New built-in lessons reach existing schools too.
+  syncBuiltInContent(db);
   return db;
 }
 

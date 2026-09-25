@@ -484,4 +484,19 @@ CREATE TABLE skill_ratings (
 );
 `,
   },
+  {
+    id: 3,
+    name: "built_in_content",
+    sql: `
+-- Lessons and quizzes that ship with the platform are identified by a stable
+-- key (e.g. "linear-equations-ka"); versions of the same lesson in different
+-- languages share a content group ("linear-equations").
+ALTER TABLE lessons ADD COLUMN content_key TEXT;
+ALTER TABLE lessons ADD COLUMN content_group TEXT;
+CREATE UNIQUE INDEX lessons_content_key ON lessons(content_key) WHERE content_key IS NOT NULL;
+CREATE INDEX lessons_content_group ON lessons(content_group) WHERE content_group IS NOT NULL;
+ALTER TABLE quizzes ADD COLUMN content_key TEXT;
+CREATE UNIQUE INDEX quizzes_content_key ON quizzes(content_key) WHERE content_key IS NOT NULL;
+`,
+  },
 ];

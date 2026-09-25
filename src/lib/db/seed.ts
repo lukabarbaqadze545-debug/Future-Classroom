@@ -9,9 +9,11 @@ import { CURATED_LESSONS, type CuratedLesson } from "@/lib/ai/templates";
 import { chunkPages } from "@/lib/files/chunk";
 import { SEED_MATERIALS } from "./seed-materials";
 import { seedLabs } from "./seed-labs";
+import { syncBuiltInContent } from "./builtin";
+import type { Subject } from "@/lib/domain/catalog";
 
 /**
- * Demo school: three teachers, eight students, published lessons, quizzes,
+ * Demo school: six teachers, eight students, published lessons, quizzes,
  * two finished classroom sessions and school materials — enough history that
  * dashboards and progress pages feel real on first launch.
  *
@@ -26,6 +28,9 @@ export const DEMO_USERS = [
   { key: "nino", role: "teacher", username: "nino", displayName: "Nino Beridze" },
   { key: "davit", role: "teacher", username: "davit", displayName: "Davit Kapanadze" },
   { key: "eka", role: "teacher", username: "eka", displayName: "Eka Chkheidze" },
+  { key: "manana", role: "teacher", username: "manana", displayName: "Manana Gelashvili" },
+  { key: "irakli", role: "teacher", username: "irakli", displayName: "Irakli Tsiklauri" },
+  { key: "natia", role: "teacher", username: "natia", displayName: "Natia Abashidze" },
   { key: "admin", role: "admin", username: "admin", displayName: "School Administrator" },
   { key: "mariam", role: "student", username: "mariam", displayName: "Mariam L." },
   { key: "giorgi", role: "student", username: "giorgi", displayName: "Giorgi T." },
@@ -94,14 +99,6 @@ export function seedDemoSchool(db: DB): void {
   );
   const passwordHash = hashPassword(DEMO_PASSWORD);
 
-  const insertLesson = db.prepare(
-    `INSERT INTO lessons (id, teacher_id, title, subject, grade, topic, duration_min, objective, difficulty, language, status, origin, ai_model, content, created_at, updated_at)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'published', 'template', NULL, ?, ?, ?)`,
-  );
-  const insertQuiz = db.prepare(
-    `INSERT INTO quizzes (id, teacher_id, lesson_id, title, subject, grade, topic, status, origin, feedback_mode, questions, created_at, updated_at)
-     VALUES (?, ?, ?, ?, ?, ?, ?, 'published', 'template', 'full', ?, ?, ?)`,
-  );
   const insertEvent = db.prepare(
     `INSERT INTO learning_events (id, user_id, kind, subject, topic, lesson_id, ref_id, correct, detail, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
   );
@@ -113,42 +110,30 @@ export function seedDemoSchool(db: DB): void {
       insertUser.run(id, u.role, u.username, u.displayName, passwordHash, start - 60 * DAY);
     }
 
-    // ---- Lessons and quizzes ------------------------------------------------
-    const owners: Record<string, string> = {
-      "quadratic-en": "nino",
-      "quadratic-ka": "nino",
-      "newton-en": "davit",
-      "algorithms-en": "davit",
-      "ecosystems-en": "eka",
-      "map-reading-en": "eka",
+    // ---- Built-in lessons and quizzes, owned by the demo teacher of each subject
+    const teacherFor: Partial<Record<Subject, string>> = {
+      mathematics: "nino",
+      economics: "nino",
+      critical_thinking: "nino",
+      research: "nino",
+      entrepreneurship: "nino",
+      physics: "davit",
+      computer_science: "davit",
+      engineering: "davit",
+      chemistry: "eka",
+      biology: "eka",
+      geography: "eka",
+      health: "eka",
+      georgian: "manana",
+      arts: "manana",
+      history: "irakli",
+      civics: "irakli",
+      english: "natia",
+      career: "natia",
     };
-    const lessonIds = new Map<string, string>();
-    const quizIds = new Map<string, string>();
-    CURATED_LESSONS.forEach((lesson, i) => {
-      const id = newId();
-      lessonIds.set(lesson.key, id);
-      const created = start - (40 - i * 3) * DAY;
-      insertLesson.run(
-        id,
-        users.get(owners[lesson.key])!,
-        lesson.title,
-        lesson.subject,
-        lesson.grade,
-        lesson.topic,
-        lesson.durationMin,
-        lesson.objective,
-        lesson.difficulty,
-        lesson.language,
-        JSON.stringify(lesson.content),
-        created,
-        created + 2 * DAY,
-      );
-      if (lesson.key !== "quadratic-ka") {
-        const quizId = newId();
-        quizIds.set(lesson.key, quizId);
-        insertQuiz.run(quizId, users.get(owners[lesson.key])!, id, lesson.quiz.title, lesson.subject, lesson.grade, lesson.topic, JSON.stringify(lesson.quiz.questions), created + DAY, created + DAY);
-      }
-    });
+    const installed = syncBuiltInContent(db, (lesson) => users.get(teacherFor[lesson.subject] ?? "nino"));
+    const lessonIds = new Map([...installed].map(([key, v]) => [key, v.lessonId]));
+    const quizIds = new Map([...installed].filter(([, v]) => v.quizId).map(([key, v]) => [key, v.quizId!]));
 
     const students = DEMO_USERS.filter((u) => u.role === "student").map((u) => u.key);
 

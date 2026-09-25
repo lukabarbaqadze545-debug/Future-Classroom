@@ -3,7 +3,7 @@ import { ArrowRight } from "lucide-react";
 import { getDictionary } from "@/lib/i18n/server";
 import { fmt } from "@/lib/i18n/config";
 import { SUBJECTS, isSubject } from "@/lib/domain/catalog";
-import { listPublishedLessons } from "@/lib/services/lessons";
+import { inLocale, listPublishedLessons } from "@/lib/services/lessons";
 import { PageContainer } from "@/components/layout/site-header";
 import { EmptyState, PageHeader } from "@/components/ui/misc";
 import { Badge } from "@/components/ui/badge";
@@ -12,8 +12,8 @@ import { cn } from "@/components/ui/cn";
 export const metadata = { title: "Learn" };
 
 export default async function LearnPage({ searchParams }: { searchParams: Promise<{ subject?: string }> }) {
-  const [{ dict }, { subject }] = await Promise.all([getDictionary(), searchParams]);
-  const lessons = listPublishedLessons();
+  const [{ dict, locale }, { subject }] = await Promise.all([getDictionary(), searchParams]);
+  const lessons = inLocale(listPublishedLessons(), locale);
   const counts = new Map<string, number>();
   for (const l of lessons) counts.set(l.subject, (counts.get(l.subject) ?? 0) + 1);
   const active = subject && isSubject(subject) ? subject : null;
@@ -41,10 +41,14 @@ export default async function LearnPage({ searchParams }: { searchParams: Promis
                 <div className="flex flex-wrap gap-2">
                   <Badge tone="brand">{dict.subjects[lesson.subject]}</Badge>
                   <Badge>{fmt(dict.common.grade, { n: lesson.grade })}</Badge>
-                  {lesson.language === "ka" ? <Badge>ქარ</Badge> : null}
+                  {lesson.language !== locale ? <Badge>{dict.contentLanguages[lesson.language]}</Badge> : null}
                 </div>
-                <h2 className="mt-3 text-lg font-semibold group-hover:text-brand">{lesson.title}</h2>
-                <p className="mt-1 line-clamp-2 text-sm text-ink-muted">{lesson.objective}</p>
+                <h2 className="mt-3 text-lg font-semibold group-hover:text-brand" lang={lesson.language}>
+                  {lesson.title}
+                </h2>
+                <p className="mt-1 line-clamp-2 text-sm text-ink-muted" lang={lesson.language}>
+                  {lesson.objective}
+                </p>
                 <span className="mt-auto inline-flex items-center gap-1 pt-4 text-sm font-medium text-brand">
                   {dict.student.learn.open}
                   <ArrowRight aria-hidden className="size-4" />

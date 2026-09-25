@@ -5,9 +5,12 @@ import { askLibrary } from "@/lib/ai/library-service";
 import { createQuiz, getQuizResults, studentAttemptView, submitQuizAttempt, getPublishedQuiz, setQuizStatus } from "@/lib/services/quizzes";
 import { quiz } from "@/lib/ai/templates/builders";
 import { SEED_MATERIALS } from "@/lib/db/seed-materials";
-import { seedDemoSchool } from "@/lib/db/seed";
+import { DEMO_USERS, seedDemoSchool } from "@/lib/db/seed";
+import { syncBuiltInContent } from "@/lib/db/builtin";
+import { BUILT_IN_LESSONS } from "@/lib/content/lessons";
+import { lessonContentSchema, quizQuestionSchema } from "@/lib/domain/schemas";
 import { getTeacherInsights, getStudentProgress, getMistakesToReview } from "@/lib/services/progress";
-import { getUserByUsername } from "@/lib/services/users";
+import { authenticate, getUserByUsername } from "@/lib/services/users";
 import { ApiError } from "@/lib/http/errors";
 import type { MaterialMeta } from "@/lib/domain/schemas";
 
@@ -92,13 +95,41 @@ describe("quizzes", () => {
   });
 });
 
+describe("built-in content", () => {
+  it("installs every built-in lesson and quiz once, without demo data", () => {
+    const db = freshDb();
+    const count = (table: string) => (db.prepare(`SELECT COUNT(*) AS n FROM ${table}`).get() as { n: number }).n;
+    syncBuiltInContent(db);
+    syncBuiltInContent(db);
+    expect(count("lessons WHERE status = 'published'")).toBe(BUILT_IN_LESSONS.length);
+    expect(count("quizzes")).toBe(BUILT_IN_LESSONS.filter((l) => l.quiz.questions.length).length);
+    expect(count("lessons WHERE teacher_id = 'system-content'")).toBe(BUILT_IN_LESSONS.length);
+    // The content account cannot be signed in to.
+    expect(authenticate("future-classroom", "!")).toBeNull();
+  });
+
+  it("gives every lesson a unique key and parses as valid lesson content", () => {
+    const keys = BUILT_IN_LESSONS.map((l) => l.key);
+    expect(new Set(keys).size).toBe(keys.length);
+    for (const lesson of BUILT_IN_LESSONS) {
+      expect(lesson.key, lesson.key).toBe(`${lesson.group}-${lesson.language}`);
+      expect(lessonContentSchema.safeParse(lesson.content).success, lesson.key).toBe(true);
+      for (const q of lesson.quiz.questions) expect(quizQuestionSchema.safeParse(q).success, `${lesson.key} ${q.id}`).toBe(true);
+    }
+  });
+});
+
 describe("demo seed", () => {
   it("creates a coherent demo school", () => {
     const db = freshDb();
     seedDemoSchool(db);
     const count = (table: string) => (db.prepare(`SELECT COUNT(*) AS n FROM ${table}`).get() as { n: number }).n;
-    expect(count("users")).toBe(12);
-    expect(count("lessons")).toBe(6);
+    expect(count("users")).toBe(DEMO_USERS.length);
+    expect(count("lessons")).toBe(BUILT_IN_LESSONS.length);
+    // Demo teachers own the built-in lessons of their subjects; nothing is owned by the system account.
+    expect(count("lessons WHERE teacher_id = 'system-content'")).toBe(0);
+    expect(syncBuiltInContent(db).size).toBe(BUILT_IN_LESSONS.length);
+    expect(count("lessons")).toBe(BUILT_IN_LESSONS.length);
     expect(count("classroom_sessions")).toBe(2);
     expect(count("materials")).toBe(SEED_MATERIALS.length);
     const nino = getUserByUsername("nino")!;

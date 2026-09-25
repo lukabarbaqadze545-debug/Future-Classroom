@@ -1,15 +1,12 @@
 import type { LessonContent } from "@/lib/domain/schemas";
 import type { ContentLanguage, Subject } from "@/lib/domain/catalog";
 import { discussion, exitTicket, section, shortAnswer } from "./builders";
-import { quadraticEn } from "./quadratic-en";
-import { quadraticKa } from "./quadratic-ka";
-import { ecosystemsEn, newtonEn } from "./science-en";
-import { algorithmsEn, mapReadingEn } from "./other-en";
+import { BUILT_IN_LESSONS } from "@/lib/content/lessons";
 import type { CuratedLesson } from "./types";
 
 export type { CuratedLesson } from "./types";
 
-export const CURATED_LESSONS: CuratedLesson[] = [quadraticEn, quadraticKa, newtonEn, algorithmsEn, ecosystemsEn, mapReadingEn];
+export const CURATED_LESSONS: CuratedLesson[] = BUILT_IN_LESSONS;
 
 /**
  * Finds a hand-written lesson for the requested topic. Prefers the requested

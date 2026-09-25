@@ -3,6 +3,7 @@ import type { CuratedLesson } from "./types";
 
 export const newtonEn: CuratedLesson = {
   key: "newton-en",
+  group: "newton",
   match: /newton|force|inertia|ნიუტონ|ძალ/i,
   subject: "physics",
   language: "en",
@@ -139,6 +140,7 @@ Safety note for follow-up experiments: use trolleys and ramps on the floor or lo
 
 export const ecosystemsEn: CuratedLesson = {
   key: "ecosystems-en",
+  group: "ecosystems",
   match: /ecosystem|food (chain|web)|ecolog|ეკოსისტემ/i,
   subject: "biology",
   language: "en",

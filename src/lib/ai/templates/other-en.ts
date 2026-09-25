@@ -3,6 +3,7 @@ import type { CuratedLesson } from "./types";
 
 export const algorithmsEn: CuratedLesson = {
   key: "algorithms-en",
+  group: "algorithms",
   match: /algorithm|binary search|linear search|ალგორითმ/i,
   subject: "computer_science",
   language: "en",
@@ -93,6 +94,7 @@ Each step halves the part of the list still to search. A sorted list of 1,000 it
 
 export const mapReadingEn: CuratedLesson = {
   key: "map-reading-en",
+  group: "map-reading",
   match: /map|scale|contour|compass|რუკ/i,
   subject: "geography",
   language: "en",

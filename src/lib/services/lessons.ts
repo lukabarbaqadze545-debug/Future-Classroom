@@ -6,7 +6,7 @@ import {
   type LessonContent,
   type LessonMeta,
 } from "@/lib/domain/schemas";
-import type { Subject } from "@/lib/domain/catalog";
+import type { ContentLanguage, Subject } from "@/lib/domain/catalog";
 import { ApiError } from "@/lib/http/errors";
 import type { CurrentUser } from "@/lib/auth/session";
 
@@ -22,6 +22,10 @@ export interface LessonRecord extends LessonMeta {
   aiModel: string | null;
   content: LessonContent;
   materialIds: string[];
+  /** Set for lessons that ship with the platform (see src/lib/content). */
+  contentKey: string | null;
+  /** Language versions of the same built-in lesson share a group. */
+  contentGroup: string | null;
   createdAt: number;
   updatedAt: number;
 }
@@ -47,6 +51,8 @@ interface LessonRow {
   origin: ContentOrigin;
   ai_model: string | null;
   content: string;
+  content_key: string | null;
+  content_group: string | null;
   created_at: number;
   updated_at: number;
 }
@@ -70,6 +76,8 @@ function toSummary(row: LessonRow): LessonSummary {
     status: row.status,
     origin: row.origin,
     aiModel: row.ai_model,
+    contentKey: row.content_key,
+    contentGroup: row.content_group,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
     activityCount: content.activities.length,
@@ -165,6 +173,36 @@ export function listPublishedLessons(filter?: { subject?: Subject }): LessonSumm
         .all(filter.subject) as LessonRow[])
     : (getDb().prepare(`${SELECT} WHERE l.status = 'published' ORDER BY l.subject, l.grade, l.title`).all() as LessonRow[]);
   return rows.map(toSummary);
+}
+
+/**
+ * One entry per built-in lesson, in the reader's language when that version
+ * exists; lessons written by teachers are always listed as they are.
+ */
+export function inLocale<T extends Pick<LessonSummary, "contentGroup" | "language">>(lessons: T[], locale: ContentLanguage): T[] {
+  const chosen = new Map<string, T>();
+  const out: T[] = [];
+  for (const lesson of lessons) {
+    if (!lesson.contentGroup) {
+      out.push(lesson);
+      continue;
+    }
+    const current = chosen.get(lesson.contentGroup);
+    if (!current) {
+      chosen.set(lesson.contentGroup, lesson);
+      out.push(lesson);
+    } else if (current.language !== locale && lesson.language === locale) {
+      chosen.set(lesson.contentGroup, lesson);
+      out[out.indexOf(current)] = lesson;
+    }
+  }
+  return out;
+}
+
+/** The published version of a built-in lesson in another language, if there is one. */
+export function lessonVersion(group: string, language: ContentLanguage): LessonSummary | null {
+  const row = getDb().prepare(`${SELECT} WHERE l.content_group = ? AND l.language = ? AND l.status = 'published' LIMIT 1`).get(group, language) as LessonRow | undefined;
+  return row ? toSummary(row) : null;
 }
 
 /** Students only ever see published lessons. */

@@ -4,6 +4,8 @@ import type { ContentLanguage, Difficulty, Subject } from "@/lib/domain/catalog"
 /** A hand-written lesson that ships with the platform. */
 export interface CuratedLesson {
   key: string;
+  /** Versions of the same lesson in different languages share a group. */
+  group: string;
   /** Matches teacher-entered topics (both languages where relevant). */
   match: RegExp;
   subject: Subject;

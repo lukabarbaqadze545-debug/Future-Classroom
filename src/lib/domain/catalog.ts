@@ -6,14 +6,22 @@
 export const SUBJECTS = [
   "mathematics",
   "physics",
-  "computer_science",
-  "english",
-  "biology",
-  "geography",
   "chemistry",
-  "history",
+  "biology",
+  "computer_science",
   "georgian",
+  "english",
+  "history",
+  "geography",
+  "civics",
+  "economics",
+  "arts",
+  "engineering",
+  "health",
+  "career",
+  "research",
   "critical_thinking",
+  "entrepreneurship",
 ] as const;
 export type Subject = (typeof SUBJECTS)[number];
 

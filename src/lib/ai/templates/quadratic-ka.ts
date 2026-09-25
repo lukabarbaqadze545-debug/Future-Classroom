@@ -3,6 +3,7 @@ import type { CuratedLesson } from "./types";
 
 export const quadraticKa: CuratedLesson = {
   key: "quadratic-ka",
+  group: "quadratic",
   match: /quadratic|კვადრატ|პარაბოლ|დისკრიმინანტ/i,
   subject: "mathematics",
   language: "ka",
