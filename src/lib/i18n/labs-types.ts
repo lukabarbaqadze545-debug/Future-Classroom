@@ -1,6 +1,6 @@
 import type { labsEn } from "./labs-en";
 
-type Widen<T> = T extends string
+export type Widen<T> = T extends string
   ? string
   : T extends readonly (infer U)[]
     ? readonly Widen<U>[]

@@ -1,3 +1,5 @@
+import { stemEn } from "./labs/stem-en";
+import { criticalEn } from "./labs/critical-en";
 /** UI strings for the six laboratories, assignments and the learning profile (English). */
 export const labsEn = {
   hub: {
@@ -228,6 +230,8 @@ export const labsEn = {
     safety:
       "Safety: student code never runs on the school server. Python runs in a sandboxed WebAssembly worker inside the student's own browser; C++ is checked by output comparison or by an optional, separately hosted code judge.",
   },
+  critical: criticalEn,
+  stem: stemEn,
   assignments: {
     title: "Assignments",
     teacherLead: "Assign activities from any laboratory, set deadlines, and review what students hand in.",

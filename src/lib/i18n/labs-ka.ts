@@ -1,3 +1,5 @@
+import { stemKa } from "./labs/stem-ka";
+import { criticalKa } from "./labs/critical-ka";
 import type { LabsDictionary } from "./labs-types";
 
 /** ლაბორატორიების, დავალებებისა და სასწავლო პროფილის ტექსტები (ქართული). */
@@ -230,6 +232,8 @@ export const labsKa: LabsDictionary = {
     safety:
       "უსაფრთხოება: მოსწავლის კოდი სკოლის სერვერზე არასოდეს ეშვება. Python სრულდება იზოლირებულ WebAssembly-პროცესში თავად მოსწავლის ბრაუზერში; C++ მოწმდება გამონატანების შედარებით ან ცალკე განთავსებული, არასავალდებულო კოდის შემმოწმებლით.",
   },
+  critical: criticalKa,
+  stem: stemKa,
   assignments: {
     title: "დავალებები",
     teacherLead: "მიეცი აქტივობები ნებისმიერი ლაბორატორიიდან, დააწესე ვადები და შეამოწმე, რას აბარებენ მოსწავლეები.",

@@ -49,8 +49,8 @@ function subscribe(listener: () => void) {
   };
 }
 
-/** Returns the saved draft (or the fallback), a setter and a reset. */
-export function useLocalDraft(key: string, fallback: string): [string, (value: string) => void, () => void] {
+/** Returns the saved draft (or the fallback), a setter, a reset and whether a draft exists. */
+export function useLocalDraft(key: string, fallback: string): [string, (value: string) => void, () => void, boolean] {
   const stored = useSyncExternalStore(
     subscribe,
     () => read(key),
@@ -58,14 +58,14 @@ export function useLocalDraft(key: string, fallback: string): [string, (value: s
   );
   const set = useCallback((value: string) => write(key, value), [key]);
   const reset = useCallback(() => write(key, null), [key]);
-  return [stored ?? fallback, set, reset];
+  return [stored ?? fallback, set, reset, stored !== null];
 }
 
 /** JSON variant for structured drafts (forms with several fields). */
-export function useLocalJsonDraft<T>(key: string, fallback: T): [T, (value: T) => void, () => void] {
-  const [raw, set, reset] = useLocalDraft(key, "");
+export function useLocalJsonDraft<T>(key: string, fallback: T): [T, (value: T) => void, () => void, boolean] {
+  const [raw, set, reset, hasDraft] = useLocalDraft(key, "");
   let value = fallback;
-  if (raw) {
+  if (hasDraft && raw) {
     try {
       value = JSON.parse(raw) as T;
     } catch {
@@ -73,5 +73,5 @@ export function useLocalJsonDraft<T>(key: string, fallback: T): [T, (value: T) =
     }
   }
   const setJson = useCallback((next: T) => set(JSON.stringify(next)), [set]);
-  return [value, setJson, reset];
+  return [value, setJson, reset, hasDraft];
 }
