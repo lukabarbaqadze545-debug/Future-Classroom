@@ -61,3 +61,26 @@ export function validateUpload(fileName: string, bytes: Uint8Array): { kind: Mat
   }
   return { kind: expected.kind, mime: expected.mime, extension };
 }
+
+const IMAGE_TYPES: Record<string, { mime: string; signature: number[][] }> = {
+  png: { mime: "image/png", signature: [[0x89, 0x50, 0x4e, 0x47]] },
+  jpg: { mime: "image/jpeg", signature: [[0xff, 0xd8, 0xff]] },
+  jpeg: { mime: "image/jpeg", signature: [[0xff, 0xd8, 0xff]] },
+  webp: { mime: "image/webp", signature: [[0x52, 0x49, 0x46, 0x46]] },
+};
+
+export const ATTACHMENT_EXTENSIONS = [...ACCEPTED_EXTENSIONS, ".png", ".jpg", ".jpeg", ".webp"];
+export const MAX_ATTACHMENT_BYTES = 10 * 1024 * 1024;
+
+/** Student attachments: the document types above plus photos (checked by content). */
+export function validateAttachment(fileName: string, bytes: Uint8Array): { mime: string; extension: string; isImage: boolean } {
+  if (bytes.byteLength > MAX_ATTACHMENT_BYTES) throw new ApiError(413, "file_too_large");
+  const extension = sanitizeFileName(fileName).split(".").pop()?.toLowerCase() ?? "";
+  const image = IMAGE_TYPES[extension];
+  if (image) {
+    if (bytes.byteLength === 0 || !image.signature.some((sig) => startsWith(bytes, sig))) throw new ApiError(415, "file_invalid");
+    return { mime: image.mime, extension, isImage: true };
+  }
+  const doc = validateUpload(fileName, bytes);
+  return { mime: doc.mime, extension: doc.extension, isImage: false };
+}

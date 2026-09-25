@@ -3,6 +3,8 @@
  * language must provide the same keys (enforced by the `Dictionary` type).
  * Placeholders use {name} and are filled with `fmt()`.
  */
+import { labsEn } from "./labs-en";
+
 export const en = {
   meta: {
     title: "Future Classroom",
@@ -830,6 +832,7 @@ export const en = {
     ],
     contact: "Questions about data? Contact your school administration.",
   },
+  labs: labsEn,
 };
 
 type Widen<T> = T extends string

@@ -220,4 +220,268 @@ CREATE TABLE learning_events (
 CREATE INDEX learning_events_user ON learning_events(user_id, created_at DESC);
 `,
   },
+  {
+    id: 2,
+    name: "laboratories",
+    sql: `
+-- Classes: a teacher's group of student accounts (e.g. "11A").
+CREATE TABLE classes (
+  id         TEXT PRIMARY KEY,
+  teacher_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  name       TEXT NOT NULL,
+  created_at INTEGER NOT NULL
+);
+CREATE TABLE class_members (
+  class_id   TEXT NOT NULL REFERENCES classes(id) ON DELETE CASCADE,
+  student_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  PRIMARY KEY (class_id, student_id)
+);
+CREATE INDEX class_members_student ON class_members(student_id);
+
+-- Assignments point at an item in any laboratory (kind + ref_id) or are a
+-- custom task. Recipients are expanded when the assignment is created.
+CREATE TABLE assignments (
+  id           TEXT PRIMARY KEY,
+  teacher_id   TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  kind         TEXT NOT NULL,
+  ref_id       TEXT,
+  title        TEXT NOT NULL,
+  instructions TEXT NOT NULL DEFAULT '',
+  due_at       INTEGER,
+  class_id     TEXT REFERENCES classes(id) ON DELETE SET NULL,
+  archived     INTEGER NOT NULL DEFAULT 0,
+  created_at   INTEGER NOT NULL
+);
+CREATE INDEX assignments_teacher ON assignments(teacher_id, created_at DESC);
+CREATE TABLE assignment_recipients (
+  assignment_id TEXT NOT NULL REFERENCES assignments(id) ON DELETE CASCADE,
+  student_id    TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  status        TEXT NOT NULL CHECK (status IN ('assigned','in_progress','submitted','completed','reviewed','revision')),
+  work_ref      TEXT,
+  score         INTEGER,
+  max_score     INTEGER,
+  response      TEXT NOT NULL DEFAULT '{}',
+  submitted_at  INTEGER,
+  feedback      TEXT NOT NULL DEFAULT '',
+  feedback_by   TEXT REFERENCES users(id) ON DELETE SET NULL,
+  feedback_at   INTEGER,
+  updated_at    INTEGER NOT NULL,
+  PRIMARY KEY (assignment_id, student_id)
+);
+CREATE INDEX assignment_recipients_student ON assignment_recipients(student_id, status);
+
+CREATE TABLE bookmarks (
+  user_id    TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  kind       TEXT NOT NULL,
+  ref_id     TEXT NOT NULL,
+  created_at INTEGER NOT NULL,
+  PRIMARY KEY (user_id, kind, ref_id)
+);
+
+-- Teacher feedback on any piece of student work (research, projects, …).
+CREATE TABLE feedback (
+  id          TEXT PRIMARY KEY,
+  target_kind TEXT NOT NULL,
+  target_id   TEXT NOT NULL,
+  author_id   TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  body        TEXT NOT NULL,
+  created_at  INTEGER NOT NULL
+);
+CREATE INDEX feedback_target ON feedback(target_kind, target_id, created_at);
+
+-- Files students attach to projects and portfolio items.
+CREATE TABLE attachments (
+  id          TEXT PRIMARY KEY,
+  owner_id    TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  target_kind TEXT NOT NULL,
+  target_id   TEXT NOT NULL,
+  file_name   TEXT NOT NULL,
+  stored_name TEXT NOT NULL,
+  mime_type   TEXT NOT NULL,
+  size_bytes  INTEGER NOT NULL,
+  created_at  INTEGER NOT NULL
+);
+CREATE INDEX attachments_target ON attachments(target_kind, target_id);
+
+-- Programming laboratory. Built-in problems live in code; teachers can add
+-- their own (same JSON shape). Submissions record how they were checked.
+CREATE TABLE programming_problems (
+  id         TEXT PRIMARY KEY,
+  teacher_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  data       TEXT NOT NULL,
+  published  INTEGER NOT NULL DEFAULT 1,
+  created_at INTEGER NOT NULL,
+  updated_at INTEGER NOT NULL
+);
+CREATE TABLE programming_submissions (
+  id         TEXT PRIMARY KEY,
+  user_id    TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  problem_id TEXT NOT NULL,
+  language   TEXT NOT NULL,
+  code       TEXT NOT NULL DEFAULT '',
+  answer     TEXT NOT NULL DEFAULT '',
+  verdict    TEXT NOT NULL,
+  passed     INTEGER NOT NULL DEFAULT 0,
+  total      INTEGER NOT NULL DEFAULT 0,
+  checker    TEXT NOT NULL,
+  details    TEXT NOT NULL DEFAULT '[]',
+  created_at INTEGER NOT NULL
+);
+CREATE INDEX programming_submissions_user ON programming_submissions(user_id, problem_id, created_at DESC);
+
+-- STEM laboratory: a student's record for an experiment / simulation /
+-- electronics or robotics challenge, and engineering projects.
+CREATE TABLE stem_records (
+  id         TEXT PRIMARY KEY,
+  user_id    TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  item_kind  TEXT NOT NULL,
+  item_id    TEXT NOT NULL,
+  data       TEXT NOT NULL DEFAULT '{}',
+  status     TEXT NOT NULL CHECK (status IN ('draft','submitted')),
+  score      INTEGER,
+  max_score  INTEGER,
+  created_at INTEGER NOT NULL,
+  updated_at INTEGER NOT NULL,
+  UNIQUE (user_id, item_kind, item_id)
+);
+CREATE TABLE stem_projects (
+  id          TEXT PRIMARY KEY,
+  user_id     TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  template_id TEXT,
+  kind        TEXT NOT NULL,
+  title       TEXT NOT NULL,
+  data        TEXT NOT NULL DEFAULT '{}',
+  status      TEXT NOT NULL CHECK (status IN ('draft','submitted')),
+  created_at  INTEGER NOT NULL,
+  updated_at  INTEGER NOT NULL
+);
+CREATE INDEX stem_projects_user ON stem_projects(user_id, updated_at DESC);
+
+-- Research laboratory.
+CREATE TABLE research_projects (
+  id         TEXT PRIMARY KEY,
+  user_id    TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  title      TEXT NOT NULL,
+  subject    TEXT NOT NULL,
+  data       TEXT NOT NULL DEFAULT '{}',
+  status     TEXT NOT NULL CHECK (status IN ('draft','submitted')),
+  created_at INTEGER NOT NULL,
+  updated_at INTEGER NOT NULL
+);
+CREATE INDEX research_projects_user ON research_projects(user_id, updated_at DESC);
+CREATE TABLE research_sources (
+  id         TEXT PRIMARY KEY,
+  project_id TEXT NOT NULL REFERENCES research_projects(id) ON DELETE CASCADE,
+  data       TEXT NOT NULL,
+  created_at INTEGER NOT NULL
+);
+CREATE TABLE research_notes (
+  id         TEXT PRIMARY KEY,
+  project_id TEXT NOT NULL REFERENCES research_projects(id) ON DELETE CASCADE,
+  source_id  TEXT REFERENCES research_sources(id) ON DELETE SET NULL,
+  kind       TEXT NOT NULL CHECK (kind IN ('note','quote','evidence')),
+  content    TEXT NOT NULL,
+  page       TEXT NOT NULL DEFAULT '',
+  stance     TEXT,
+  created_at INTEGER NOT NULL
+);
+CREATE TABLE research_datasets (
+  id         TEXT PRIMARY KEY,
+  project_id TEXT NOT NULL REFERENCES research_projects(id) ON DELETE CASCADE,
+  data       TEXT NOT NULL,
+  created_at INTEGER NOT NULL,
+  updated_at INTEGER NOT NULL
+);
+
+-- Critical thinking laboratory attempts (scored deterministically).
+CREATE TABLE ct_attempts (
+  id          TEXT PRIMARY KEY,
+  user_id     TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  exercise_id TEXT NOT NULL,
+  kind        TEXT NOT NULL,
+  answers     TEXT NOT NULL,
+  result      TEXT NOT NULL,
+  score       INTEGER NOT NULL,
+  max_score   INTEGER NOT NULL,
+  created_at  INTEGER NOT NULL
+);
+CREATE INDEX ct_attempts_user ON ct_attempts(user_id, created_at DESC);
+
+-- School library: catalogue, physical copies (each with its own QR code),
+-- reading progress and links to lessons.
+CREATE TABLE library_resources (
+  id           TEXT PRIMARY KEY,
+  data         TEXT NOT NULL,
+  material_id  TEXT REFERENCES materials(id) ON DELETE SET NULL,
+  created_by   TEXT REFERENCES users(id) ON DELETE SET NULL,
+  created_at   INTEGER NOT NULL,
+  updated_at   INTEGER NOT NULL
+);
+CREATE TABLE library_copies (
+  id          TEXT PRIMARY KEY,
+  resource_id TEXT NOT NULL REFERENCES library_resources(id) ON DELETE CASCADE,
+  code        TEXT NOT NULL UNIQUE,
+  shelf       TEXT NOT NULL DEFAULT '',
+  status      TEXT NOT NULL CHECK (status IN ('available','on_loan','reference','missing')),
+  borrower_id TEXT REFERENCES users(id) ON DELETE SET NULL,
+  due_at      INTEGER,
+  updated_at  INTEGER NOT NULL
+);
+CREATE INDEX library_copies_resource ON library_copies(resource_id);
+CREATE TABLE reading_progress (
+  user_id     TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  resource_id TEXT NOT NULL REFERENCES library_resources(id) ON DELETE CASCADE,
+  status      TEXT NOT NULL CHECK (status IN ('want','reading','finished')),
+  percent     INTEGER NOT NULL DEFAULT 0,
+  note        TEXT NOT NULL DEFAULT '',
+  updated_at  INTEGER NOT NULL,
+  PRIMARY KEY (user_id, resource_id)
+);
+CREATE TABLE lesson_resources (
+  lesson_id   TEXT NOT NULL REFERENCES lessons(id) ON DELETE CASCADE,
+  resource_id TEXT NOT NULL REFERENCES library_resources(id) ON DELETE CASCADE,
+  PRIMARY KEY (lesson_id, resource_id)
+);
+
+-- Career & university laboratory.
+CREATE TABLE university_cards (
+  id         TEXT PRIMARY KEY,
+  owner_id   TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  shared     INTEGER NOT NULL DEFAULT 0,
+  data       TEXT NOT NULL,
+  checked_at INTEGER,
+  created_at INTEGER NOT NULL,
+  updated_at INTEGER NOT NULL
+);
+CREATE INDEX university_cards_owner ON university_cards(owner_id);
+CREATE TABLE portfolio_items (
+  id          TEXT PRIMARY KEY,
+  user_id     TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  title       TEXT NOT NULL,
+  category    TEXT NOT NULL,
+  data        TEXT NOT NULL,
+  item_date   TEXT NOT NULL,
+  source_kind TEXT,
+  source_id   TEXT,
+  created_at  INTEGER NOT NULL,
+  updated_at  INTEGER NOT NULL
+);
+CREATE INDEX portfolio_items_user ON portfolio_items(user_id, item_date DESC);
+CREATE TABLE development_goals (
+  id         TEXT PRIMARY KEY,
+  user_id    TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  data       TEXT NOT NULL,
+  status     TEXT NOT NULL CHECK (status IN ('active','done')),
+  created_at INTEGER NOT NULL,
+  updated_at INTEGER NOT NULL
+);
+CREATE TABLE skill_ratings (
+  user_id    TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  skill_id   TEXT NOT NULL,
+  level      INTEGER NOT NULL CHECK (level BETWEEN 1 AND 4),
+  updated_at INTEGER NOT NULL,
+  PRIMARY KEY (user_id, skill_id)
+);
+`,
+  },
 ];

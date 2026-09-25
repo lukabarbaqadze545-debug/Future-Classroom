@@ -27,6 +27,14 @@
   --color-danger: #b42318;
   --color-danger-soft: #fdf0ef;
   --color-ai: #5b3fc4;
+
+  /* Laboratory accents — each room has its own colour, same components. */
+  --color-lab-programming: #4338ca;
+  --color-lab-stem: #0e7490;
+  --color-lab-research: #9a3412;
+  --color-lab-critical: #be123c;
+  --color-lab-library: #15803d;
+  --color-lab-career: #0369a1;
   --color-ai-soft: #f2effd;
 
   --font-sans: "Inter Variable", "Noto Sans Georgian Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;

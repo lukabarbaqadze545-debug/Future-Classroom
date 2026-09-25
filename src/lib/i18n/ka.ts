@@ -1,4 +1,5 @@
 import type { Dictionary } from "./en";
+import { labsKa } from "./labs-ka";
 
 /** Georgian UI strings (ქართული). Must match the English dictionary shape. */
 export const ka: Dictionary = {
@@ -828,4 +829,5 @@ export const ka: Dictionary = {
     ],
     contact: "მონაცემებთან დაკავშირებით კითხვები გაქვთ? მიმართეთ სკოლის ადმინისტრაციას.",
   },
+  labs: labsKa,
 };
