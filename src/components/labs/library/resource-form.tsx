@@ -166,7 +166,7 @@ export function ResourceForm({ id, initial, initialMaterialId, materials }: { id
           {form.supplementary.map((s, i) => (
             <div key={i} className="grid gap-2 sm:grid-cols-[1fr_1.5fr_auto]">
               <Input aria-label={f.linkTitle} placeholder={f.linkTitle} value={s.title} onChange={(e) => set("supplementary", form.supplementary.map((x, j) => (j === i ? { ...x, title: e.target.value } : x)))} />
-              <Input aria-label="URL" placeholder="https://" value={s.url} onChange={(e) => set("supplementary", form.supplementary.map((x, j) => (j === i ? { ...x, url: e.target.value } : x)))} />
+              <Input aria-label={dict.common.url} placeholder="https://" value={s.url} onChange={(e) => set("supplementary", form.supplementary.map((x, j) => (j === i ? { ...x, url: e.target.value } : x)))} />
               <Button variant="ghost" aria-label={dict.common.remove} onClick={() => set("supplementary", form.supplementary.filter((_, j) => j !== i))}>
                 <Trash2 aria-hidden className="size-4" />
               </Button>

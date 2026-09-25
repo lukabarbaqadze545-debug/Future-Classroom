@@ -1,13 +1,15 @@
 import { notFound } from "next/navigation";
 import { requirePageUser, STAFF_ROLES } from "@/lib/auth/session";
-import { getDictionary } from "@/lib/i18n/server";
+import { getDictionary, pageTitle } from "@/lib/i18n/server";
 import { getCustomProblemInput } from "@/lib/labs/programming/service";
 import { ApiError } from "@/lib/http/errors";
 import { PageContainer } from "@/components/layout/site-header";
 import { LabHeader } from "@/components/labs/lab-shell";
 import { ProblemForm } from "@/components/labs/programming/problem-form";
 
-export const metadata = { title: "Edit problem" };
+export async function generateMetadata() {
+  return pageTitle((p) => p.editProblem);
+}
 
 export default async function EditProblemPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;

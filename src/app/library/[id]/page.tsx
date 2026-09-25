@@ -28,8 +28,9 @@ import { LessonAttach } from "@/components/labs/library/lesson-attach";
 type Props = { params: Promise<{ id: string }>; searchParams: Promise<{ copy?: string }> };
 
 export async function generateMetadata({ params }: Props) {
+  const { dict } = await getDictionary();
   const r = getResource((await params).id);
-  return { title: r ? r.title : "School Library" };
+  return { title: r ? r.title : dict.labs.hub.rooms.library.name };
 }
 
 function materialFor(id: string | null, user: Parameters<typeof canView>[1]) {

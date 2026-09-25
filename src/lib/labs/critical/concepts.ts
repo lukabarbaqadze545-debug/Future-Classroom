@@ -93,7 +93,7 @@ export const CONCEPTS: ConceptCard[] = [
   },
   {
     topic: "biases",
-    title: l("Cognitive biases", "კოგნიტიური მიკერძოებები"),
+    title: l("Cognitive biases", "კოგნიტური მიკერძოებები"),
     summary: l(
       "Biases are shortcuts in how everyone’s mind works. They are not a sign of stupidity — they affect experts too. Knowing them helps you slow down when it matters.",
       "მიკერძოებები აზროვნების მალსახმობებია, რომლებიც ყველა ადამიანს ახასიათებს. ეს სისულელის ნიშანი არ არის — ექსპერტებზეც მოქმედებს. მათი ცოდნა გეხმარება, შეჩერდე და დაფიქრდე, როცა ეს მნიშვნელოვანია.",
@@ -133,7 +133,7 @@ export const CONCEPTS: ConceptCard[] = [
   },
   {
     topic: "debate",
-    title: l("Debate", "დებატი"),
+    title: l("Debate", "დებატები"),
     summary: l(
       "In a good debate you argue a position with reasons and evidence, listen carefully, answer the strongest version of the other side and stay respectful. Arguing the side you disagree with is a powerful way to understand an issue.",
       "კარგ დებატში პოზიციას მიზეზებითა და მტკიცებულებებით იცავ, ყურადღებით უსმენ, პასუხობ მოწინააღმდეგე მხარის ყველაზე ძლიერ არგუმენტს და პატივისცემას ინარჩუნებ. იმ მხარის დაცვა, რომელსაც არ ეთანხმები, საკითხის გაგების ძლიერი გზაა.",

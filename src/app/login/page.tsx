@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { getDictionary } from "@/lib/i18n/server";
+import { getDictionary, pageTitle } from "@/lib/i18n/server";
 import { getCurrentUser } from "@/lib/auth/session";
 import { demoModeEnabled } from "@/lib/config";
 import { fmt } from "@/lib/i18n/config";
@@ -8,7 +8,9 @@ import { AuthShell } from "@/components/layout/auth-shell";
 import { LoginForm } from "@/components/auth/login-form";
 import { DemoLoginButtons } from "@/components/auth/demo-login";
 
-export const metadata = { title: "Sign in" };
+export async function generateMetadata() {
+  return pageTitle((p) => p.login);
+}
 
 export default async function LoginPage({ searchParams }: { searchParams: Promise<{ next?: string }> }) {
   const [{ dict }, user, params] = await Promise.all([getDictionary(), getCurrentUser(), searchParams]);
@@ -24,7 +26,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
             <p className="mt-1 text-sm text-ink-muted">{dict.landing.demoText}</p>
             <DemoLoginButtons className="mt-4" size="md" />
             <p className="mt-4 text-xs text-ink-subtle">
-              teacher: <code>nino</code> · student: <code>mariam</code> · {fmt(dict.auth.demoHint, { password: DEMO_PASSWORD })}
+              {dict.roles.teacher}: <code>nino</code> · {dict.roles.student}: <code>mariam</code> · {fmt(dict.auth.demoHint, { password: DEMO_PASSWORD })}
             </p>
           </div>
         ) : null

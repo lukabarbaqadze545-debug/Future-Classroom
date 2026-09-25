@@ -5,23 +5,33 @@ import type { SimulationId } from "@/lib/labs/stem/types";
 import type { StudentItem } from "@/lib/labs/stem/service";
 import { Card } from "@/components/ui/card";
 import { ItemChallenge, type TaskValues } from "./item-challenge";
-import { CIRCUIT_DEFAULT, CircuitSim } from "./sims/circuit";
-import { GridRobotSim, ROBOT_DEFAULT } from "./sims/grid-robot";
+import { useSimFormat } from "./sim-controls";
+import { CIRCUIT_START, CircuitSim, circuitSummary } from "./sims/circuit";
+import { GridRobotSim, ROBOT_START, robotSummary } from "./sims/grid-robot";
 import { GrowthSim } from "./sims/growth";
-import { LINEAR_DEFAULT, LinearModelSim } from "./sims/linear-model";
+import { LINEAR_START, LinearModelSim, linearSummary } from "./sims/linear-model";
 import { MotionSim } from "./sims/motion";
 import { ProbabilitySim } from "./sims/probability";
-import { PROJECTILE_DEFAULT, ProjectileSim } from "./sims/projectile";
+import { PROJECTILE_START, ProjectileSim, projectileSummary } from "./sims/projectile";
+import type { TaskInputs, TaskReporter } from "./sims/types";
 
 /** A simulation plus its auto-checked challenge; the challenge reads the live simulation settings. */
 export function SimulationView({ id, items, best, challengeTitle }: { id: SimulationId; items: StudentItem[]; best: { score: number; max: number } | null; challengeTitle: string }) {
-  const [tasks, setTasks] = useState<TaskValues>({
-    projectile_target: PROJECTILE_DEFAULT,
-    circuit_current: CIRCUIT_DEFAULT,
-    fit_line: LINEAR_DEFAULT,
-    robot_goal: ROBOT_DEFAULT,
+  const [inputs, setInputs] = useState<TaskInputs>({
+    projectile_target: PROJECTILE_START,
+    circuit_current: CIRCUIT_START,
+    fit_line: LINEAR_START,
+    robot_goal: ROBOT_START,
   });
-  const report = (task: keyof TaskValues, value: { summary: string; value: unknown }) => setTasks((t) => ({ ...t, [task]: value }));
+  const report: TaskReporter = (task, value) => setInputs((t) => ({ ...t, [task]: value }));
+  // Summaries are built on every render so they follow the interface language.
+  const f = useSimFormat();
+  const tasks: TaskValues = {
+    projectile_target: { value: inputs.projectile_target, summary: projectileSummary(inputs.projectile_target, f) },
+    circuit_current: { value: inputs.circuit_current, summary: circuitSummary(inputs.circuit_current, f) },
+    fit_line: { value: inputs.fit_line, summary: linearSummary(inputs.fit_line, f) },
+    robot_goal: { value: inputs.robot_goal, summary: robotSummary(inputs.robot_goal, f) },
+  };
 
   return (
     <div className="space-y-6">

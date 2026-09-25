@@ -54,6 +54,17 @@ function sameNumberMultiset(a: number[], b: number[], tolerance = 1e-6): boolean
   return left.every((value, i) => Math.abs(value - right[i]) <= tolerance);
 }
 
+/**
+ * Units a student may write after a number ("20 m/s", "20 მ/წმ", "4 m/s²",
+ * "5 ₾"). They are ignored when numbers are compared, in either script.
+ */
+const UNIT =
+  /(?<![\p{L}\d])(?:m\/s[²2]|m\/s|km\/h|მ\/წმ[²2]|მ\/წმ|კმ\/სთ|kg|km|cm|mm|min|m|s|h|g|n|j|w|v|a|ω|კგ|კმ|სმ|მმ|წმ|წთ|სთ|მ|გ|ნ|ჯ|ვტ|ვ|ა|ომი|ლარი|₾|°c|°|%)(?![\p{L}\d])/giu;
+
+export function withoutUnits(value: string): string {
+  return value.replace(UNIT, " ");
+}
+
 function isMostlyNumeric(value: string): boolean {
   const withoutNumbers = value
     .replace(NUMBER_WITH_COMMA, "")
@@ -71,9 +82,10 @@ export function matchesAcceptedAnswer(given: string, accepted: string[]): boolea
     if (!normalizedCandidate) continue;
     if (normalizedGiven === normalizedCandidate) return true;
     if (normalizedGiven.replace(/\s/g, "") === normalizedCandidate.replace(/\s/g, "")) return true;
-    if (isMostlyNumeric(candidate) && isMostlyNumeric(given)) {
+    const [givenNumbers, candidateNumbers] = [withoutUnits(given), withoutUnits(candidate)];
+    if (isMostlyNumeric(candidateNumbers) && isMostlyNumeric(givenNumbers)) {
       for (const commaIsDecimal of [false, true]) {
-        if (sameNumberMultiset(extractNumbers(given, commaIsDecimal), extractNumbers(candidate, commaIsDecimal))) {
+        if (sameNumberMultiset(extractNumbers(givenNumbers, commaIsDecimal), extractNumbers(candidateNumbers, commaIsDecimal))) {
           return true;
         }
       }
@@ -113,7 +125,7 @@ export function gradeQuizQuestion(question: QuizQuestion, answer: Answer): boole
       const target = question.numericAnswer;
       const tolerance = Math.max(question.tolerance, 1e-9);
       return [false, true].some((commaIsDecimal) => {
-        const numbers = extractNumbers(answer.text, commaIsDecimal);
+        const numbers = extractNumbers(withoutUnits(answer.text), commaIsDecimal);
         return numbers.length === 1 && Math.abs(numbers[0] - target) <= tolerance;
       });
     }

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { getCurrentUser } from "@/lib/auth/session";
-import { getDictionary } from "@/lib/i18n/server";
+import { getDictionary, pageTitle } from "@/lib/i18n/server";
 import { fmt, formatDateTime } from "@/lib/i18n/config";
 import { listAssignmentsForStudent } from "@/lib/services/assignments";
 import { assignedItem } from "@/lib/labs/assignment-items";
@@ -12,7 +12,9 @@ import { EmptyState, PageHeader } from "@/components/ui/misc";
 import { LabIcon } from "@/components/labs/lab-shell";
 import { STATUS_TONE } from "@/components/assignments/review-board";
 
-export const metadata = { title: "My assignments" };
+export async function generateMetadata() {
+  return pageTitle((p) => p.myAssignments);
+}
 
 const DONE = ["submitted", "completed", "reviewed"];
 

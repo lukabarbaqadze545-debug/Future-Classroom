@@ -1,10 +1,12 @@
 import { redirect } from "next/navigation";
-import { getDictionary } from "@/lib/i18n/server";
+import { getDictionary, pageTitle } from "@/lib/i18n/server";
 import { getCurrentUser } from "@/lib/auth/session";
 import { AuthShell } from "@/components/layout/auth-shell";
 import { RegisterForm } from "@/components/auth/register-form";
 
-export const metadata = { title: "Create account" };
+export async function generateMetadata() {
+  return pageTitle((p) => p.register);
+}
 
 export default async function RegisterPage() {
   const [{ dict }, user] = await Promise.all([getDictionary(), getCurrentUser()]);

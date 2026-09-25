@@ -1,10 +1,12 @@
-import { getDictionary } from "@/lib/i18n/server";
+import { getDictionary, pageTitle } from "@/lib/i18n/server";
 import { bridgeItems } from "@/lib/labs/session-bridge";
 import { PageContainer } from "@/components/layout/site-header";
 import { PageHeader } from "@/components/ui/misc";
 import { SessionPicker } from "@/components/labs/session-picker";
 
-export const metadata = { title: "Lab session" };
+export async function generateMetadata() {
+  return pageTitle((p) => p.labSession);
+}
 
 export default async function LabSessionPage({ searchParams }: { searchParams: Promise<{ add?: string | string[] }> }) {
   const { dict, locale } = await getDictionary();

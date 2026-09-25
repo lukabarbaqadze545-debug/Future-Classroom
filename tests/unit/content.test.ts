@@ -13,6 +13,7 @@ import { getTeacherInsights, getStudentProgress, getMistakesToReview } from "@/l
 import { authenticate, getUserByUsername } from "@/lib/services/users";
 import { ApiError } from "@/lib/http/errors";
 import type { MaterialMeta } from "@/lib/domain/schemas";
+import { dictionaries } from "@/lib/i18n/config";
 
 const newtonText = SEED_MATERIALS.find((m) => m.key === "newton-notes")!.text;
 const meta = (overrides: Partial<MaterialMeta> = {}): MaterialMeta => ({ title: "Newton notes", subject: "physics", grade: 9, author: "", tags: [], visibility: "students", ...overrides });
@@ -141,5 +142,26 @@ describe("demo seed", () => {
     const progress = getStudentProgress(mariam.id);
     expect(progress.streakDays).toBeGreaterThan(0);
     expect(progress.quizzesTaken).toBe(3);
+  });
+
+  it("answers every suggested library question from the demo materials, in both languages", () => {
+    const db = freshDb();
+    seedDemoSchool(db, "ka");
+    const mariam = getUserByUsername("mariam")!;
+    for (const dict of Object.values(dictionaries)) {
+      for (const question of dict.student.library.exampleQuestions) {
+        expect(searchPassages(mariam, question).length, question).toBeGreaterThan(0);
+      }
+    }
+  });
+
+  it("writes the demo in the school's language", () => {
+    const db = freshDb();
+    seedDemoSchool(db, "ka");
+    const titles = db.prepare("SELECT title FROM assignments").all() as { title: string }[];
+    expect(titles.length).toBeGreaterThan(0);
+    for (const { title } of titles.filter((t) => !t.title.includes("Alice"))) expect(title, title).toMatch(/[ა-ჿ]/);
+    const session = db.prepare("SELECT title FROM classroom_sessions LIMIT 1").get() as { title: string };
+    expect(session.title).toMatch(/[ა-ჿ]/);
   });
 });

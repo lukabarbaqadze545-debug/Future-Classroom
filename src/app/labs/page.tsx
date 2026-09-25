@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ArrowRight, ClipboardList, Radio, WifiOff } from "lucide-react";
 import { getCurrentUser, isStaff } from "@/lib/auth/session";
-import { getDictionary } from "@/lib/i18n/server";
+import { getDictionary, pageTitle } from "@/lib/i18n/server";
 import { fmt } from "@/lib/i18n/config";
 import { LAB_IDS, LAB_ROUTES, type LabId } from "@/lib/labs/registry";
 import { programmingProgress } from "@/lib/labs/programming/service";
@@ -18,7 +18,9 @@ import { Meter } from "@/components/ui/misc";
 import { LAB_ACCENT, LabIcon } from "@/components/labs/lab-shell";
 import { cn } from "@/components/ui/cn";
 
-export const metadata = { title: "Laboratories" };
+export async function generateMetadata() {
+  return pageTitle((p) => p.labs);
+}
 
 export default async function LabsHub() {
   const user = (await getCurrentUser())!;

@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { now } from "@/lib/db";
 import { requirePageUser } from "@/lib/auth/session";
-import { getDictionary } from "@/lib/i18n/server";
+import { getDictionary, pageTitle } from "@/lib/i18n/server";
 import { fmt, fmtCount, formatDate } from "@/lib/i18n/config";
 import { tr } from "@/lib/labs/localized";
 import { SKILLS } from "@/lib/labs/career/skills";
@@ -12,7 +12,9 @@ import { SiteHeader, PageContainer } from "@/components/layout/site-header";
 import { Badge } from "@/components/ui/badge";
 import { PrintButton } from "@/components/labs/library/print-button";
 
-export const metadata = { title: "Portfolio overview" };
+export async function generateMetadata() {
+  return pageTitle((p) => p.portfolioOverview);
+}
 
 /** A printable one-page portfolio for the student, their teachers and mentors. */
 export default async function PortfolioOverviewPage({ params }: { params: Promise<{ userId: string }> }) {

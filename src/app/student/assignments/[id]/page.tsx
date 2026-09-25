@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowRight, MessageSquareText } from "lucide-react";
 import { getCurrentUser } from "@/lib/auth/session";
-import { getDictionary } from "@/lib/i18n/server";
+import { getDictionary, pageTitle } from "@/lib/i18n/server";
 import { fmt, formatDateTime } from "@/lib/i18n/config";
 import { ApiError } from "@/lib/http/errors";
 import { getAssignmentForStudent, markStarted } from "@/lib/services/assignments";
@@ -19,7 +19,9 @@ import { HandIn } from "@/components/assignments/hand-in";
 import { STATUS_TONE } from "@/components/assignments/review-board";
 import { AttachmentPanel } from "@/components/labs/shared/attachment-panel";
 
-export const metadata = { title: "Assignment" };
+export async function generateMetadata() {
+  return pageTitle((p) => p.assignment);
+}
 
 /** Kinds completed by doing the activity in its lab (the lab updates the status). */
 const LAB_DRIVEN = ["experiment", "library"];

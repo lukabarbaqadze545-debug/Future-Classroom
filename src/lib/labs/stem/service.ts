@@ -1,6 +1,7 @@
 import "server-only";
 import { z } from "zod";
 import { getDb, now, parseJson } from "@/lib/db";
+import { withoutUnits } from "@/lib/domain/grading";
 import { newId } from "@/lib/domain/ids";
 import { ApiError } from "@/lib/http/errors";
 import type { CurrentUser } from "@/lib/auth/session";
@@ -60,7 +61,7 @@ export interface StemCheckResult {
 export function parseNumber(value: unknown): number | null {
   if (typeof value === "number") return Number.isFinite(value) ? value : null;
   if (typeof value !== "string") return null;
-  const cleaned = value.trim().replace(/\s/g, "").replace(",", ".");
+  const cleaned = withoutUnits(value).trim().replace(/\s/g, "").replace(",", ".");
   if (!/^[-+]?\d*\.?\d+(e[-+]?\d+)?$/i.test(cleaned)) {
     const fraction = cleaned.match(/^([-+]?\d+)\/(\d+)$/);
     return fraction && Number(fraction[2]) !== 0 ? Number(fraction[1]) / Number(fraction[2]) : null;

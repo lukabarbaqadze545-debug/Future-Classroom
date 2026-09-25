@@ -1,12 +1,14 @@
 import { getCurrentUser } from "@/lib/auth/session";
-import { getDictionary } from "@/lib/i18n/server";
+import { getDictionary, pageTitle } from "@/lib/i18n/server";
 import { listMaterials } from "@/lib/services/materials";
 import { listLessonsForTeacher } from "@/lib/services/lessons";
 import { PageContainer } from "@/components/layout/site-header";
 import { PageHeader } from "@/components/ui/misc";
 import { MaterialsLibrary } from "@/components/materials/materials-library";
 
-export const metadata = { title: "Materials" };
+export async function generateMetadata() {
+  return pageTitle((p) => p.materials);
+}
 
 export default async function MaterialsPage() {
   const user = (await getCurrentUser())!;

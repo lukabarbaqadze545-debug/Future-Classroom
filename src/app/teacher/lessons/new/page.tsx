@@ -1,5 +1,5 @@
 import { getCurrentUser } from "@/lib/auth/session";
-import { getDictionary } from "@/lib/i18n/server";
+import { getDictionary, pageTitle } from "@/lib/i18n/server";
 import { getAIProvider } from "@/lib/ai";
 import { curatedTopicsFor } from "@/lib/ai/templates";
 import { isSubject } from "@/lib/domain/catalog";
@@ -8,7 +8,9 @@ import { PageContainer } from "@/components/layout/site-header";
 import { PageHeader } from "@/components/ui/misc";
 import { CreateLessonForm } from "@/components/lesson/create-lesson-form";
 
-export const metadata = { title: "Create lesson" };
+export async function generateMetadata() {
+  return pageTitle((p) => p.newLesson);
+}
 
 export default async function NewLessonPage({ searchParams }: { searchParams: Promise<{ subject?: string }> }) {
   const user = (await getCurrentUser())!;

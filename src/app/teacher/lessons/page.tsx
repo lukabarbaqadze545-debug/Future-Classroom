@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Plus } from "lucide-react";
 import { getCurrentUser } from "@/lib/auth/session";
-import { getDictionary } from "@/lib/i18n/server";
+import { getDictionary, pageTitle } from "@/lib/i18n/server";
 import { fmt, fmtCount, relativeTime } from "@/lib/i18n/config";
 import { inLocale, listLessonsForTeacher, listPublishedLessons } from "@/lib/services/lessons";
 import { SYSTEM_USER_ID } from "@/lib/db/builtin";
@@ -12,7 +12,9 @@ import { ButtonLink } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { DuplicateLessonButton } from "@/components/lesson/duplicate-button";
 
-export const metadata = { title: "Lessons" };
+export async function generateMetadata() {
+  return pageTitle((p) => p.lessons);
+}
 
 export default async function LessonsPage() {
   const user = (await getCurrentUser())!;

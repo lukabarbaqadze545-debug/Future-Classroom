@@ -13,7 +13,11 @@ import { Meter } from "@/components/ui/misc";
 import { SubjectIcon } from "@/components/subjects/subject-icon";
 import { ItemRow, SubjectExplorer, type Viewer } from "@/components/subjects/subject-explorer";
 
-export const metadata = { title: "Subject" };
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
+  const [{ id }, { dict }] = await Promise.all([params, getDictionary()]);
+  const entry = findSubjectEntry(id);
+  return { title: entry ? dict.subjects[entry.id] : dict.meta.pages.subject };
+}
 
 export default async function SubjectPage({ params }: { params: Promise<{ id: string }> }) {
   const [{ id }, user, { dict, locale }] = await Promise.all([params, getCurrentUser(), getDictionary()]);

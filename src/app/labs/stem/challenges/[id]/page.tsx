@@ -18,8 +18,9 @@ import { ItemChallenge } from "@/components/labs/stem/item-challenge";
 type Props = { params: Promise<{ id: string }> };
 
 export async function generateMetadata({ params }: Props) {
+  const { locale, dict } = await getDictionary();
   const set = findChallengeSet((await params).id);
-  return { title: set ? set.title.en : "STEM Lab" };
+  return { title: set ? tr(set.title, locale) : dict.labs.hub.rooms.stem.name };
 }
 
 export default async function ChallengePage({ params }: Props) {

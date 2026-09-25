@@ -1,7 +1,22 @@
 "use client";
 
 import { useId } from "react";
+import { useI18n } from "@/lib/i18n/client";
+import type { Dictionary } from "@/lib/i18n/en";
 import { cn } from "@/components/ui/cn";
+
+export type SimText = Dictionary["labs"]["stem"]["simulations"];
+
+/** Simulation texts plus numbers in the reader's convention (Georgian uses a decimal comma). */
+export interface SimFormat {
+  s: SimText;
+  num: (v: number, digits?: number) => string;
+}
+
+export function useSimFormat(): SimFormat {
+  const { dict, locale } = useI18n();
+  return { s: dict.labs.stem.simulations, num: (v, digits = 2) => (locale === "ka" ? fixed(v, digits).replace(".", ",") : fixed(v, digits)) };
+}
 
 /** A large, touch-friendly slider with its value shown next to it. */
 export function SimSlider({
@@ -24,6 +39,7 @@ export function SimSlider({
   format?: (v: number) => string;
 }) {
   const id = useId();
+  const { num } = useSimFormat();
   return (
     <div>
       <div className="flex items-baseline justify-between gap-2">
@@ -31,7 +47,7 @@ export function SimSlider({
           {label}
         </label>
         <output htmlFor={id} className="text-sm font-semibold tabular-nums">
-          {format ? format(value) : value}
+          {format ? format(value) : num(value, 3)}
           {unit ? ` ${unit}` : ""}
         </output>
       </div>

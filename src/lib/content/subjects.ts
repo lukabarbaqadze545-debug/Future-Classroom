@@ -346,7 +346,7 @@ export const SUBJECT_CATALOG: SubjectEntry[] = [
     grades: [6, 12],
     description: l(
       "Claims and evidence, logical fallacies and cognitive biases, misinformation, debate and changing your mind well.",
-      "მტკიცება და მტკიცებულება, ლოგიკური შეცდომები და კოგნიტური მიკერძოებები, მცდარი ინფორმაცია, დებატი და აზრის სწორად შეცვლა.",
+      "მტკიცება და მტკიცებულება, ლოგიკური შეცდომები და კოგნიტური მიკერძოებები, მცდარი ინფორმაცია, დებატები და აზრის სწორად შეცვლა.",
     ),
     topics: [
       { id: "claims", name: l("Claims and evidence", "მტკიცება და მტკიცებულება"), items: [lesson("claim-evidence"), ct("ct-claims-1"), ct("ct-claims-2"), ct("ct-claims-3")] },

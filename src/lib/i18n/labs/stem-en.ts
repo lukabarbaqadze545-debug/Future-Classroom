@@ -118,6 +118,7 @@ export const stemEn = {
   viewRecord: "View record",
   schematic: "Schematic",
   simulations: {
+    units: { m: "m", s: "s", mps: "m/s", mps2: "m/s²", volt: "V", ohm: "Ω", amp: "A", watt: "W" },
     angle: "Launch angle",
     speed: "Launch speed",
     height: "Launch height",

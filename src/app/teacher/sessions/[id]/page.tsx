@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth/session";
-import { getDictionary } from "@/lib/i18n/server";
+import { getDictionary, pageTitle } from "@/lib/i18n/server";
 import { getSessionForTeacher, getSessionSummary, getTeacherSessionView } from "@/lib/services/sessions";
 import { getLesson } from "@/lib/services/lessons";
 import { ApiError } from "@/lib/http/errors";
@@ -9,7 +9,9 @@ import { TeacherConsole } from "@/components/session/teacher-console";
 import { SessionSummaryView } from "@/components/session/session-summary";
 import { StartSessionButton } from "@/components/teacher/start-session-dialog";
 
-export const metadata = { title: "Classroom session" };
+export async function generateMetadata() {
+  return pageTitle((p) => p.sessionConsole);
+}
 
 export default async function SessionPage({ params }: { params: Promise<{ id: string }> }) {
   const user = (await getCurrentUser())!;

@@ -1,16 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { useI18n } from "@/lib/i18n/client";
 import { exponentialGrowth, logisticGrowth } from "@/lib/labs/stem/physics";
 import { LineChart } from "../../charts";
-import { fixed, Readout, SimSlider } from "../sim-controls";
+import { Readout, SimSlider, useSimFormat } from "../sim-controls";
 
 const HOURS = 20;
 
 export function GrowthSim() {
-  const { dict } = useI18n();
-  const s = dict.labs.stem.simulations;
+  const { s, num } = useSimFormat();
   const [p0, setP0] = useState(100);
   const [r, setR] = useState(0.4);
   const [k, setK] = useState(2000);
@@ -39,11 +37,11 @@ export function GrowthSim() {
       </div>
       <div className="space-y-4">
         <SimSlider label={s.start} value={p0} min={10} max={500} step={10} onChange={setP0} />
-        <SimSlider label={s.rate} value={r} min={0.1} max={1.5} step={0.05} format={(v) => fixed(v, 2)} onChange={setR} />
+        <SimSlider label={s.rate} value={r} min={0.1} max={1.5} step={0.05} format={(v) => num(v, 2)} onChange={setR} />
         <SimSlider label={s.capacity} value={k} min={500} max={5000} step={100} onChange={setK} />
         <div className="grid grid-cols-2 gap-2">
-          <Readout label={`${s.exponential}, t = 10`} value={fixed(exponentialGrowth(p0, r, 10), 0)} />
-          <Readout label={`${s.logistic}, t = 10`} value={fixed(logisticGrowth(p0, r, k, 10), 0)} />
+          <Readout label={`${s.exponential}, t = 10`} value={num(exponentialGrowth(p0, r, 10), 0)} />
+          <Readout label={`${s.logistic}, t = 10`} value={num(logisticGrowth(p0, r, k, 10), 0)} />
         </div>
       </div>
     </div>

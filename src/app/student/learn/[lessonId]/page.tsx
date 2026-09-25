@@ -1,7 +1,7 @@
 import { notFound, redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth/session";
 import { getPublishedLesson, lessonVersion } from "@/lib/services/lessons";
-import { getLocale } from "@/lib/i18n/server";
+import { getLocale, pageTitle } from "@/lib/i18n/server";
 import { listAttemptsForStudent, listQuizzesForLesson } from "@/lib/services/quizzes";
 import { listMaterialsForLesson } from "@/lib/services/materials";
 import { resourcesForLesson } from "@/lib/labs/library/service";
@@ -12,7 +12,9 @@ import { ApiError } from "@/lib/http/errors";
 import { PageContainer } from "@/components/layout/site-header";
 import { TopicView, type StudentLesson } from "@/components/student/topic-view";
 
-export const metadata = { title: "Topic" };
+export async function generateMetadata() {
+  return pageTitle((p) => p.lesson);
+}
 
 const PRACTICE_TYPES = new Set(["multiple_choice", "short_answer", "exercise"]);
 

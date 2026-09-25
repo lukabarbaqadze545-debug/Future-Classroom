@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { getCurrentUser } from "@/lib/auth/session";
-import { getDictionary } from "@/lib/i18n/server";
+import { getDictionary, pageTitle } from "@/lib/i18n/server";
 import { fmt, fmtCount, relativeTime } from "@/lib/i18n/config";
 import { listQuizzesForTeacher } from "@/lib/services/quizzes";
 import { PageContainer } from "@/components/layout/site-header";
@@ -8,7 +8,9 @@ import { EmptyState, PageHeader } from "@/components/ui/misc";
 import { Badge } from "@/components/ui/badge";
 import { ButtonLink } from "@/components/ui/button";
 
-export const metadata = { title: "Quizzes" };
+export async function generateMetadata() {
+  return pageTitle((p) => p.quizzes);
+}
 
 export default async function QuizzesPage() {
   const user = (await getCurrentUser())!;

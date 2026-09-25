@@ -14,7 +14,10 @@ import { LabHeader } from "@/components/labs/lab-shell";
 import { AssignmentBanner } from "@/components/labs/shared/assignment-banner";
 import { NewResearchForm } from "@/components/labs/research/new-research-form";
 
-export const metadata = { title: "Research Lab" };
+export async function generateMetadata() {
+  const { dict } = await getDictionary();
+  return { title: dict.labs.hub.rooms.research.name };
+}
 
 export default async function ResearchLabPage() {
   const user = (await getCurrentUser())!;

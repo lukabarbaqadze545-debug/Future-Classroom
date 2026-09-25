@@ -1,5 +1,5 @@
 import { getCurrentUser } from "@/lib/auth/session";
-import { getDictionary } from "@/lib/i18n/server";
+import { getDictionary, pageTitle } from "@/lib/i18n/server";
 import { ASSIGNMENT_KINDS, type AssignmentKind } from "@/lib/labs/registry";
 import { assignableItems } from "@/lib/labs/assignment-items";
 import { listClassesForTeacher, listStudents } from "@/lib/services/classes";
@@ -7,7 +7,9 @@ import { PageContainer } from "@/components/layout/site-header";
 import { PageHeader } from "@/components/ui/misc";
 import { AssignmentForm } from "@/components/assignments/assignment-form";
 
-export const metadata = { title: "New assignment" };
+export async function generateMetadata() {
+  return pageTitle((p) => p.newAssignment);
+}
 
 export default async function NewAssignmentPage({ searchParams }: { searchParams: Promise<{ kind?: string; ref?: string }> }) {
   const user = (await getCurrentUser())!;

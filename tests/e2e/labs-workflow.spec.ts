@@ -18,7 +18,7 @@ test("teacher assigns lab work, student completes it, teacher reviews", async ({
   await teacher.page.getByTestId("assignment-title").fill(title);
   await teacher.page.getByLabel("Instructions for students").fill("Read each situation twice before you choose.");
   await teacher.page.getByTestId("assignment-class").selectOption("");
-  await teacher.page.getByRole("checkbox", { name: "Luka M." }).check();
+  await teacher.page.getByRole("checkbox", { name: "ლუკა მ." }).check();
   await teacher.page.getByTestId("create-assignment").click();
   await expect(teacher.page).toHaveURL(/\/teacher\/assignments\/(?!new$)\w+$/);
   const assignmentUrl = teacher.page.url();
@@ -76,7 +76,7 @@ test("student hands in their own lab work for an open assignment", async ({ brow
   await teacher.page.goto("/teacher/assignments/new?kind=research");
   await teacher.page.getByTestId("assignment-title").fill(title);
   await teacher.page.getByTestId("assignment-class").selectOption("");
-  await teacher.page.getByRole("checkbox", { name: "Ana K." }).check();
+  await teacher.page.getByRole("checkbox", { name: "ანა კ." }).check();
   await teacher.page.getByTestId("create-assignment").click();
   await expect(teacher.page).toHaveURL(/\/teacher\/assignments\/(?!new$)\w+$/);
   const assignmentUrl = teacher.page.url();

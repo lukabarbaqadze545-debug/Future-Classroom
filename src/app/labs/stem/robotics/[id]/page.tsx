@@ -14,8 +14,9 @@ import { getCurrentUser, isStaff } from "@/lib/auth/session";
 type Props = { params: Promise<{ id: string }> };
 
 export async function generateMetadata({ params }: Props) {
+  const { locale, dict } = await getDictionary();
   const p = findRoboticsProject((await params).id);
-  return { title: p ? p.title.en : "STEM Lab" };
+  return { title: p ? tr(p.title, locale) : dict.labs.hub.rooms.stem.name };
 }
 
 export default async function RoboticsProjectPage({ params }: Props) {

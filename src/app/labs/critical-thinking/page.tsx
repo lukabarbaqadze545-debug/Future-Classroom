@@ -15,7 +15,10 @@ import { LabHeader, Stars } from "@/components/labs/lab-shell";
 import { AssignmentBanner } from "@/components/labs/shared/assignment-banner";
 import { TabPanels } from "@/components/labs/shared/tab-panels";
 
-export const metadata = { title: "Critical Thinking Lab" };
+export async function generateMetadata() {
+  const { dict } = await getDictionary();
+  return { title: dict.labs.hub.rooms.critical.name };
+}
 
 export default async function CriticalThinkingPage() {
   const user = (await getCurrentUser())!;

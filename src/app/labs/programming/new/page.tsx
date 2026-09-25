@@ -1,10 +1,12 @@
 import { requirePageUser, STAFF_ROLES } from "@/lib/auth/session";
-import { getDictionary } from "@/lib/i18n/server";
+import { getDictionary, pageTitle } from "@/lib/i18n/server";
 import { PageContainer } from "@/components/layout/site-header";
 import { LabHeader } from "@/components/labs/lab-shell";
 import { ProblemForm } from "@/components/labs/programming/problem-form";
 
-export const metadata = { title: "New problem" };
+export async function generateMetadata() {
+  return pageTitle((p) => p.newProblem);
+}
 
 export default async function NewProblemPage() {
   await requirePageUser(STAFF_ROLES, "/labs/programming/new");

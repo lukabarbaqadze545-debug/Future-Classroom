@@ -21,8 +21,9 @@ import { ProblemWorkspace } from "@/components/labs/programming/problem-workspac
 type Props = { params: Promise<{ id: string }> };
 
 export async function generateMetadata({ params }: Props) {
+  const { locale, dict } = await getDictionary();
   const problem = getProblem((await params).id);
-  return { title: problem ? problem.title.en : "Programming Lab" };
+  return { title: problem ? tr(problem.title, locale) : dict.labs.hub.rooms.programming.name };
 }
 
 export default async function ProblemPage({ params }: Props) {

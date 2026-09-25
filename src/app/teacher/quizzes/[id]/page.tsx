@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth/session";
-import { getDictionary } from "@/lib/i18n/server";
+import { getDictionary, pageTitle } from "@/lib/i18n/server";
 import { getQuizForEditor, getQuizResults } from "@/lib/services/quizzes";
 import { ApiError } from "@/lib/http/errors";
 import { PageContainer } from "@/components/layout/site-header";
@@ -9,7 +9,9 @@ import { QuizEditor } from "@/components/quiz/quiz-editor";
 import { QuizResults } from "@/components/quiz/quiz-results";
 import { cn } from "@/components/ui/cn";
 
-export const metadata = { title: "Quiz" };
+export async function generateMetadata() {
+  return pageTitle((p) => p.quiz);
+}
 
 export default async function QuizPage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ tab?: string; generated?: string }> }) {
   const user = (await getCurrentUser())!;

@@ -1,6 +1,8 @@
 import "server-only";
+import type { Metadata } from "next";
 import { cookies, headers } from "next/headers";
 import { DEFAULT_LOCALE, LOCALE_COOKIE, dictionaries, isLocale, type Locale } from "./config";
+import type { Dictionary } from "./en";
 
 /**
  * UI locale: the user's own choice (cookie) first, then the school's default
@@ -25,4 +27,10 @@ export async function getLocale(): Promise<Locale> {
 export async function getDictionary() {
   const locale = await getLocale();
   return { locale, dict: dictionaries[locale] };
+}
+
+/** Metadata for a page whose browser-tab title comes from the dictionary. */
+export async function pageTitle(pick: (pages: Dictionary["meta"]["pages"]) => string): Promise<Metadata> {
+  const { dict } = await getDictionary();
+  return { title: pick(dict.meta.pages) };
 }

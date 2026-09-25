@@ -1,13 +1,15 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { getCurrentUser } from "@/lib/auth/session";
-import { getDictionary } from "@/lib/i18n/server";
+import { getDictionary, pageTitle } from "@/lib/i18n/server";
 import { resolveCatalog } from "@/lib/content/subject-items";
 import { PageContainer } from "@/components/layout/site-header";
 import { PageHeader } from "@/components/ui/misc";
 import { SubjectCatalog, type CatalogSubject } from "@/components/subjects/subject-catalog";
 
-export const metadata = { title: "Subjects" };
+export async function generateMetadata() {
+  return pageTitle((p) => p.subjects);
+}
 
 export default async function SubjectsPage() {
   const [{ dict, locale }, user] = await Promise.all([getDictionary(), getCurrentUser()]);

@@ -40,6 +40,17 @@ describe("matchesAcceptedAnswer", () => {
     expect(matchesAcceptedAnswer("0.5, -2", ["1/2, -2"])).toBe(true);
     expect(matchesAcceptedAnswer("-2 and 1/2", ["1/2, -2"])).toBe(true);
   });
+  it.each(["20", "20 m/s", "20 მ/წმ", "20მ/წმ", "20 m/s."])("ignores a unit after the number: %s", (answer) => {
+    expect(matchesAcceptedAnswer(answer, ["20", "20 m/s"])).toBe(true);
+  });
+  it("ignores units in both scripts, including squared units and money", () => {
+    expect(matchesAcceptedAnswer("4 მ/წმ²", ["4"])).toBe(true);
+    expect(matchesAcceptedAnswer("4 m/s2", ["4 m/s²"])).toBe(true);
+    expect(matchesAcceptedAnswer("2,5 კგ", ["2.5"])).toBe(true);
+    expect(matchesAcceptedAnswer("12 ₾", ["12 ლარი"])).toBe(true);
+    expect(matchesAcceptedAnswer("21 მ/წმ", ["20"])).toBe(false);
+    expect(matchesAcceptedAnswer("20 ვაშლი", ["20"])).toBe(false);
+  });
 });
 
 describe("gradeActivity", () => {
@@ -66,6 +77,8 @@ describe("gradeQuizQuestion", () => {
     expect(gradeQuizQuestion(q, { optionIds: [], text: "2,5" })).toBe(true);
     expect(gradeQuizQuestion(q, { optionIds: [], text: "2.6" })).toBe(false);
     expect(gradeQuizQuestion(q, { optionIds: [], text: "2.5 or 3" })).toBe(false);
+    expect(gradeQuizQuestion(q, { optionIds: [], text: "2,5 მ/წმ²" })).toBe(true);
+    expect(gradeQuizQuestion(q, { optionIds: [], text: "2.5 m/s2" })).toBe(true);
   });
   it("grades true/false", () => {
     const q = quiz.trueFalse("q", "Statement", false);

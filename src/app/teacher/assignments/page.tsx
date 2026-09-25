@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Plus } from "lucide-react";
 import { getCurrentUser } from "@/lib/auth/session";
-import { getDictionary } from "@/lib/i18n/server";
+import { getDictionary, pageTitle } from "@/lib/i18n/server";
 import { fmt, formatDateTime } from "@/lib/i18n/config";
 import { listAssignmentsForTeacher } from "@/lib/services/assignments";
 import { assignedItem } from "@/lib/labs/assignment-items";
@@ -13,7 +13,9 @@ import { Card } from "@/components/ui/card";
 import { EmptyState, Meter, PageHeader } from "@/components/ui/misc";
 import { LabIcon } from "@/components/labs/lab-shell";
 
-export const metadata = { title: "Assignments" };
+export async function generateMetadata() {
+  return pageTitle((p) => p.assignments);
+}
 
 export default async function TeacherAssignmentsPage({ searchParams }: { searchParams: Promise<{ archived?: string }> }) {
   const user = (await getCurrentUser())!;

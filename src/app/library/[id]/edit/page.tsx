@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { requirePageUser, STAFF_ROLES } from "@/lib/auth/session";
-import { getDictionary } from "@/lib/i18n/server";
+import { getDictionary, pageTitle } from "@/lib/i18n/server";
 import { getResource } from "@/lib/labs/library/service";
 import { resourceSchema } from "@/lib/labs/library/model";
 import { listMaterials } from "@/lib/services/materials";
@@ -8,7 +8,9 @@ import { PageContainer } from "@/components/layout/site-header";
 import { LabHeader } from "@/components/labs/lab-shell";
 import { ResourceForm } from "@/components/labs/library/resource-form";
 
-export const metadata = { title: "Edit library resource" };
+export async function generateMetadata() {
+  return pageTitle((p) => p.editResource);
+}
 
 export default async function EditResourcePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;

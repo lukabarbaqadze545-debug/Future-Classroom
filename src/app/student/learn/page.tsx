@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { getDictionary } from "@/lib/i18n/server";
+import { getDictionary, pageTitle } from "@/lib/i18n/server";
 import { fmt } from "@/lib/i18n/config";
 import { SUBJECTS, isSubject } from "@/lib/domain/catalog";
 import { inLocale, listPublishedLessons } from "@/lib/services/lessons";
@@ -9,7 +9,9 @@ import { EmptyState, PageHeader } from "@/components/ui/misc";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/components/ui/cn";
 
-export const metadata = { title: "Learn" };
+export async function generateMetadata() {
+  return pageTitle((p) => p.learn);
+}
 
 export default async function LearnPage({ searchParams }: { searchParams: Promise<{ subject?: string }> }) {
   const [{ dict, locale }, { subject }] = await Promise.all([getDictionary(), searchParams]);

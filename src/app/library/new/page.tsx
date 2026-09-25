@@ -1,11 +1,13 @@
 import { requirePageUser, STAFF_ROLES } from "@/lib/auth/session";
-import { getDictionary } from "@/lib/i18n/server";
+import { getDictionary, pageTitle } from "@/lib/i18n/server";
 import { listMaterials } from "@/lib/services/materials";
 import { PageContainer } from "@/components/layout/site-header";
 import { LabHeader } from "@/components/labs/lab-shell";
 import { ResourceForm } from "@/components/labs/library/resource-form";
 
-export const metadata = { title: "Add a library resource" };
+export async function generateMetadata() {
+  return pageTitle((p) => p.newResource);
+}
 
 export default async function NewResourcePage() {
   const user = await requirePageUser(STAFF_ROLES, "/library/new");

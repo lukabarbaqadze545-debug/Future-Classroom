@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { getCurrentUser, isStaff } from "@/lib/auth/session";
-import { getDictionary } from "@/lib/i18n/server";
+import { getDictionary, pageTitle } from "@/lib/i18n/server";
 import { fmt, formatDateTime } from "@/lib/i18n/config";
 import { tr } from "@/lib/labs/localized";
 import { findExperiment } from "@/lib/labs/stem/experiments";
@@ -16,7 +16,9 @@ import { AttachmentPanel } from "@/components/labs/shared/attachment-panel";
 import { FeedbackPanel } from "@/components/labs/shared/feedback-panel";
 import { ExperimentRecord } from "@/components/labs/stem/experiment-record";
 
-export const metadata = { title: "STEM record" };
+export async function generateMetadata() {
+  return pageTitle((p) => p.stemRecord);
+}
 
 /** Read-only view of a student's STEM record, with teacher feedback. */
 export default async function RecordPage({ params }: { params: Promise<{ id: string }> }) {

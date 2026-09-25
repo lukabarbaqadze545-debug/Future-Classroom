@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { getCurrentUser } from "@/lib/auth/session";
-import { getDictionary } from "@/lib/i18n/server";
+import { getDictionary, pageTitle } from "@/lib/i18n/server";
 import { fmt } from "@/lib/i18n/config";
 import { listClassesForTeacher, listStudents } from "@/lib/services/classes";
 import { assignmentStats } from "@/lib/services/assignments";
@@ -11,7 +11,9 @@ import { Card, CardHeader } from "@/components/ui/card";
 import { PageHeader } from "@/components/ui/misc";
 import { ClassesManager } from "@/components/assignments/classes-manager";
 
-export const metadata = { title: "Students" };
+export async function generateMetadata() {
+  return pageTitle((p) => p.students);
+}
 
 export default async function StudentsPage() {
   const user = (await getCurrentUser())!;

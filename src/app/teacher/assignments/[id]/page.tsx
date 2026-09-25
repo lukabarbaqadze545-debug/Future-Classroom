@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ExternalLink } from "lucide-react";
 import { getCurrentUser } from "@/lib/auth/session";
-import { getDictionary } from "@/lib/i18n/server";
+import { getDictionary, pageTitle } from "@/lib/i18n/server";
 import { fmt, formatDateTime } from "@/lib/i18n/config";
 import { ApiError } from "@/lib/http/errors";
 import { getAssignmentForTeacher } from "@/lib/services/assignments";
@@ -15,7 +15,9 @@ import { PageHeader, Stat } from "@/components/ui/misc";
 import { ReviewBoard } from "@/components/assignments/review-board";
 import { AssignmentSettings } from "@/components/assignments/assignment-settings";
 
-export const metadata = { title: "Assignment" };
+export async function generateMetadata() {
+  return pageTitle((p) => p.assignment);
+}
 
 export default async function TeacherAssignmentPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;

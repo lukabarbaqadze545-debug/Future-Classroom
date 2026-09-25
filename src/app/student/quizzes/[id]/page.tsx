@@ -1,13 +1,15 @@
 import { notFound } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth/session";
-import { getDictionary } from "@/lib/i18n/server";
+import { getDictionary, pageTitle } from "@/lib/i18n/server";
 import { getAttempt, getPublishedQuiz, studentAttemptView, toStudentQuestions } from "@/lib/services/quizzes";
 import { ApiError } from "@/lib/http/errors";
 import { PageContainer } from "@/components/layout/site-header";
 import { PageHeader } from "@/components/ui/misc";
 import { QuizPlayer, QuizResultView } from "@/components/quiz/quiz-player";
 
-export const metadata = { title: "Quiz" };
+export async function generateMetadata() {
+  return pageTitle((p) => p.quiz);
+}
 
 export default async function StudentQuizPage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ attempt?: string }> }) {
   const user = (await getCurrentUser())!;

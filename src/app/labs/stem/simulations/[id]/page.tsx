@@ -21,8 +21,9 @@ import { SimulationView } from "@/components/labs/stem/simulation-view";
 type Props = { params: Promise<{ id: string }> };
 
 export async function generateMetadata({ params }: Props) {
+  const { locale, dict } = await getDictionary();
   const sim = findSimulation((await params).id);
-  return { title: sim ? sim.title.en : "STEM Lab" };
+  return { title: sim ? tr(sim.title, locale) : dict.labs.hub.rooms.stem.name };
 }
 
 export default async function SimulationPage({ params }: Props) {

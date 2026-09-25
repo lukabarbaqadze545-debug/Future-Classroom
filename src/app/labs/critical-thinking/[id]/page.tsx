@@ -23,8 +23,9 @@ type Props = { params: Promise<{ id: string }>; searchParams: Promise<{ attempt?
 const SESSION_READY = new Set(["fallacy", "bias", "media", "sources", "claim"]);
 
 export async function generateMetadata({ params }: Props) {
+  const { locale, dict } = await getDictionary();
   const exercise = findExercise((await params).id);
-  return { title: exercise ? exercise.title.en : "Critical Thinking Lab" };
+  return { title: exercise ? tr(exercise.title, locale) : dict.labs.hub.rooms.critical.name };
 }
 
 export default async function ExercisePage({ params, searchParams }: Props) {

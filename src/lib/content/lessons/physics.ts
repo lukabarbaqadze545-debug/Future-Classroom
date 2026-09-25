@@ -13,11 +13,11 @@ export const PHYSICS: BiLesson[] = [
     topic: l("Motion", "მოძრაობა"),
     objective: l(
       "Students calculate average speed, convert between km/h and m/s, and read distance–time graphs.",
-      "მოსწავლეები ითვლიან საშუალო სიჩქარეს, გადაჰყავთ km/h m/s-ში და პირიქით, და კითხულობენ მანძილი-დროის გრაფიკებს.",
+      "მოსწავლეები ითვლიან საშუალო სიჩქარეს, გადაჰყავთ კმ/სთ მ/წმ-ში და პირიქით, და კითხულობენ მანძილი-დროის გრაფიკებს.",
     ),
     objectives: [
       l("Calculate average speed as distance divided by time, with correct units.", "გამოთვალოს საშუალო სიჩქარე — მანძილი გაყოფილი დროზე — სწორი ერთეულებით."),
-      l("Convert speeds between km/h and m/s.", "სიჩქარე გადაიყვანოს km/h-დან m/s-ში და პირიქით."),
+      l("Convert speeds between km/h and m/s.", "სიჩქარე გადაიყვანოს კმ/სთ-დან მ/წმ-ში და პირიქით."),
       l("Describe motion from a distance–time graph (at rest, steady speed, faster, slower).", "მანძილი-დროის გრაფიკიდან აღწეროს მოძრაობა (უძრაობა, თანაბარი, უფრო სწრაფი, უფრო ნელი)."),
     ],
     sections: [
@@ -50,11 +50,11 @@ Converting: 1 km/h = 1000 m ÷ 3600 s, so divide km/h by 3.6 to get m/s. 18 km/h
 "Average" matters: on the way Elene stopped at a traffic light and went faster downhill. Average speed describes the whole trip, not each moment.`,
           `საშუალო სიჩქარე = მანძილი ÷ დრო,   v = s / t
 
-ერთეულები: მეტრი წამში (m/s) ან კილომეტრი საათში (km/h).
-• გიორგი: 1,2 კმ 0,25 საათში → 4,8 km/h
-• ელენე: 3 კმ 1/6 საათში → 18 km/h
+ერთეულები: მეტრი წამში (მ/წმ) ან კილომეტრი საათში (კმ/სთ).
+• გიორგი: 1,2 კმ 0,25 საათში → 4,8 კმ/სთ
+• ელენე: 3 კმ 1/6 საათში → 18 კმ/სთ
 
-გადაყვანა: 1 km/h = 1000 მ ÷ 3600 წმ, ამიტომ m/s-ის მისაღებად km/h გაყავი 3,6-ზე. 18 km/h = 5 m/s.
+გადაყვანა: 1 კმ/სთ = 1000 მ ÷ 3600 წმ, ამიტომ მ/წმ-ის მისაღებად კმ/სთ გაყავი 3,6-ზე. 18 კმ/სთ = 5 მ/წმ.
 
 სიტყვა „საშუალო“ მნიშვნელოვანია: გზაში ელენე შუქნიშანთან გაჩერდა, დაღმართზე კი უფრო სწრაფად იარა. საშუალო სიჩქარე მთელ მგზავრობას აღწერს და არა თითოეულ მომენტს.`,
         ),
@@ -75,9 +75,9 @@ The speed is the slope: distance gained ÷ time taken. The graph below shows a s
 • დახრილი წრფე: თანაბარი მოძრაობა. რაც უფრო ციცაბოა წრფე, მით სწრაფია მოძრაობა.
 • მრუდი, რომელიც უფრო ციცაბო ხდება: სხეული აჩქარდება. მრუდი, რომელიც უფრო დამრეცი ხდება: ნელდება.
 
-სიჩქარე გრაფიკის დახრილობაა: გავლილი მანძილი ÷ დახარჯული დრო. ქვემოთ მოცემული გრაფიკი თანაბარ 2 m/s სიჩქარეს აჩვენებს.`,
+სიჩქარე გრაფიკის დახრილობაა: გავლილი მანძილი ÷ დახარჯული დრო. ქვემოთ მოცემული გრაფიკი თანაბარ 2 მ/წმ სიჩქარეს აჩვენებს.`,
         ),
-        plot: { expression: "2x", xMin: 0, xMax: 10, caption: l("Distance (m) against time (s) at a steady 2 m/s", "მანძილი (მ) დროის (წმ) მიხედვით, თანაბარი სიჩქარე 2 m/s") },
+        plot: { expression: "2x", xMin: 0, xMax: 10, caption: l("Distance (m) against time (s) at a steady 2 m/s", "მანძილი (მ) დროის (წმ) მიხედვით, თანაბარი სიჩქარე 2 მ/წმ") },
       },
       {
         kind: "practice",
@@ -97,7 +97,7 @@ The speed is the slope: distance gained ÷ time taken. The graph below shows a s
 • km/h ÷ 3.6 = m/s.
 • On a distance–time graph: flat = at rest, steeper = faster.`,
           `• v = s / t; ერთეულები ყოველთვის ჩაწერე.
-• km/h ÷ 3,6 = m/s.
+• კმ/სთ ÷ 3,6 = მ/წმ.
 • მანძილი-დროის გრაფიკზე: ჰორიზონტალური = უძრავი, უფრო ციცაბო = უფრო სწრაფი.`,
         ),
       },
@@ -106,21 +106,21 @@ The speed is the slope: distance gained ÷ time taken. The graph below shows a s
       {
         type: "exercise",
         title: l("Average speed", "საშუალო სიჩქარე"),
-        prompt: l("A train travels 240 km in 3 hours. What is its average speed in km/h?", "მატარებელმა 240 კმ 3 საათში გაიარა. რისი ტოლია მისი საშუალო სიჩქარე (km/h)?"),
-        accepted: ["80", "80 km/h"],
+        prompt: l("A train travels 240 km in 3 hours. What is its average speed in km/h?", "მატარებელმა 240 კმ 3 საათში გაიარა. რისი ტოლია მისი საშუალო სიჩქარე (კმ/სთ)?"),
+        accepted: ["80"],
         hints: [l("Use v = s / t.", "გამოიყენე v = s / t."), l("Divide 240 by 3.", "240 გაყავი 3-ზე.")],
-        solution: l("v = 240 km ÷ 3 h = 80 km/h", "v = 240 კმ ÷ 3 სთ = 80 km/h"),
+        solution: l("v = 240 km ÷ 3 h = 80 km/h", "v = 240 კმ ÷ 3 სთ = 80 კმ/სთ"),
       },
       {
         type: "exercise",
         title: l("Convert units", "ერთეულების გადაყვანა"),
-        prompt: l("A car drives at 72 km/h. What is its speed in m/s?", "მანქანა 72 km/h სიჩქარით მოძრაობს. რისი ტოლია მისი სიჩქარე m/s-ში?"),
-        accepted: ["20", "20 m/s"],
+        prompt: l("A car drives at 72 km/h. What is its speed in m/s?", "მანქანა 72 კმ/სთ სიჩქარით მოძრაობს. რისი ტოლია მისი სიჩქარე მ/წმ-ში?"),
+        accepted: ["20"],
         hints: [
           l("1 km = 1000 m and 1 h = 3600 s.", "1 კმ = 1000 მ, 1 სთ = 3600 წმ."),
-          l("To go from km/h to m/s, divide by 3.6.", "km/h-დან m/s-ში გადასაყვანად გაყავი 3,6-ზე."),
+          l("To go from km/h to m/s, divide by 3.6.", "კმ/სთ-დან მ/წმ-ში გადასაყვანად გაყავი 3,6-ზე."),
         ],
-        solution: l("72 ÷ 3.6 = 20 m/s", "72 ÷ 3,6 = 20 m/s"),
+        solution: l("72 ÷ 3.6 = 20 m/s", "72 ÷ 3,6 = 20 მ/წმ"),
       },
       {
         type: "mc",
@@ -136,7 +136,7 @@ The speed is the slope: distance gained ÷ time taken. The graph below shows a s
         title: l("How long?", "რამდენ ხანს?"),
         prompt: l(
           "The distance from Tbilisi to Kutaisi by road is roughly 230 km. How many hours does the trip take at an average speed of 70 km/h? Round to one decimal place.",
-          "საავტომობილო გზით თბილისიდან ქუთაისამდე დაახლოებით 230 კმ-ია. რამდენ საათს გასტანს მგზავრობა 70 km/h საშუალო სიჩქარით? დაამრგვალე მეათედებამდე.",
+          "საავტომობილო გზით თბილისიდან ქუთაისამდე დაახლოებით 230 კმ-ია. რამდენ საათს გასტანს მგზავრობა 70 კმ/სთ საშუალო სიჩქარით? დაამრგვალე მეათედებამდე.",
         ),
         accepted: { en: ["3.3", "3.3 h"], ka: ["3,3", "3.3", "3,3 სთ"] },
         hints: [l("Rearrange v = s / t to find t.", "v = s / t-დან გამოსახე t."), l("t = s / v = 230 ÷ 70.", "t = s / v = 230 ÷ 70.")],
@@ -160,8 +160,8 @@ The speed is the slope: distance gained ÷ time taken. The graph below shows a s
       l("Students describe each part of a distance–time graph in words.", "მოსწავლე მანძილი-დროის გრაფიკის თითოეულ ნაწილს სიტყვებით აღწერს."),
     ],
     homework: [
-      l("Measure how long it takes you to walk 100 m. Calculate your speed in m/s and km/h.", "გაზომე, რამდენ ხანს გჭირდება 100 მ-ის გავლა. გამოთვალე შენი სიჩქარე m/s-სა და km/h-ში."),
-      l("Draw a distance–time graph for: 5 min walking at 1.5 m/s, 3 min stop, 4 min running at 3 m/s.", "დახატე მანძილი-დროის გრაფიკი: 5 წთ სიარული 1,5 m/s სიჩქარით, 3 წთ გაჩერება, 4 წთ სირბილი 3 m/s სიჩქარით."),
+      l("Measure how long it takes you to walk 100 m. Calculate your speed in m/s and km/h.", "გაზომე, რამდენ ხანს გჭირდება 100 მ-ის გავლა. გამოთვალე შენი სიჩქარე მ/წმ-სა და კმ/სთ-ში."),
+      l("Draw a distance–time graph for: 5 min walking at 1.5 m/s, 3 min stop, 4 min running at 3 m/s.", "დახატე მანძილი-დროის გრაფიკი: 5 წთ სიარული 1,5 მ/წმ სიჩქარით, 3 წთ გაჩერება, 4 წთ სირბილი 3 მ/წმ სიჩქარით."),
     ],
     teacherNotes: l(
       "Road distances are rounded on purpose — ask students where they would check a precise figure. A quick outdoor activity (timing 20 m walks and runs with phone stopwatches) makes the formula concrete. Students often read a distance–time graph as a map of the route; ask \"what does a point on this graph tell you?\"",
@@ -170,12 +170,12 @@ The speed is the slope: distance gained ÷ time taken. The graph below shows a s
     quiz: {
       title: l("Motion — check yourself", "მოძრაობა — შეამოწმე თავი"),
       questions: [
-        { type: "num", prompt: l("A runner covers 400 m in 80 s. Average speed in m/s?", "მორბენალმა 400 მ 80 წამში გაირბინა. საშუალო სიჩქარე m/s-ში?"), answer: 5, explanation: l("400 ÷ 80 = 5 m/s", "400 ÷ 80 = 5 m/s") },
-        { type: "num", prompt: l("Convert 10 m/s to km/h.", "გადაიყვანე 10 m/s km/h-ში."), answer: 36, explanation: l("10 × 3.6 = 36 km/h", "10 × 3,6 = 36 km/h") },
+        { type: "num", prompt: l("A runner covers 400 m in 80 s. Average speed in m/s?", "მორბენალმა 400 მ 80 წამში გაირბინა. საშუალო სიჩქარე მ/წმ-ში?"), answer: 5, explanation: l("400 ÷ 80 = 5 მ/წმ", "400 ÷ 80 = 5 მ/წმ") },
+        { type: "num", prompt: l("Convert 10 m/s to km/h.", "გადაიყვანე 10 მ/წმ კმ/სთ-ში."), answer: 36, explanation: l("10 × 3.6 = 36 km/h", "10 × 3,6 = 36 კმ/სთ") },
         { type: "tf", prompt: l("A steeper line on a distance–time graph means a higher speed.", "მანძილი-დროის გრაფიკზე უფრო ციცაბო წრფე მეტ სიჩქარეს ნიშნავს."), answer: true },
         {
           type: "mc",
-          prompt: l("How far does a cyclist travel in 2 h at 15 km/h?", "რა მანძილს გაივლის ველოსიპედისტი 2 საათში 15 km/h სიჩქარით?"),
+          prompt: l("How far does a cyclist travel in 2 h at 15 km/h?", "რა მანძილს გაივლის ველოსიპედისტი 2 საათში 15 კმ/სთ სიჩქარით?"),
           options: [l("30 km", "30 კმ"), l("7.5 km", "7,5 კმ"), l("17 km", "17 კმ"), l("15 km", "15 კმ")],
           correct: 0,
           explanation: l("s = v · t = 15 × 2 = 30 km", "s = v · t = 15 × 2 = 30 კმ"),
@@ -223,11 +223,11 @@ The speed is the slope: distance gained ÷ time taken. The graph below shows a s
 Example: a 2 kg book on a shelf 1.5 m high has Eₚ = 2 · 10 · 1.5 = 30 J. If it falls, just before hitting the floor almost all of it has become kinetic energy: ½ · 2 · v² = 30, so v ≈ 5.5 m/s.
 
 Notice: doubling the speed makes the kinetic energy four times larger. This is why speed matters so much in road safety.`,
-          `ენერგია ჯოულებში (J) იზომება.
+          `ენერგია ჯოულებში (ჯ) იზომება.
 • კინეტიკური ენერგია — მოძრაობის ენერგია: Eₖ = ½ m v²
-• პოტენციური ენერგია (მიზიდულობის ველში) — სიმაღლის ენერგია: Eₚ = m g h (დედამიწაზე g ≈ 10 N/kg; უფრო ზუსტად 9,8)
+• პოტენციური ენერგია (მიზიდულობის ველში) — სიმაღლის ენერგია: Eₚ = m g h (დედამიწაზე g ≈ 10 ნ/კგ; უფრო ზუსტად 9,8)
 
-მაგალითი: 1,5 მ სიმაღლის თაროზე მდებარე 2 კგ მასის წიგნს აქვს Eₚ = 2 · 10 · 1,5 = 30 J. თუ ის ჩამოვარდება, იატაკთან შეჯახებამდე ეს ენერგია თითქმის მთლიანად კინეტიკურად გარდაიქმნება: ½ · 2 · v² = 30, ანუ v ≈ 5,5 m/s.
+მაგალითი: 1,5 მ სიმაღლის თაროზე მდებარე 2 კგ მასის წიგნს აქვს Eₚ = 2 · 10 · 1,5 = 30 ჯ. თუ ის ჩამოვარდება, იატაკთან შეჯახებამდე ეს ენერგია თითქმის მთლიანად კინეტიკურად გარდაიქმნება: ½ · 2 · v² = 30, ანუ v ≈ 5,5 მ/წმ.
 
 შენიშნე: სიჩქარის გაორმაგება კინეტიკურ ენერგიას ოთხჯერ ზრდის. ამიტომაა სიჩქარე ასეთი მნიშვნელოვანი საგზაო უსაფრთხოებისთვის.`,
         ),
@@ -279,18 +279,18 @@ efficiency = useful output energy ÷ input energy × 100%`,
       {
         type: "exercise",
         title: l("Potential energy", "პოტენციური ენერგია"),
-        prompt: l("A 5 kg bag is lifted onto a 2 m high shelf. How much potential energy does it gain? (g = 10 N/kg, answer in J)", "5 კგ მასის ჩანთა 2 მ სიმაღლის თაროზე აიტანეს. რამდენი პოტენციური ენერგია შეიძინა? (g = 10 N/kg, პასუხი J-ში)"),
-        accepted: ["100", "100 J"],
+        prompt: l("A 5 kg bag is lifted onto a 2 m high shelf. How much potential energy does it gain? (g = 10 N/kg, answer in J)", "5 კგ მასის ჩანთა 2 მ სიმაღლის თაროზე აიტანეს. რამდენი პოტენციური ენერგია შეიძინა? (g = 10 ნ/კგ, პასუხი ჯ-ში)"),
+        accepted: ["100"],
         hints: [l("Use Eₚ = m g h.", "გამოიყენე Eₚ = m g h."), l("5 × 10 × 2", "5 × 10 × 2")],
-        solution: l("Eₚ = 5 · 10 · 2 = 100 J", "Eₚ = 5 · 10 · 2 = 100 J"),
+        solution: l("Eₚ = 5 · 10 · 2 = 100 ჯ", "Eₚ = 5 · 10 · 2 = 100 ჯ"),
       },
       {
         type: "exercise",
         title: l("Kinetic energy", "კინეტიკური ენერგია"),
-        prompt: l("A 60 kg cyclist rides at 5 m/s. What is the kinetic energy in J?", "60 კგ მასის ველოსიპედისტი 5 m/s სიჩქარით მოძრაობს. რისი ტოლია მისი კინეტიკური ენერგია (J)?"),
-        accepted: ["750", "750 J"],
+        prompt: l("A 60 kg cyclist rides at 5 m/s. What is the kinetic energy in J?", "60 კგ მასის ველოსიპედისტი 5 მ/წმ სიჩქარით მოძრაობს. რისი ტოლია მისი კინეტიკური ენერგია (ჯ)?"),
+        accepted: ["750"],
         hints: [l("Use Eₖ = ½ m v².", "გამოიყენე Eₖ = ½ m v²."), l("Square the speed first: 5² = 25.", "ჯერ სიჩქარე აიყვანე კვადრატში: 5² = 25."), l("½ × 60 × 25", "½ × 60 × 25")],
-        solution: l("Eₖ = ½ · 60 · 25 = 750 J", "Eₖ = ½ · 60 · 25 = 750 J"),
+        solution: l("Eₖ = ½ · 60 · 25 = 750 ჯ", "Eₖ = ½ · 60 · 25 = 750 ჯ"),
       },
       {
         type: "mc",
@@ -304,10 +304,10 @@ efficiency = useful output energy ÷ input energy × 100%`,
       {
         type: "exercise",
         title: l("Efficiency", "მქკ"),
-        prompt: l("A lamp uses 200 J of electrical energy and gives out 50 J as light. What is its efficiency in %?", "ნათურა 200 J ელექტრულ ენერგიას იყენებს და 50 J-ს სინათლის სახით გამოსცემს. რისი ტოლია მისი მქკ (%)?"),
+        prompt: l("A lamp uses 200 J of electrical energy and gives out 50 J as light. What is its efficiency in %?", "ნათურა 200 ჯ ელექტრულ ენერგიას იყენებს და 50 ჯ-ს სინათლის სახით გამოსცემს. რისი ტოლია მისი მქკ (%)?"),
         accepted: ["25", "25%"],
         hints: [l("Efficiency = useful ÷ input × 100%.", "მქკ = სასარგებლო ÷ დახარჯული × 100%."), l("50 ÷ 200 = 0.25", "50 ÷ 200 = 0,25")],
-        solution: l("50 ÷ 200 × 100% = 25%. The other 150 J become heat.", "50 ÷ 200 × 100% = 25%. დანარჩენი 150 J სითბოდ გარდაიქმნება."),
+        solution: l("50 ÷ 200 × 100% = 25%. The other 150 J become heat.", "50 ÷ 200 × 100% = 25%. დანარჩენი 150 ჯ სითბოდ გარდაიქმნება."),
       },
       {
         type: "discussion",
@@ -328,17 +328,17 @@ efficiency = useful output energy ÷ input energy × 100%`,
     ],
     homework: [
       l("Choose three devices at home. For each, draw the energy transfer chain and mark the useful and the wasted output.", "აირჩიე სახლში სამი მოწყობილობა. თითოეულისთვის დახატე ენერგიის გარდაქმნების ჯაჭვი და მონიშნე სასარგებლო და დაკარგული ენერგია."),
-      l("A 0.5 kg ball is dropped from 3.2 m. Ignoring air resistance, how fast is it moving when it hits the ground? (g = 10 N/kg)", "0,5 კგ მასის ბურთი 3,2 მ სიმაღლიდან ჩამოაგდეს. ჰაერის წინააღმდეგობის გაუთვალისწინებლად, რა სიჩქარით მოხვდება ის მიწას? (g = 10 N/kg)"),
+      l("A 0.5 kg ball is dropped from 3.2 m. Ignoring air resistance, how fast is it moving when it hits the ground? (g = 10 N/kg)", "0,5 კგ მასის ბურთი 3,2 მ სიმაღლიდან ჩამოაგდეს. ჰაერის წინააღმდეგობის გაუთვალისწინებლად, რა სიჩქარით მოხვდება ის მიწას? (g = 10 ნ/კგ)"),
     ],
     teacherNotes: l(
       "g = 10 N/kg keeps the arithmetic simple; mention 9.8 N/kg for precise work. The hydropower example is deliberately general — if you add figures (installed capacity, share of electricity), take them from current official sources such as the Georgian State Electrosystem or Geostat and give the year.",
-      "g = 10 N/kg გამოთვლებს ამარტივებს; ზუსტი გამოთვლებისთვის მოიხსენიეთ 9,8 N/kg. ჰიდროენერგეტიკის მაგალითი განზრახაა ზოგადი — თუ რიცხვებს დაამატებთ (დადგმული სიმძლავრე, ელექტროენერგიაში წილი), აიღეთ ისინი მოქმედი ოფიციალური წყაროებიდან, მაგალითად, საქართველოს სახელმწიფო ელექტროსისტემის ან საქსტატის მონაცემებიდან, და მიუთითეთ წელი.",
+      "g = 10 ნ/კგ გამოთვლებს ამარტივებს; ზუსტი გამოთვლებისთვის მოიხსენიეთ 9,8 ნ/კგ. ჰიდროენერგეტიკის მაგალითი განზრახაა ზოგადი — თუ რიცხვებს დაამატებთ (დადგმული სიმძლავრე, ელექტროენერგიაში წილი), აიღეთ ისინი მოქმედი ოფიციალური წყაროებიდან, მაგალითად, საქართველოს სახელმწიფო ელექტროსისტემის ან საქსტატის მონაცემებიდან, და მიუთითეთ წელი.",
     ),
     quiz: {
       title: l("Energy — check yourself", "ენერგია — შეამოწმე თავი"),
       questions: [
-        { type: "num", prompt: l("Eₚ of a 3 kg object at 4 m (g = 10 N/kg), in J?", "3 კგ მასის სხეულის Eₚ 4 მ სიმაღლეზე (g = 10 N/kg), J-ში?"), answer: 120, explanation: l("3 · 10 · 4 = 120 J", "3 · 10 · 4 = 120 J") },
-        { type: "num", prompt: l("Eₖ of a 2 kg ball at 3 m/s, in J?", "3 m/s სიჩქარით მოძრავი 2 კგ მასის ბურთის Eₖ, J-ში?"), answer: 9, explanation: l("½ · 2 · 9 = 9 J", "½ · 2 · 9 = 9 J") },
+        { type: "num", prompt: l("Eₚ of a 3 kg object at 4 m (g = 10 N/kg), in J?", "3 კგ მასის სხეულის Eₚ 4 მ სიმაღლეზე (g = 10 ნ/კგ), ჯ-ში?"), answer: 120, explanation: l("3 · 10 · 4 = 120 ჯ", "3 · 10 · 4 = 120 ჯ") },
+        { type: "num", prompt: l("Eₖ of a 2 kg ball at 3 m/s, in J?", "3 მ/წმ სიჩქარით მოძრავი 2 კგ მასის ბურთის Eₖ, ჯ-ში?"), answer: 9, explanation: l("½ · 2 · 9 = 9 ჯ", "½ · 2 · 9 = 9 ჯ") },
         { type: "tf", prompt: l("A device with 100% efficiency is common in everyday life.", "100%-იანი მქკ-ის მქონე მოწყობილობა ყოველდღიურ ცხოვრებაში ხშირია."), answer: false, explanation: l("Real devices always transfer some energy to the surroundings.", "რეალური მოწყობილობები ენერგიის ნაწილს ყოველთვის გარემოს გადასცემს.") },
         {
           type: "mc",
@@ -389,13 +389,13 @@ efficiency = useful output energy ÷ input energy × 100%`,
 Ohm's law: I = U / R  (so U = I · R and R = U / I)
 
 Example: a 6 V battery and a 12 Ω resistor: I = 6 / 12 = 0.5 A.`,
-          `• დენის ძალა (I) — რამდენი ელექტრული მუხტი გადის წამში; იზომება ამპერებში (A) ამპერმეტრით, რომელიც წრედში მიმდევრობით ირთვება.
-• ძაბვა (U) — „ბიძგი“, რომელიც მუხტს ამოძრავებს; იზომება ვოლტებში (V) ვოლტმეტრით, რომელიც ელემენტს პარალელურად უერთდება.
+          `• დენის ძალა (I) — რამდენი ელექტრული მუხტი გადის წამში; იზომება ამპერებში (ა) ამპერმეტრით, რომელიც წრედში მიმდევრობით ირთვება.
+• ძაბვა (U) — „ბიძგი“, რომელიც მუხტს ამოძრავებს; იზომება ვოლტებში (ვ) ვოლტმეტრით, რომელიც ელემენტს პარალელურად უერთდება.
 • წინაღობა (R) — რამდენად ეწინააღმდეგება ელემენტი დენს; იზომება ომებში (Ω).
 
 ომის კანონი: I = U / R  (ანუ U = I · R და R = U / I)
 
-მაგალითი: 6 V ბატარეა და 12 Ω რეზისტორი: I = 6 / 12 = 0,5 A.`,
+მაგალითი: 6 ვ ბატარეა და 12 Ω რეზისტორი: I = 6 / 12 = 0,5 ა.`,
         ),
       },
       {
@@ -433,7 +433,7 @@ Parallel: components on separate branches.
 Safety: use only batteries or low-voltage kits (up to about 12 V). Never experiment with mains sockets — mains electricity can kill.`,
           `გახსენი STEM ლაბორატორიის სიმულაცია „ომის კანონი წრედში“: შეცვალე ძაბვა და წინაღობა და დააკვირდი დენს. შემდეგ, თუ კლასს ნაკრები აქვს, სცადე ექსპერიმენტი „გამტარები და იზოლატორები“.
 
-უსაფრთხოება: გამოიყენე მხოლოდ ბატარეები ან დაბალი ძაბვის ნაკრები (დაახლოებით 12 V-მდე). არასოდეს ჩაატარო ცდები როზეტზე — ქსელის დენი სიცოცხლისთვის საშიშია.`,
+უსაფრთხოება: გამოიყენე მხოლოდ ბატარეები ან დაბალი ძაბვის ნაკრები (დაახლოებით 12 ვ-მდე). არასოდეს ჩაატარო ცდები როზეტზე — ქსელის დენი სიცოცხლისთვის საშიშია.`,
         ),
       },
       {
@@ -454,18 +454,18 @@ Safety: use only batteries or low-voltage kits (up to about 12 V). Never experim
       {
         type: "exercise",
         title: l("Ohm's law", "ომის კანონი"),
-        prompt: l("A 9 V battery is connected to a 30 Ω resistor. What is the current in A?", "9 V ბატარეა 30 Ω რეზისტორს უერთდება. რისი ტოლია დენის ძალა (A)?"),
+        prompt: l("A 9 V battery is connected to a 30 Ω resistor. What is the current in A?", "9 ვ ბატარეა 30 Ω რეზისტორს უერთდება. რისი ტოლია დენის ძალა (ა)?"),
         accepted: ["0.3", "0.3 A", "0,3"],
         hints: [l("Use I = U / R.", "გამოიყენე I = U / R."), l("9 ÷ 30", "9 ÷ 30")],
-        solution: l("I = 9 ÷ 30 = 0.3 A", "I = 9 ÷ 30 = 0,3 A"),
+        solution: l("I = 9 ÷ 30 = 0.3 A", "I = 9 ÷ 30 = 0,3 ა"),
       },
       {
         type: "exercise",
         title: l("Series resistance", "მიმდევრობითი წინაღობა"),
-        prompt: l("Two resistors of 4 Ω and 8 Ω are connected in series to a 6 V battery. What is the current in A?", "4 Ω და 8 Ω რეზისტორები მიმდევრობით არის შეერთებული 6 V ბატარეასთან. რისი ტოლია დენის ძალა (A)?"),
+        prompt: l("Two resistors of 4 Ω and 8 Ω are connected in series to a 6 V battery. What is the current in A?", "4 Ω და 8 Ω რეზისტორები მიმდევრობით არის შეერთებული 6 ვ ბატარეასთან. რისი ტოლია დენის ძალა (ა)?"),
         accepted: ["0.5", "0.5 A", "0,5"],
         hints: [l("In series, resistances add.", "მიმდევრობით შეერთებისას წინაღობები იკრიბება."), l("R = 12 Ω. Now use I = U / R.", "R = 12 Ω. ახლა გამოიყენე I = U / R.")],
-        solution: l("R = 4 + 8 = 12 Ω; I = 6 ÷ 12 = 0.5 A", "R = 4 + 8 = 12 Ω; I = 6 ÷ 12 = 0,5 A"),
+        solution: l("R = 4 + 8 = 12 Ω; I = 6 ÷ 12 = 0.5 A", "R = 4 + 8 = 12 Ω; I = 6 ÷ 12 = 0,5 ა"),
       },
       {
         type: "mc",
@@ -509,7 +509,7 @@ Safety: use only batteries or low-voltage kits (up to about 12 V). Never experim
     ],
     homework: [
       l("Look at a phone charger or appliance label. Which voltage and current are written on it?", "დახედე ტელეფონის დამტენის ან საყოფაცხოვრებო მოწყობილობის ეტიკეტს. რა ძაბვა და დენია მასზე მითითებული?"),
-      l("Calculate the resistance of a lamp that draws 0.25 A from a 12 V supply.", "გამოთვალე ნათურის წინაღობა, რომელიც 12 V კვების წყაროდან 0,25 A დენს მოიხმარს."),
+      l("Calculate the resistance of a lamp that draws 0.25 A from a 12 V supply.", "გამოთვალე ნათურის წინაღობა, რომელიც 12 ვ კვების წყაროდან 0,25 ა დენს მოიხმარს."),
     ],
     teacherNotes: l(
       "Use only low-voltage kits. The STEM Laboratory electronics topics and the \"Ohm's law practice\" challenge give extra practice. Students often think current is \"used up\" by the first lamp in series; the ammeter readings before and after each lamp show that it is not.",
@@ -518,13 +518,13 @@ Safety: use only batteries or low-voltage kits (up to about 12 V). Never experim
     quiz: {
       title: l("Circuits — check yourself", "წრედები — შეამოწმე თავი"),
       questions: [
-        { type: "num", prompt: l("U = 12 V, R = 4 Ω. Current in A?", "U = 12 V, R = 4 Ω. დენის ძალა A-ში?"), answer: 3, explanation: l("12 ÷ 4 = 3 A", "12 ÷ 4 = 3 A") },
-        { type: "num", prompt: l("I = 2 A through R = 5 Ω. Voltage in V?", "R = 5 Ω წინაღობაში გადის I = 2 A. ძაბვა V-ში?"), answer: 10, explanation: l("U = I · R = 10 V", "U = I · R = 10 V") },
+        { type: "num", prompt: l("U = 12 V, R = 4 Ω. Current in A?", "U = 12 ვ, R = 4 Ω. დენის ძალა ა-ში?"), answer: 3, explanation: l("12 ÷ 4 = 3 ა", "12 ÷ 4 = 3 ა") },
+        { type: "num", prompt: l("I = 2 A through R = 5 Ω. Voltage in V?", "R = 5 Ω წინაღობაში გადის I = 2 ა. ძაბვა ვ-ში?"), answer: 10, explanation: l("U = I · R = 10 ვ", "U = I · R = 10 ვ") },
         { type: "tf", prompt: l("In a series circuit, if one lamp breaks, the others keep shining.", "მიმდევრობით წრედში ერთი ნათურის გადაწვისას დანარჩენები ანათებს."), answer: false, explanation: l("The single loop is broken, so the current stops everywhere.", "ერთადერთი შეკრული გზა წყდება და დენი ყველგან წყდება.") },
         {
           type: "mc",
           prompt: l("What is the unit of resistance?", "რა არის წინაღობის ერთეული?"),
-          options: [l("Ohm (Ω)", "ომი (Ω)"), l("Ampere (A)", "ამპერი (A)"), l("Volt (V)", "ვოლტი (V)"), l("Joule (J)", "ჯოული (J)")],
+          options: [l("Ohm (Ω)", "ომი (Ω)"), l("Ampere (A)", "ამპერი (ა)"), l("Volt (V)", "ვოლტი (ვ)"), l("Joule (J)", "ჯოული (ჯ)")],
           correct: 0,
         },
       ],

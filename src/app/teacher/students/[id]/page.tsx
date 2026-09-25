@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth/session";
-import { getDictionary } from "@/lib/i18n/server";
+import { getDictionary, pageTitle } from "@/lib/i18n/server";
 import { getStudent, listClassesForStudent } from "@/lib/services/classes";
 import { learningProfile } from "@/lib/services/learning-profile";
 import { PageContainer } from "@/components/layout/site-header";
@@ -9,7 +9,9 @@ import { Badge } from "@/components/ui/badge";
 import { PageHeader } from "@/components/ui/misc";
 import { LearningProfileView } from "@/components/profile/learning-profile-view";
 
-export const metadata = { title: "Learning profile" };
+export async function generateMetadata() {
+  return pageTitle((p) => p.studentProfile);
+}
 
 export default async function StudentProfilePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;

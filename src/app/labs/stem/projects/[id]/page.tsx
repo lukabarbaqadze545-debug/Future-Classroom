@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { getCurrentUser, isStaff } from "@/lib/auth/session";
-import { getDictionary } from "@/lib/i18n/server";
+import { getDictionary, pageTitle } from "@/lib/i18n/server";
 import { tr } from "@/lib/labs/localized";
 import { findTemplate } from "@/lib/labs/stem/projects";
 import { getProjectFor } from "@/lib/labs/stem/service";
@@ -16,7 +16,9 @@ import { FeedbackPanel } from "@/components/labs/shared/feedback-panel";
 import { PortfolioButton } from "@/components/labs/shared/portfolio-button";
 import { ProjectWorkspace } from "@/components/labs/stem/project-workspace";
 
-export const metadata = { title: "Engineering project" };
+export async function generateMetadata() {
+  return pageTitle((p) => p.engineeringProject);
+}
 
 export default async function ProjectPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;

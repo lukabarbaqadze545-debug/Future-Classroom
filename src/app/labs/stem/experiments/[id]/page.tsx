@@ -24,8 +24,9 @@ import { ExperimentWork } from "@/components/labs/stem/experiment-work";
 type Props = { params: Promise<{ id: string }> };
 
 export async function generateMetadata({ params }: Props) {
+  const { locale, dict } = await getDictionary();
   const e = findExperiment((await params).id);
-  return { title: e ? e.title.en : "STEM Lab" };
+  return { title: e ? tr(e.title, locale) : dict.labs.hub.rooms.stem.name };
 }
 
 export default async function ExperimentPage({ params }: Props) {

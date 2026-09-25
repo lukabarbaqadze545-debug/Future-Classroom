@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ArrowRight, BookOpen, Flame, Radio } from "lucide-react";
 import { getCurrentUser } from "@/lib/auth/session";
-import { getDictionary } from "@/lib/i18n/server";
+import { getDictionary, pageTitle } from "@/lib/i18n/server";
 import { fmt, fmtCount, relativeTime } from "@/lib/i18n/config";
 import { getStudentProgress } from "@/lib/services/progress";
 import { listAttemptsForStudent, listPublishedQuizzes } from "@/lib/services/quizzes";
@@ -20,7 +20,9 @@ import { LabIcon } from "@/components/labs/lab-shell";
 import { STATUS_TONE } from "@/components/assignments/review-board";
 import { formatDateTime } from "@/lib/i18n/config";
 
-export const metadata = { title: "Student" };
+export async function generateMetadata() {
+  return pageTitle((p) => p.home);
+}
 
 export default async function StudentHome() {
   const user = (await getCurrentUser())!;

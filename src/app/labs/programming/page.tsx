@@ -12,7 +12,10 @@ import { LabHeader } from "@/components/labs/lab-shell";
 import { AssignmentBanner } from "@/components/labs/shared/assignment-banner";
 import { ProblemBrowser, type ProblemSummary } from "@/components/labs/programming/problem-browser";
 
-export const metadata = { title: "Programming Lab" };
+export async function generateMetadata() {
+  const { dict } = await getDictionary();
+  return { title: dict.labs.hub.rooms.programming.name };
+}
 
 export default async function ProgrammingLabPage() {
   const user = (await getCurrentUser())!;

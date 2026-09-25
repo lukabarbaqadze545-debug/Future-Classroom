@@ -1,12 +1,14 @@
 import { requirePageUser, STAFF_ROLES } from "@/lib/auth/session";
-import { getDictionary } from "@/lib/i18n/server";
+import { getDictionary, pageTitle } from "@/lib/i18n/server";
 import { listAllCopies } from "@/lib/labs/library/service";
 import { copyUrl, publicOrigin, qrSvg } from "@/lib/labs/library/qr";
 import { PageContainer } from "@/components/layout/site-header";
 import { PageHeader } from "@/components/ui/misc";
 import { PrintButton } from "@/components/labs/library/print-button";
 
-export const metadata = { title: "QR labels" };
+export async function generateMetadata() {
+  return pageTitle((p) => p.qrLabels);
+}
 
 /** Printable QR labels: one per physical copy. */
 export default async function LabelsPage({ searchParams }: { searchParams: Promise<{ resource?: string }> }) {

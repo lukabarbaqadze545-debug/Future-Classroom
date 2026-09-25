@@ -23,7 +23,10 @@ import { UniversityCards } from "@/components/labs/career/university-cards";
 import { SkillsSelf } from "@/components/labs/career/skills-self";
 import { Goals } from "@/components/labs/career/goals";
 
-export const metadata = { title: "Career & University" };
+export async function generateMetadata() {
+  const { dict } = await getDictionary();
+  return { title: dict.labs.hub.rooms.career.name };
+}
 
 export default async function CareerPage({ searchParams }: { searchParams: Promise<{ field?: string }> }) {
   const user = (await getCurrentUser())!;

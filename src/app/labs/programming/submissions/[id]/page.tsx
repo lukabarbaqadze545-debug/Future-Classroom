@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth/session";
-import { getDictionary } from "@/lib/i18n/server";
+import { getDictionary, pageTitle } from "@/lib/i18n/server";
 import { fmt, formatDateTime } from "@/lib/i18n/config";
 import { tr } from "@/lib/labs/localized";
 import { getProblem, getSubmission } from "@/lib/labs/programming/service";
@@ -11,7 +11,9 @@ import { Card, CardHeader } from "@/components/ui/card";
 import { LabHeader } from "@/components/labs/lab-shell";
 import { CodeBlock } from "@/components/labs/code-editor";
 
-export const metadata = { title: "Submission" };
+export async function generateMetadata() {
+  return pageTitle((p) => p.submission);
+}
 
 /** One submission: the code as handed in and how each test went. Owner and staff only. */
 export default async function SubmissionPage({ params }: { params: Promise<{ id: string }> }) {

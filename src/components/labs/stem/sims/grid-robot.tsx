@@ -7,7 +7,8 @@ import { fmt } from "@/lib/i18n/config";
 import { ROBOT_LEVEL, runRobot, type RobotCommand, type RobotStep } from "@/lib/labs/stem/physics";
 import { Button } from "@/components/ui/button";
 import { Notice } from "@/components/ui/notice";
-import type { TaskReporter } from "./types";
+import type { SimFormat } from "../sim-controls";
+import type { TaskInputs, TaskReporter } from "./types";
 
 const CELL = 56;
 const ICONS = { forward: ArrowUp, left: CornerUpLeft, right: CornerUpRight };
@@ -27,10 +28,7 @@ export function GridRobotSim({ report }: { report: TaskReporter }) {
     setProgram(next);
     setRan(false);
     setShown(0);
-    report("robot_goal", {
-      summary: next.length ? next.map((st) => `${s.commands[st.command]}${st.times > 1 ? ` ×${st.times}` : ""}`).join(", ") : "—",
-      value: { program: next },
-    });
+    report("robot_goal", { program: next });
   };
 
   const start = () => {
@@ -138,4 +136,8 @@ export function GridRobotSim({ report }: { report: TaskReporter }) {
   );
 }
 
-export const ROBOT_DEFAULT = { summary: "—", value: { program: [] } };
+export const ROBOT_START: TaskInputs["robot_goal"] = { program: [] };
+
+export function robotSummary(v: TaskInputs["robot_goal"], { s }: SimFormat): string {
+  return v.program.length ? v.program.map((st) => `${s.commands[st.command]}${st.times > 1 ? ` ×${st.times}` : ""}`).join(", ") : "—";
+}

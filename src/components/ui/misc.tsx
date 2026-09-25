@@ -2,11 +2,14 @@ import type { ReactNode } from "react";
 import { Loader2 } from "lucide-react";
 import { cn } from "./cn";
 
+/** A spinner with a visible label; without one it is decorative and the caller announces the state. */
 export function Spinner({ className, label }: { className?: string; label?: string }) {
+  const icon = <Loader2 aria-hidden className={cn("size-4 animate-spin", className)} />;
+  if (!label) return icon;
   return (
     <span role="status" className="inline-flex items-center gap-2">
-      <Loader2 aria-hidden className={cn("size-4 animate-spin", className)} />
-      {label ? <span>{label}</span> : <span className="sr-only">Loading</span>}
+      {icon}
+      <span>{label}</span>
     </span>
   );
 }

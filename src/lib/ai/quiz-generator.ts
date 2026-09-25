@@ -57,7 +57,7 @@ export function mapAIQuestion(q: z.infer<typeof aiQuestion>, id: string, trueFal
 }
 
 function trueFalseLabels(language: LessonMeta["language"]): [string, string] {
-  return language === "ka" ? ["სწორია", "არასწორია"] : ["True", "False"];
+  return language === "ka" ? ["მართალია", "მცდარია"] : ["True", "False"];
 }
 
 /** Builds quiz questions from the lesson's own checkable activities. */

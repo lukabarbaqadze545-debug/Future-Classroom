@@ -1,9 +1,11 @@
 import { ShieldCheck } from "lucide-react";
-import { getDictionary } from "@/lib/i18n/server";
+import { getDictionary, pageTitle } from "@/lib/i18n/server";
 import { SiteHeader, PageContainer } from "@/components/layout/site-header";
 import { PageHeader } from "@/components/ui/misc";
 
-export const metadata = { title: "Privacy" };
+export async function generateMetadata() {
+  return pageTitle((p) => p.privacy);
+}
 
 export default async function PrivacyPage() {
   const { dict } = await getDictionary();

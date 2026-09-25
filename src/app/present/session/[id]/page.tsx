@@ -3,8 +3,11 @@ import { requirePageUser, STAFF_ROLES } from "@/lib/auth/session";
 import { getTeacherSessionView } from "@/lib/services/sessions";
 import { ApiError } from "@/lib/http/errors";
 import { PresentSession } from "@/components/present/present-session";
+import { pageTitle } from "@/lib/i18n/server";
 
-export const metadata = { title: "Presentation" };
+export async function generateMetadata() {
+  return pageTitle((p) => p.presentation);
+}
 
 export default async function PresentSessionPage({ params }: { params: Promise<{ id: string }> }) {
   const user = await requirePageUser(STAFF_ROLES, "/teacher");

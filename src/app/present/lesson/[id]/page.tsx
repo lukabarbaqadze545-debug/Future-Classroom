@@ -2,8 +2,11 @@ import { notFound } from "next/navigation";
 import { requirePageUser, STAFF_ROLES } from "@/lib/auth/session";
 import { getLesson } from "@/lib/services/lessons";
 import { PresentLesson } from "@/components/present/present-lesson";
+import { pageTitle } from "@/lib/i18n/server";
 
-export const metadata = { title: "Presentation" };
+export async function generateMetadata() {
+  return pageTitle((p) => p.presentation);
+}
 
 export default async function PresentLessonPage({ params }: { params: Promise<{ id: string }> }) {
   const user = await requirePageUser(STAFF_ROLES, "/teacher");

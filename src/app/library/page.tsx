@@ -19,7 +19,10 @@ import { TabPanels } from "@/components/labs/shared/tab-panels";
 import { Catalogue, type CatalogueItem } from "@/components/labs/library/catalogue";
 import { LibraryAsk } from "@/components/student/library-ask";
 
-export const metadata = { title: "School Library" };
+export async function generateMetadata() {
+  const { dict } = await getDictionary();
+  return { title: dict.labs.hub.rooms.library.name };
+}
 
 export default async function LibraryPage({ searchParams }: { searchParams: Promise<{ subject?: string }> }) {
   const user = (await getCurrentUser())!;

@@ -20,7 +20,10 @@ import { ModeLegend, StemCard } from "@/components/labs/stem/stem-cards";
 import { SchematicSymbol } from "@/components/labs/stem/schematic-symbol";
 import { StartProjectButton } from "@/components/labs/stem/project-workspace";
 
-export const metadata = { title: "STEM Lab" };
+export async function generateMetadata() {
+  const { dict } = await getDictionary();
+  return { title: dict.labs.hub.rooms.stem.name };
+}
 
 export default async function StemLabPage() {
   const user = (await getCurrentUser())!;

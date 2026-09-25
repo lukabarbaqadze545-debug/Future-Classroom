@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Flame } from "lucide-react";
 import { getCurrentUser } from "@/lib/auth/session";
-import { getDictionary } from "@/lib/i18n/server";
+import { getDictionary, pageTitle } from "@/lib/i18n/server";
 import { fmt, fmtCount, relativeTime } from "@/lib/i18n/config";
 import { getMistakesToReview, getStudentProgress } from "@/lib/services/progress";
 import { PageContainer } from "@/components/layout/site-header";
@@ -13,7 +13,9 @@ import { ActivityChart } from "@/components/student/activity-chart";
 import { learningProfile } from "@/lib/services/learning-profile";
 import { LearningProfileView } from "@/components/profile/learning-profile-view";
 
-export const metadata = { title: "My progress" };
+export async function generateMetadata() {
+  return pageTitle((p) => p.progress);
+}
 
 export default async function ProgressPage() {
   const user = (await getCurrentUser())!;

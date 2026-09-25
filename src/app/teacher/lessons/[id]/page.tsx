@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth/session";
-import { getDictionary } from "@/lib/i18n/server";
+import { getDictionary, pageTitle } from "@/lib/i18n/server";
 import { getAIProvider } from "@/lib/ai";
 import { curatedTopicsFor } from "@/lib/ai/templates";
 import { getLessonForEditor } from "@/lib/services/lessons";
@@ -10,7 +10,9 @@ import { ApiError } from "@/lib/http/errors";
 import { PageContainer } from "@/components/layout/site-header";
 import { LessonEditor, type GenerationNotice } from "@/components/lesson/lesson-editor";
 
-export const metadata = { title: "Lesson" };
+export async function generateMetadata() {
+  return pageTitle((p) => p.lesson);
+}
 
 const NOTICES: GenerationNotice[] = ["ai", "curated", "outline", "ai_failed"];
 

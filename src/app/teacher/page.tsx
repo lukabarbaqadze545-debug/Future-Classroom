@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { BookPlus, FileUp, Radio } from "lucide-react";
 import { getCurrentUser } from "@/lib/auth/session";
-import { getDictionary } from "@/lib/i18n/server";
+import { getDictionary, pageTitle } from "@/lib/i18n/server";
 import { fmt, fmtCount, relativeTime } from "@/lib/i18n/config";
 import { listLessonsForTeacher } from "@/lib/services/lessons";
 import { listSessionsForTeacher } from "@/lib/services/sessions";
@@ -17,7 +17,9 @@ import { listAssignmentsForTeacher } from "@/lib/services/assignments";
 import { LAB_IDS, LAB_ROUTES } from "@/lib/labs/registry";
 import { LabIcon } from "@/components/labs/lab-shell";
 
-export const metadata = { title: "Teacher dashboard" };
+export async function generateMetadata() {
+  return pageTitle((p) => p.teacher);
+}
 
 export default async function TeacherDashboard() {
   const user = (await getCurrentUser())!;

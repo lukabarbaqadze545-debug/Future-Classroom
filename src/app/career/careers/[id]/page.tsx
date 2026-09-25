@@ -16,8 +16,9 @@ import { BookmarkButton } from "@/components/labs/shared/bookmark-button";
 type Props = { params: Promise<{ id: string }> };
 
 export async function generateMetadata({ params }: Props) {
+  const { locale, dict } = await getDictionary();
   const career = findCareer((await params).id);
-  return { title: career ? career.title.en : "Career" };
+  return { title: career ? tr(career.title, locale) : dict.meta.pages.career };
 }
 
 export default async function CareerDetailPage({ params }: Props) {

@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { getCurrentUser, isStaff } from "@/lib/auth/session";
-import { getDictionary } from "@/lib/i18n/server";
+import { getDictionary, pageTitle } from "@/lib/i18n/server";
 import { ApiError } from "@/lib/http/errors";
 import { getResearchBundle } from "@/lib/labs/research/service";
 import { listAttachments } from "@/lib/services/attachments";
@@ -15,7 +15,9 @@ import { FeedbackPanel } from "@/components/labs/shared/feedback-panel";
 import { PortfolioButton } from "@/components/labs/shared/portfolio-button";
 import { ResearchWorkspace } from "@/components/labs/research/research-workspace";
 
-export const metadata = { title: "Research project" };
+export async function generateMetadata() {
+  return pageTitle((p) => p.researchProject);
+}
 
 export default async function ResearchProjectPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;

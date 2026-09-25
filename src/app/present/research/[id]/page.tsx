@@ -3,8 +3,11 @@ import { getCurrentUser } from "@/lib/auth/session";
 import { ApiError } from "@/lib/http/errors";
 import { getResearchBundle } from "@/lib/labs/research/service";
 import { ResearchPresentation } from "@/components/labs/research/research-presentation";
+import { pageTitle } from "@/lib/i18n/server";
 
-export const metadata = { title: "Research presentation" };
+export async function generateMetadata() {
+  return pageTitle((p) => p.researchPresentation);
+}
 
 /** Students present their own research; teachers can present any student's. */
 export default async function PresentResearchPage({ params }: { params: Promise<{ id: string }> }) {

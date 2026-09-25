@@ -1,13 +1,15 @@
 import Link from "next/link";
 import { getCurrentUser } from "@/lib/auth/session";
-import { getDictionary } from "@/lib/i18n/server";
+import { getDictionary, pageTitle } from "@/lib/i18n/server";
 import { fmt, fmtCount, formatDate } from "@/lib/i18n/config";
 import { getTeacherInsights } from "@/lib/services/progress";
 import { PageContainer } from "@/components/layout/site-header";
 import { EmptyState, Meter, PageHeader, Stat } from "@/components/ui/misc";
 import { Card, CardHeader } from "@/components/ui/card";
 
-export const metadata = { title: "Class overview" };
+export async function generateMetadata() {
+  return pageTitle((p) => p.insights);
+}
 
 export default async function InsightsPage() {
   const user = (await getCurrentUser())!;

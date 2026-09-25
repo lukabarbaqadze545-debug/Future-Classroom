@@ -3,8 +3,11 @@ import { getParticipant } from "@/lib/auth/participant";
 import { getCurrentUser } from "@/lib/auth/session";
 import { getSession, getStudentSessionView, getUnlockedHints } from "@/lib/services/sessions";
 import { StudentSession } from "@/components/session/student-session";
+import { pageTitle } from "@/lib/i18n/server";
 
-export const metadata = { title: "Class session" };
+export async function generateMetadata() {
+  return pageTitle((p) => p.classSession);
+}
 
 export default async function StudentSessionPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;

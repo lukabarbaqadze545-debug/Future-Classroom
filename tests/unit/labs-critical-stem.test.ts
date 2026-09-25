@@ -177,6 +177,8 @@ describe("STEM checking", () => {
   it("parses numbers written the Georgian or English way", () => {
     expect(parseNumber("0,2")).toBe(0.2);
     expect(parseNumber("1/6")).toBeCloseTo(1 / 6);
+    expect(parseNumber("0,2 ა")).toBe(0.2);
+    expect(parseNumber("12 m/s")).toBe(12);
     expect(parseNumber("abc")).toBeNull();
   });
   it("checks numeric tolerance, choices and simulation tasks on the server", () => {
