@@ -187,7 +187,7 @@ export const en = {
     generic: "Something went wrong.",
   },
   connection: {
-    live: "Live",
+    live: "Connected",
     reconnecting: "Reconnecting…",
     offline: "Offline — your work is kept on this computer",
   },
@@ -633,6 +633,8 @@ export const en = {
     dashboard: {
       greeting: "Hi {name}!",
       lead: "Join your class, or keep learning at your own pace.",
+      activeTitle: "Active classes",
+      rejoin: "Rejoin",
       joinTitle: "Join a live class",
       joinText: "Enter the code from the classroom screen.",
       continue: "Continue learning",

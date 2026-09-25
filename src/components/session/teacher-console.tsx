@@ -276,7 +276,7 @@ export function TeacherConsole({ initial }: { initial: TeacherSessionView }) {
                   <ul className="mt-2 flex flex-wrap gap-2">
                     {results.commonWrongAnswers.map((w) => (
                       <li key={w.answer} className="rounded-lg bg-surface px-3 py-1.5 text-sm">
-                        <span className="font-mono">{w.answer}</span> <span className="text-ink-subtle">×{w.count}</span>
+                        <span className="font-medium">{w.answer}</span> <span className="text-ink-subtle">×{w.count}</span>
                       </li>
                     ))}
                   </ul>

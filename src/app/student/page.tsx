@@ -5,6 +5,7 @@ import { getDictionary } from "@/lib/i18n/server";
 import { fmt, fmtCount, relativeTime } from "@/lib/i18n/config";
 import { getStudentProgress } from "@/lib/services/progress";
 import { listAttemptsForStudent, listPublishedQuizzes } from "@/lib/services/quizzes";
+import { listActiveSessionsForStudent } from "@/lib/services/sessions";
 import { PageContainer } from "@/components/layout/site-header";
 import { PageHeader } from "@/components/ui/misc";
 import { Card, CardHeader } from "@/components/ui/card";
@@ -28,12 +29,13 @@ export default async function StudentHome() {
     if (!best || a.score / a.maxScore > best.score / best.max) bestByQuiz.set(a.quizId, { score: a.score, max: a.maxScore });
   }
   const continueTopics = progress.topics.filter((t) => t.lessonId).slice(0, 4);
+  const activeSessions = listActiveSessionsForStudent(user.id);
 
   return (
     <PageContainer>
       <PageHeader title={fmt(d.greeting, { name: user.displayName.split(" ")[0] })} description={d.lead} />
       <div className="grid gap-6 lg:grid-cols-[1fr_380px]">
-        <div className="space-y-6">
+        <div className="min-w-0 space-y-6">
           <Card>
             <CardHeader title={d.continue} action={<ButtonLink href="/student/learn" variant="ghost" size="sm">{d.explore}</ButtonLink>} />
             {continueTopics.length ? (
@@ -92,6 +94,27 @@ export default async function StudentHome() {
         </div>
 
         <div className="space-y-6">
+          {activeSessions.length ? (
+            <Card className="border-success/30">
+              <CardHeader title={<span className="flex items-center gap-2"><span className="fc-pulse size-2.5 rounded-full bg-success" />{d.activeTitle}</span>} />
+              <ul className="divide-y divide-line">
+                {activeSessions.map((s) => (
+                  <li key={s.id} className="flex items-center justify-between gap-3 px-5 py-3">
+                    <div className="min-w-0">
+                      <p className="truncate font-medium">{s.title}</p>
+                      <p className="text-sm text-ink-muted">
+                        {s.teacherName}
+                        {s.classLabel ? ` · ${s.classLabel}` : ""}
+                      </p>
+                    </div>
+                    <ButtonLink href={`/join?code=${encodeURIComponent(s.joinCode)}`} size="sm">
+                      {d.rejoin}
+                    </ButtonLink>
+                  </li>
+                ))}
+              </ul>
+            </Card>
+          ) : null}
           <Card className="border-brand/25 p-5">
             <h2 className="flex items-center gap-2 text-lg font-semibold">
               <Radio aria-hidden className="size-5 text-brand" />

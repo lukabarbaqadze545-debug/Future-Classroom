@@ -372,6 +372,22 @@ export function listSessionsForTeacher(teacherId: string) {
   return rows.map((row) => ({ ...toSession(row), participantCount: row.participant_count, activityCount: row.activity_count }));
 }
 
+/** Live sessions a signed-in student has joined (for "rejoin" on the dashboard). */
+export function listActiveSessionsForStudent(userId: string) {
+  return (
+    getDb()
+      .prepare(
+        `SELECT s.id, s.title, s.subject, s.join_code, s.class_label, u.display_name AS teacher_name
+           FROM session_participants p
+           JOIN classroom_sessions s ON s.id = p.session_id
+           JOIN users u ON u.id = s.teacher_id
+          WHERE p.user_id = ? AND s.status != 'ended'
+          ORDER BY s.created_at DESC LIMIT 5`,
+      )
+      .all(userId) as { id: string; title: string; subject: Subject; join_code: string; class_label: string; teacher_name: string }[]
+  ).map((r) => ({ id: r.id, title: r.title, subject: r.subject, joinCode: r.join_code, classLabel: r.class_label, teacherName: r.teacher_name }));
+}
+
 export function deleteSession(sessionId: string, user: CurrentUser): void {
   getSessionForTeacher(sessionId, user);
   getDb().prepare("DELETE FROM classroom_sessions WHERE id = ?").run(sessionId);

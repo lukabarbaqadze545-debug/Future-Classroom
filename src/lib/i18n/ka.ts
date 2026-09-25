@@ -185,7 +185,7 @@ export const ka: Dictionary = {
     generic: "რაღაც არასწორად წავიდა.",
   },
   connection: {
-    live: "ონლაინ",
+    live: "დაკავშირებულია",
     reconnecting: "ხელახლა დაკავშირება…",
     offline: "კავშირი არ არის — თქვენი ნამუშევარი ამ კომპიუტერზე ინახება",
   },
@@ -631,6 +631,8 @@ export const ka: Dictionary = {
     dashboard: {
       greeting: "გამარჯობა, {name}!",
       lead: "შედი შენს კლასში ან ისწავლე საკუთარი ტემპით.",
+      activeTitle: "მიმდინარე გაკვეთილები",
+      rejoin: "დაბრუნება",
       joinTitle: "შედი ცოცხალ გაკვეთილზე",
       joinText: "შეიყვანე საკლასო ეკრანზე ნაჩვენები კოდი.",
       continue: "სწავლის გაგრძელება",

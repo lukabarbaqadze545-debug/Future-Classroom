@@ -74,6 +74,11 @@
     text-wrap: balance;
   }
 
+  /* Grid items may shrink below their content width (prevents horizontal overflow on phones). */
+  .grid > * {
+    min-width: 0;
+  }
+
   button,
   [role="button"] {
     cursor: pointer;

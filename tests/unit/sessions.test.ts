@@ -8,6 +8,7 @@ import {
   getStudentSessionView,
   getTeacherSessionView,
   joinSession,
+  listActiveSessionsForStudent,
   requestSessionHint,
   submitResponse,
 } from "@/lib/services/sessions";
@@ -130,6 +131,7 @@ describe("classroom session flow", () => {
     expect(joined.participant.displayName).toBe("Mariam L.");
     const again = joinSession({ code: session.joinCode, displayName: "", user: student });
     expect(again.participant.id).toBe(joined.participant.id);
+    expect(listActiveSessionsForStudent(student.id).map((s) => s.joinCode)).toEqual([session.joinCode]);
 
     const state = controlSession(session.id, teacher, { type: "next" });
     submitResponse({ sessionId: session.id, participant: joined.participant, activityId: state.currentActivityId!, answer: { optionIds: ["b"], text: "" } });

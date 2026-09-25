@@ -33,8 +33,24 @@ export function AnswerInput({
   const { dict } = useI18n();
   if (type === "multiple_choice" || type === "poll") {
     return (
-      <div role="radiogroup" aria-labelledby={labelId} className="grid gap-3 sm:grid-cols-2">
-        {options.map((option) => {
+      <div
+        role="radiogroup"
+        aria-labelledby={labelId}
+        className="grid gap-3 sm:grid-cols-2"
+        onKeyDown={(event) => {
+          // WAI-ARIA radio group: arrow keys move and select.
+          const keys = ["ArrowDown", "ArrowRight", "ArrowUp", "ArrowLeft"];
+          if (disabled || !keys.includes(event.key)) return;
+          event.preventDefault();
+          const current = options.findIndex((o) => value.optionIds.includes(o.id));
+          const delta = event.key === "ArrowDown" || event.key === "ArrowRight" ? 1 : -1;
+          const next = options[(current + delta + options.length) % options.length];
+          onChange({ optionIds: [next.id], text: "" });
+          const buttons = event.currentTarget.querySelectorAll<HTMLButtonElement>("[role=radio]");
+          buttons[options.indexOf(next)]?.focus();
+        }}
+      >
+        {options.map((option, index) => {
           const selected = value.optionIds.includes(option.id);
           const correct = correctOptionIds.includes(option.id);
           return (
@@ -43,6 +59,7 @@ export function AnswerInput({
               type="button"
               role="radio"
               aria-checked={selected}
+              tabIndex={selected || (value.optionIds.length === 0 && index === 0) ? 0 : -1}
               disabled={disabled}
               onClick={() => onChange({ optionIds: [option.id], text: "" })}
               className={cn(
