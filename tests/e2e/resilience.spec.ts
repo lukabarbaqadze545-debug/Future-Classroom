@@ -70,6 +70,37 @@ test("the same work open in two tabs stays consistent", async ({ browser }) => {
   await context.close();
 });
 
+test("shared workstation: the next student never sees the previous student's drafts", async ({ browser }) => {
+  const context = await browser.newContext();
+  const page = await context.newPage();
+  const signInHere = async (username: string) => {
+    const res = await page.request.post("/api/auth/login", { data: { username, password: "demo1234" } });
+    expect(res.ok()).toBeTruthy();
+  };
+
+  await signInHere("ana");
+  await page.goto("/labs/programming/l1-sum-to-n");
+  await page.getByTestId("code-editor").fill("# Ana's unfinished solution\nprint(42)");
+  await page.goto("/labs/critical-thinking/ct-fallacies-1");
+  await page.getByTestId("ct-item").first().getByTestId("ct-option").first().click();
+  await page.getByRole("button", { name: "Sign out" }).click();
+  await expect(page).toHaveURL(/\/$/);
+
+  await signInHere("nika");
+  await page.goto("/labs/programming/l1-sum-to-n");
+  await expect(page.getByTestId("code-editor")).not.toHaveValue(/Ana's unfinished solution/);
+  await page.goto("/labs/critical-thinking/ct-fallacies-1");
+  await expect(page.getByTestId("ct-item").first().locator("input:checked")).toHaveCount(0);
+
+  // Even without signing out, drafts belong to the account that wrote them.
+  await page.goto("/labs/programming/l1-sum-to-n");
+  await page.getByTestId("code-editor").fill("# Nika's draft\nprint(7)");
+  await signInHere("ana");
+  await page.goto("/labs/programming/l1-sum-to-n");
+  await expect(page.getByTestId("code-editor")).not.toHaveValue(/Nika's draft/);
+  await context.close();
+});
+
 test("touchscreen: simulations respond to taps", async ({ browser }) => {
   const context = await userContext(browser, "mariam", { viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true });
   const page = await context.newPage();

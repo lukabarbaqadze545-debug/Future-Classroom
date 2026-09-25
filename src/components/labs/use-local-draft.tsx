@@ -1,11 +1,14 @@
 "use client";
 
-import { useCallback, useSyncExternalStore } from "react";
+import { createContext, useCallback, useContext, useSyncExternalStore, type ReactNode } from "react";
 
 /*
  * Keeps unsaved work on this computer (localStorage), so a refresh, a closed
  * tab or a lost connection never loses a student's code or notes. Falls back
  * to memory when storage is unavailable (private windows, locked-down PCs).
+ *
+ * School workstations are shared, so drafts are kept per signed-in user and
+ * removed when anyone signs out: the next student never sees them.
  */
 const memory = new Map<string, string | null>();
 const listeners = new Set<() => void>();
@@ -49,8 +52,30 @@ function subscribe(listener: () => void) {
   };
 }
 
+const DraftScope = createContext("guest");
+
+/** Keeps drafts separate for each signed-in user (rendered once in the root layout). */
+export function DraftScopeProvider({ userId, children }: { userId: string | null; children: ReactNode }) {
+  return <DraftScope.Provider value={userId ?? "guest"}>{children}</DraftScope.Provider>;
+}
+
+/** Removes every draft stored on this computer (on sign-out). */
+export function clearAllDrafts() {
+  memory.clear();
+  try {
+    for (let i = window.localStorage.length - 1; i >= 0; i--) {
+      const key = window.localStorage.key(i);
+      if (key?.startsWith(PREFIX)) window.localStorage.removeItem(key);
+    }
+  } catch {
+    // Storage unavailable: nothing was stored.
+  }
+  listeners.forEach((l) => l());
+}
+
 /** Returns the saved draft (or the fallback), a setter, a reset and whether a draft exists. */
-export function useLocalDraft(key: string, fallback: string): [string, (value: string) => void, () => void, boolean] {
+export function useLocalDraft(draftKey: string, fallback: string): [string, (value: string) => void, () => void, boolean] {
+  const key = `${useContext(DraftScope)}:${draftKey}`;
   const stored = useSyncExternalStore(
     subscribe,
     () => read(key),

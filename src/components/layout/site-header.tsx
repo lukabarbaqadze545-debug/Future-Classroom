@@ -1,4 +1,3 @@
-import { LogOut } from "lucide-react";
 import { getCurrentUser } from "@/lib/auth/session";
 import { getDictionary } from "@/lib/i18n/server";
 import { getAIStatus } from "@/lib/ai";
@@ -7,6 +6,7 @@ import { Logo } from "./logo";
 import { NavLinks } from "./nav-links";
 import { LanguageSwitcher } from "./language-switcher";
 import { AIStatusBadge } from "./ai-status";
+import { SignOutButton } from "./sign-out-button";
 
 export async function SiteHeader() {
   const [{ dict }, user] = await Promise.all([getDictionary(), getCurrentUser()]);
@@ -53,12 +53,7 @@ export async function SiteHeader() {
                 <div className="text-sm font-medium text-ink">{user.displayName}</div>
                 <div className="text-xs text-ink-subtle">{dict.roles[user.role]}</div>
               </div>
-              <form action="/api/auth/logout" method="post">
-                <button type="submit" className="inline-flex h-9 items-center gap-1.5 rounded-lg px-2.5 text-sm text-ink-muted hover:bg-muted hover:text-ink" title={dict.nav.signOut}>
-                  <LogOut aria-hidden className="size-4" />
-                  <span className="sr-only sm:not-sr-only">{dict.nav.signOut}</span>
-                </button>
-              </form>
+              <SignOutButton label={dict.nav.signOut} />
             </div>
           ) : (
             <ButtonLink href="/login" variant="secondary" size="sm">
