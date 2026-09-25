@@ -176,6 +176,8 @@ export function addItem(projectId: string, user: CurrentUser, collection: Resear
   } else if (collection === "notes") {
     const data = noteSchema.parse(raw);
     assertSourceInProject(projectId, data.sourceId);
+    // A quotation without its source would be unattributed — not allowed.
+    if (data.kind === "quote" && !data.sourceId) throw new ApiError(400, "invalid_input", "A quotation must be linked to a source.");
     db.prepare("INSERT INTO research_notes (id, project_id, source_id, kind, content, page, stance, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)").run(
       id,
       projectId,
@@ -219,6 +221,7 @@ export function updateItem(collection: ResearchCollection, itemId: string, user:
   } else if (collection === "notes") {
     const data = noteSchema.parse(raw);
     assertSourceInProject(projectId, data.sourceId);
+    if (data.kind === "quote" && !data.sourceId) throw new ApiError(400, "invalid_input", "A quotation must be linked to a source.");
     db.prepare("UPDATE research_notes SET kind = ?, content = ?, source_id = ?, page = ?, stance = ? WHERE id = ?").run(
       data.kind,
       data.content,
