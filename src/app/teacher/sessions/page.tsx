@@ -17,7 +17,15 @@ export default async function SessionsPage() {
   const sessions = listSessionsForTeacher(user.id);
   return (
     <PageContainer>
-      <PageHeader title={s.title} description={s.lead} />
+      <PageHeader
+        title={s.title}
+        description={s.lead}
+        actions={
+          <ButtonLink href="/teacher/sessions/labs" variant="secondary">
+            {dict.labs.bridge.title}
+          </ButtonLink>
+        }
+      />
       {sessions.length ? (
         <div className="overflow-x-auto rounded-2xl border border-line bg-surface shadow-[var(--shadow-card)]">
           <table className="w-full text-sm">

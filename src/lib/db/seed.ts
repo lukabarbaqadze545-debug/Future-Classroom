@@ -8,6 +8,7 @@ import type { Activity, Answer, LessonContent, QuizQuestion } from "@/lib/domain
 import { CURATED_LESSONS, type CuratedLesson } from "@/lib/ai/templates";
 import { chunkPages } from "@/lib/files/chunk";
 import { SEED_MATERIALS } from "./seed-materials";
+import { seedLabs } from "./seed-labs";
 
 /**
  * Demo school: three teachers, eight students, published lessons, quizzes,
@@ -230,7 +231,8 @@ export function seedDemoSchool(db: DB): void {
     }
   })();
 
-  seedMaterials(db, users);
+  const materialIds = seedMaterials(db, users);
+  seedLabs(db, users, materialIds, start);
 }
 
 function correctQuizAnswer(q: QuizQuestion): Answer {
@@ -318,7 +320,8 @@ function seedSession(
   });
 }
 
-function seedMaterials(db: DB, users: Map<string, string>): void {
+function seedMaterials(db: DB, users: Map<string, string>): Map<string, string> {
+  const ids = new Map<string, string>();
   const dir = uploadDir();
   fs.mkdirSync(dir, { recursive: true });
   const insertMaterial = db.prepare(
@@ -329,6 +332,7 @@ function seedMaterials(db: DB, users: Map<string, string>): void {
   db.transaction(() => {
     for (const material of SEED_MATERIALS) {
       const id = newId();
+      ids.set(material.key, id);
       const storedName = `${id}.md`;
       const bytes = Buffer.from(material.text, "utf-8");
       fs.writeFileSync(path.join(dir, storedName), bytes);
@@ -349,4 +353,5 @@ function seedMaterials(db: DB, users: Map<string, string>): void {
       chunkPages([{ page: null, text: material.text }]).forEach((chunk, i) => insertChunk.run(id, i, chunk.page, chunk.content));
     }
   })();
+  return ids;
 }

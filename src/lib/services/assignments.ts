@@ -384,6 +384,16 @@ function backfillFromExistingWork(assignmentId: string, kind: AssignmentKind, re
       .prepare("SELECT id, score, max_score FROM ct_attempts WHERE user_id = ? AND exercise_id = ? ORDER BY CAST(score AS REAL) / MAX(max_score, 1) DESC LIMIT 1")
       .get(studentId, refId) as { id: string; score: number; max_score: number } | undefined;
     if (row) done = { workRef: row.id, score: row.score, max: row.max_score };
+  } else if (kind === "quiz") {
+    const row = db
+      .prepare("SELECT id, score, max_score FROM quiz_attempts WHERE student_id = ? AND quiz_id = ? ORDER BY CAST(score AS REAL) / MAX(max_score, 1) DESC LIMIT 1")
+      .get(studentId, refId) as { id: string; score: number; max_score: number } | undefined;
+    if (row) done = { workRef: row.id, score: row.score, max: row.max_score };
+  } else if (kind === "simulation" || kind === "stem_challenge") {
+    const row = db
+      .prepare("SELECT id, score, max_score FROM stem_records WHERE user_id = ? AND item_kind = ? AND item_id = ?")
+      .get(studentId, kind === "simulation" ? "simulation" : "challenge", refId) as { id: string; score: number | null; max_score: number | null } | undefined;
+    if (row) done = { workRef: row.id, score: row.score ?? undefined, max: row.max_score ?? undefined };
   } else if (kind === "library") {
     const row = db.prepare("SELECT 1 FROM reading_progress WHERE user_id = ? AND resource_id = ? AND status = 'finished'").get(studentId, refId);
     if (row) done = { workRef: refId };

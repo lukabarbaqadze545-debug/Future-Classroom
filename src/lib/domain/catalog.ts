@@ -13,6 +13,7 @@ export const SUBJECTS = [
   "chemistry",
   "history",
   "georgian",
+  "critical_thinking",
 ] as const;
 export type Subject = (typeof SUBJECTS)[number];
 

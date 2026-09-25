@@ -1,4 +1,5 @@
 import "server-only";
+import { recordLabProgress } from "./assignments";
 import { getDb, now, parseJson } from "@/lib/db";
 import { newId } from "@/lib/domain/ids";
 import {
@@ -251,6 +252,8 @@ export function submitQuizAttempt(quizId: string, student: CurrentUser, rawAnswe
       });
     }
   })();
+  // Quizzes can be assigned: the attempt completes the assignment (best score kept).
+  recordLabProgress(student.id, "quiz", quiz.id, { status: "completed", workRef: attempt.id, score, maxScore });
   return attempt;
 }
 

@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { getCurrentUser } from "@/lib/auth/session";
+import { requirePageUser, STAFF_ROLES } from "@/lib/auth/session";
 import { getTeacherSessionView } from "@/lib/services/sessions";
 import { ApiError } from "@/lib/http/errors";
 import { PresentSession } from "@/components/present/present-session";
@@ -7,7 +7,7 @@ import { PresentSession } from "@/components/present/present-session";
 export const metadata = { title: "Presentation" };
 
 export default async function PresentSessionPage({ params }: { params: Promise<{ id: string }> }) {
-  const user = (await getCurrentUser())!;
+  const user = await requirePageUser(STAFF_ROLES, "/teacher");
   const { id } = await params;
   let view;
   try {

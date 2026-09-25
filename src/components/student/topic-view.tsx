@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { ArrowLeft, Download, Library, ListChecks, MessageCircleQuestion } from "lucide-react";
+import { ArrowLeft, BookOpen, Download, Library, ListChecks, MessageCircleQuestion } from "lucide-react";
 import { useI18n } from "@/lib/i18n/client";
 import { fmt, fmtCount } from "@/lib/i18n/config";
 import type { Section } from "@/lib/domain/schemas";
@@ -28,6 +28,7 @@ export interface StudentLesson {
   practice: PracticeItem[];
   quizzes: { id: string; title: string; questionCount: number; best: string | null }[];
   materials: { id: string; title: string }[];
+  libraryResources: { id: string; title: string }[];
 }
 
 type TabId = "learn" | "practice" | "quiz" | "ask";
@@ -127,7 +128,19 @@ export function TopicView({ lesson, aiAvailable, initialTab }: { lesson: Student
                     ))}
                   </ul>
                 ) : null}
-                <ButtonLink href={`/student/library?subject=${lesson.subject}`} variant="ghost" size="sm" className="mt-2">
+                {lesson.libraryResources.length ? (
+                  <ul className="mt-2 space-y-1.5 text-sm">
+                    {lesson.libraryResources.map((r) => (
+                      <li key={r.id}>
+                        <Link href={`/library/${r.id}`} className="inline-flex items-center gap-1.5 text-brand hover:underline">
+                          <BookOpen aria-hidden className="size-3.5" />
+                          {r.title}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                ) : null}
+                <ButtonLink href={`/library?subject=${lesson.subject}#ask`} variant="ghost" size="sm" className="mt-2">
                   {l.openInLibrary}
                 </ButtonLink>
               </Card>

@@ -1,3 +1,6 @@
+import { careerKa } from "./labs/career-ka";
+import { libraryKa } from "./labs/library-ka";
+import { researchKa } from "./labs/research-ka";
 import { stemKa } from "./labs/stem-ka";
 import { criticalKa } from "./labs/critical-ka";
 import type { LabsDictionary } from "./labs-types";
@@ -234,6 +237,24 @@ export const labsKa: LabsDictionary = {
   },
   critical: criticalKa,
   stem: stemKa,
+  research: researchKa,
+  library: libraryKa,
+  career: careerKa,
+  bridge: {
+    title: "ლაბორატორიის აქტივობები ცოცხალ სესიაში",
+    lead: "აირჩიე ელემენტები ლაბორატორიებიდან. ისინი საკლასო სესიის აქტივობებად იქცევა, რომელსაც მოსწავლეები კოდით უერთდებიან — ისევე, როგორც გაკვეთილის სესიას.",
+    note: "სესიაში ჩანს კითხვები, რომლებზეც ყველას შეუძლია ერთდროულად პასუხის გაცემა: ცნებების შემოწმება, გამოტანის წინასწარმეტყველება, ლოგიკური შეცდომებისა და მიკერძოებების კითხვები, სიმულაციების კითხვები და ექსპერიმენტების განხილვა. კოდის წერა და სრული პროექტები ლაბორატორიებში რჩება.",
+    search: "აქტივობების ძებნა",
+    groups: { programming: "პროგრამირება", critical: "კრიტიკული აზროვნება", experiment: "ექსპერიმენტები", simulation: "სიმულაციები", challenge: "ელექტრონიკა და რობოტიკა" },
+    activities: { one: "{n} აქტივობა", other: "{n} აქტივობა" },
+    selected: "არჩეული",
+    none: "ჯერ არაფერია არჩეული.",
+    sessionTitle: "სესიის სათაური",
+    classLabel: "კლასი (არასავალდებულო)",
+    start: "სესიის შექმნა",
+    starting: "იქმნება…",
+    tooMany: "სესიაში მაქსიმუმ 30 აქტივობა ეტევა.",
+  },
   assignments: {
     title: "დავალებები",
     teacherLead: "მიეცი აქტივობები ნებისმიერი ლაბორატორიიდან, დააწესე ვადები და შეამოწმე, რას აბარებენ მოსწავლეები.",
@@ -277,6 +298,7 @@ export const labsKa: LabsDictionary = {
     unarchive: "აღდგენა",
     progressCount: "შესრულებულია {done} / {total}",
     toReview: "შესამოწმებელია {n}",
+    toReviewLabel: "შესამოწმებელი",
     overdueCount: "ვადაგადაცილებულია {n}",
     status: {
       assigned: "არ დაწყებულა",

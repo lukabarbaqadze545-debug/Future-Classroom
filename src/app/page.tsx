@@ -1,7 +1,8 @@
 import { ArrowRight, BookOpenCheck, Compass, Library, Lightbulb, MonitorSmartphone, ShieldCheck, Users } from "lucide-react";
+import { LAB_IDS, LAB_ROUTES } from "@/lib/labs/registry";
+import { LabIcon } from "@/components/labs/lab-shell";
 import { getDictionary } from "@/lib/i18n/server";
 import { demoModeEnabled } from "@/lib/config";
-import { FUTURE_MODULES } from "@/lib/domain/catalog";
 import { SiteHeader, PageContainer } from "@/components/layout/site-header";
 import { ButtonLink } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -106,19 +107,22 @@ export default async function HomePage() {
           ) : null}
         </section>
 
-        {/* Roadmap */}
-        <section aria-labelledby="roadmap" className="py-10">
-          <h2 id="roadmap" className="text-2xl font-semibold tracking-tight">{l.roadmapTitle}</h2>
+        {/* Laboratories */}
+        <section aria-labelledby="labs" className="py-10">
+          <h2 id="labs" className="text-2xl font-semibold tracking-tight">{l.roadmapTitle}</h2>
           <p className="mt-1.5 text-ink-muted">{l.roadmapText}</p>
           <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {FUTURE_MODULES.map((key) => (
-              <div key={key} className="rounded-2xl border border-dashed border-line-strong bg-surface/60 p-5">
-                <div className="flex items-center justify-between gap-2">
-                  <h3 className="font-semibold text-ink">{dict.modules[key].name}</h3>
-                  <Badge>{l.planned}</Badge>
-                </div>
-                <p className="mt-1.5 text-sm text-ink-muted">{dict.modules[key].text}</p>
-              </div>
+            {LAB_IDS.map((id) => (
+              <Link key={id} href={LAB_ROUTES[id]} className="flex gap-4 rounded-2xl border border-line bg-surface p-5 shadow-[var(--shadow-card)] transition-colors hover:border-line-strong">
+                <LabIcon lab={id} />
+                <span className="min-w-0">
+                  <span className="flex items-center gap-2">
+                    <span className="font-semibold text-ink">{dict.labs.hub.rooms[id].name}</span>
+                    <Badge tone="success">{l.planned}</Badge>
+                  </span>
+                  <span className="mt-1 block text-sm text-ink-muted">{dict.labs.hub.rooms[id].text}</span>
+                </span>
+              </Link>
             ))}
           </div>
         </section>

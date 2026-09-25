@@ -13,6 +13,12 @@ import { Badge } from "@/components/ui/badge";
 import { ButtonLink } from "@/components/ui/button";
 import { JoinForm } from "@/components/session/join-form";
 import { ActivityChart } from "@/components/student/activity-chart";
+import { listAssignmentsForStudent } from "@/lib/services/assignments";
+import { listClassesForStudent } from "@/lib/services/classes";
+import { LAB_IDS, LAB_ROUTES } from "@/lib/labs/registry";
+import { LabIcon } from "@/components/labs/lab-shell";
+import { STATUS_TONE } from "@/components/assignments/review-board";
+import { formatDateTime } from "@/lib/i18n/config";
 
 export const metadata = { title: "Student" };
 
@@ -30,12 +36,50 @@ export default async function StudentHome() {
   }
   const continueTopics = progress.topics.filter((t) => t.lessonId).slice(0, 4);
   const activeSessions = listActiveSessionsForStudent(user.id);
+  const todo = listAssignmentsForStudent(user.id).filter((a) => !["submitted", "completed", "reviewed"].includes(a.recipient.status));
+  const classes = listClassesForStudent(user.id);
+  const a = dict.labs.assignments;
 
   return (
     <PageContainer>
       <PageHeader title={fmt(d.greeting, { name: user.displayName.split(" ")[0] })} description={d.lead} />
+      <nav aria-label={dict.labs.hub.title} className="mb-6">
+        <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-6" data-testid="dashboard-labs">
+          {LAB_IDS.map((id) => (
+            <li key={id}>
+              <Link href={LAB_ROUTES[id]} className="flex h-full items-center gap-3 rounded-2xl border border-line bg-surface p-3 shadow-[var(--shadow-card)] transition-colors hover:border-brand/40">
+                <LabIcon lab={id} size="sm" />
+                <span className="text-sm leading-tight font-medium">{dict.labs.hub.rooms[id].name}</span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </nav>
       <div className="grid gap-6 lg:grid-cols-[1fr_380px]">
         <div className="min-w-0 space-y-6">
+          <Card>
+            <CardHeader title={a.title} action={<ButtonLink href="/student/assignments" variant="ghost" size="sm">{a.filter.all}</ButtonLink>} />
+            {todo.length ? (
+              <ul className="divide-y divide-line" data-testid="dashboard-assignments">
+                {todo.slice(0, 5).map((x) => (
+                  <li key={x.id}>
+                    <Link href={`/student/assignments/${x.id}`} className="flex flex-wrap items-center justify-between gap-3 px-5 py-3 hover:bg-muted/50">
+                      <span className="min-w-0">
+                        <span className="block font-medium">{x.title}</span>
+                        <span className="text-sm text-ink-muted">
+                          {a.kinds[x.kind]}
+                          {x.dueAt ? ` · ${fmt(dict.labs.common.due, { date: formatDateTime(locale, x.dueAt) })}` : ""}
+                        </span>
+                      </span>
+                      <Badge tone={x.overdue ? "danger" : STATUS_TONE[x.recipient.status]}>{x.overdue ? dict.labs.common.overdue : a.status[x.recipient.status]}</Badge>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="px-5 py-5 text-sm text-ink-muted">{a.studentEmpty}</p>
+            )}
+          </Card>
           <Card>
             <CardHeader title={d.continue} action={<ButtonLink href="/student/learn" variant="ghost" size="sm">{d.explore}</ButtonLink>} />
             {continueTopics.length ? (
@@ -115,6 +159,21 @@ export default async function StudentHome() {
               </ul>
             </Card>
           ) : null}
+          <Card className="p-5">
+            <h2 className="text-lg font-semibold">{dict.labs.classes.myClasses}</h2>
+            {classes.length ? (
+              <ul className="mt-2 space-y-1.5">
+                {classes.map((c) => (
+                  <li key={c.id} className="flex items-center justify-between gap-2 text-sm">
+                    <span className="font-medium">{c.name}</span>
+                    <span className="text-ink-muted">{c.teacherName}</span>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="mt-1 text-sm text-ink-muted">{dict.labs.classes.noStudentClasses}</p>
+            )}
+          </Card>
           <Card className="border-brand/25 p-5">
             <h2 className="flex items-center gap-2 text-lg font-semibold">
               <Radio aria-hidden className="size-5 text-brand" />

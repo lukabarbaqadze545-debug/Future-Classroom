@@ -8,6 +8,7 @@ import { getProblem } from "@/lib/labs/programming/service";
 import { findExperiment } from "@/lib/labs/stem/experiments";
 import { findSimulation } from "@/lib/labs/stem/simulations";
 import { findChallengeSet, getProjectFor, getRecordFor } from "@/lib/labs/stem/service";
+import { getResearchBundle } from "@/lib/labs/research/service";
 import { createPortfolioItem, findPortfolioItemBySource, todayIso, type PortfolioItem, type PortfolioItemInput, type PortfolioSource } from "./portfolio";
 
 /*
@@ -80,6 +81,21 @@ const builders: Partial<Record<PortfolioSource, DraftBuilder>> = {
       evidence: experiment ? `/labs/stem/experiments/${record.itemId}` : `/labs/stem/${record.itemKind === "simulation" ? "simulations" : "challenges"}/${record.itemId}`,
       skills: experiment ? ["scientific_inquiry", "data_analysis"] : ["problem_solving", "math_reasoning"],
       reflection: (data.conclusion ?? "").slice(0, 4000),
+    };
+  },
+  research(user, id) {
+    const { project } = getResearchBundle(id, user);
+    if (project.userId !== user.id) throw new ApiError(403, "forbidden");
+    const d = project.data;
+    return {
+      title: project.title,
+      category: "research",
+      date: todayIso(project.updatedAt),
+      description: [d.question, d.findings.filter(Boolean).map((f) => `• ${f}`).join("\n")].filter(Boolean).join("\n\n").slice(0, 4000),
+      link: "",
+      evidence: `/labs/research/${id}`,
+      skills: ["research", "critical_thinking", "data_analysis", "communication"],
+      reflection: d.conclusion.slice(0, 4000),
     };
   },
 };

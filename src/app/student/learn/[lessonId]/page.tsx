@@ -3,6 +3,7 @@ import { getCurrentUser } from "@/lib/auth/session";
 import { getPublishedLesson } from "@/lib/services/lessons";
 import { listAttemptsForStudent, listQuizzesForLesson } from "@/lib/services/quizzes";
 import { listMaterialsForLesson } from "@/lib/services/materials";
+import { resourcesForLesson } from "@/lib/labs/library/service";
 import { recordLessonView } from "@/lib/services/progress";
 import { hintLadderInfo } from "@/lib/ai/hint-service";
 import { getAIProvider } from "@/lib/ai";
@@ -48,6 +49,7 @@ export default async function TopicPage({ params, searchParams }: { params: Prom
         return { id: q.id, title: q.title, questionCount: q.questions.length, best: best ? `${best.score}/${best.maxScore}` : null };
       }),
     materials: listMaterialsForLesson(lesson.id, user).map((m) => ({ id: m.id, title: m.title })),
+    libraryResources: resourcesForLesson(lesson.id).map((r) => ({ id: r.id, title: r.title })),
   };
   const initialTab = tab === "practice" || tab === "quiz" || tab === "ask" ? tab : "learn";
   return (

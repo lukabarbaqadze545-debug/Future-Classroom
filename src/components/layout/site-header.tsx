@@ -17,6 +17,10 @@ export async function SiteHeader() {
         { href: "/teacher/lessons", label: dict.nav.lessons },
         { href: "/teacher/sessions", label: dict.nav.sessions },
         { href: "/teacher/quizzes", label: dict.nav.quizzes },
+        { href: "/labs", label: dict.nav.labs },
+        { href: "/teacher/assignments", label: dict.nav.assignments },
+        { href: "/teacher/students", label: dict.nav.students },
+        { href: "/library", label: dict.nav.library },
         { href: "/teacher/materials", label: dict.nav.materials },
         { href: "/teacher/insights", label: dict.nav.insights },
       ]
@@ -24,7 +28,10 @@ export async function SiteHeader() {
       ? [
           { href: "/student", label: dict.nav.home, exact: true },
           { href: "/student/learn", label: dict.nav.learn },
-          { href: "/student/library", label: dict.nav.library },
+          { href: "/labs", label: dict.nav.labs },
+          { href: "/student/assignments", label: dict.nav.assignments },
+          { href: "/library", label: dict.nav.library },
+          { href: "/career", label: dict.nav.portfolio },
           { href: "/student/progress", label: dict.nav.progress },
           { href: "/join", label: dict.nav.join },
         ]
@@ -34,7 +41,7 @@ export async function SiteHeader() {
     <header className="sticky top-0 z-30 border-b border-line bg-surface/95 backdrop-blur supports-[backdrop-filter]:bg-surface/85">
       <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-x-6 gap-y-2 px-4 py-2.5 sm:px-6 lg:px-8">
         <Logo label={dict.common.appName} href={staff ? "/teacher" : user ? "/student" : "/"} />
-        <div className="order-3 w-full lg:order-none lg:w-auto lg:flex-1">
+        <div className="order-3 w-full">
           <NavLinks items={items} label={dict.nav.mainNavigation} />
         </div>
         <div className="ml-auto flex items-center gap-2">

@@ -1,6 +1,7 @@
-import { requirePageUser, STAFF_ROLES } from "@/lib/auth/session";
+import { requirePageUser } from "@/lib/auth/session";
 
+/** Full-screen presentation pages. Each page checks who may present it. */
 export default async function PresentLayout({ children }: { children: React.ReactNode }) {
-  await requirePageUser(STAFF_ROLES, "/teacher");
+  await requirePageUser(["student", "teacher", "admin"], "/");
   return children;
 }

@@ -1,12 +1,12 @@
 import { notFound } from "next/navigation";
-import { getCurrentUser } from "@/lib/auth/session";
+import { requirePageUser, STAFF_ROLES } from "@/lib/auth/session";
 import { getLesson } from "@/lib/services/lessons";
 import { PresentLesson } from "@/components/present/present-lesson";
 
 export const metadata = { title: "Presentation" };
 
 export default async function PresentLessonPage({ params }: { params: Promise<{ id: string }> }) {
-  const user = (await getCurrentUser())!;
+  const user = await requirePageUser(STAFF_ROLES, "/teacher");
   const { id } = await params;
   const lesson = getLesson(id);
   // Teachers can present their own lessons and any published lesson.

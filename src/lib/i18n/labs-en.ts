@@ -1,3 +1,6 @@
+import { careerEn } from "./labs/career-en";
+import { libraryEn } from "./labs/library-en";
+import { researchEn } from "./labs/research-en";
 import { stemEn } from "./labs/stem-en";
 import { criticalEn } from "./labs/critical-en";
 /** UI strings for the six laboratories, assignments and the learning profile (English). */
@@ -232,6 +235,24 @@ export const labsEn = {
   },
   critical: criticalEn,
   stem: stemEn,
+  research: researchEn,
+  library: libraryEn,
+  career: careerEn,
+  bridge: {
+    title: "Use lab activities in a live session",
+    lead: "Pick items from the laboratories. They become activities in a classroom session that students join with a code, like a lesson session.",
+    note: "Sessions show questions everyone can answer at once: concept checks, predict-the-output, fallacy and bias questions, simulation questions and experiment discussions. Writing code or full projects stays in the labs.",
+    search: "Search activities",
+    groups: { programming: "Programming", critical: "Critical thinking", experiment: "Experiments", simulation: "Simulations", challenge: "Electronics and robotics" },
+    activities: { one: "{n} activity", other: "{n} activities" },
+    selected: "Selected",
+    none: "Nothing selected yet.",
+    sessionTitle: "Session title",
+    classLabel: "Class (optional)",
+    start: "Create session",
+    starting: "Creating…",
+    tooMany: "A session can hold up to 30 activities.",
+  },
   assignments: {
     title: "Assignments",
     teacherLead: "Assign activities from any laboratory, set deadlines, and review what students hand in.",
@@ -275,6 +296,7 @@ export const labsEn = {
     unarchive: "Restore",
     progressCount: "{done} of {total} done",
     toReview: "{n} to review",
+    toReviewLabel: "To review",
     overdueCount: "{n} overdue",
     status: {
       assigned: "Not started",

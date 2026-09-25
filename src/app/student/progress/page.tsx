@@ -10,6 +10,8 @@ import { Card, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ButtonLink } from "@/components/ui/button";
 import { ActivityChart } from "@/components/student/activity-chart";
+import { learningProfile } from "@/lib/services/learning-profile";
+import { LearningProfileView } from "@/components/profile/learning-profile-view";
 
 export const metadata = { title: "My progress" };
 
@@ -23,6 +25,11 @@ export default async function ProgressPage() {
   return (
     <PageContainer>
       <PageHeader title={p.title} description={p.lead} />
+      <section className="mb-8" aria-label={dict.labs.profile.title}>
+        <h2 className="mb-3 text-lg font-semibold">{dict.labs.profile.title}</h2>
+        <LearningProfileView profile={learningProfile(user.id, user, locale)} dict={dict} locale={locale} studentId={user.id} />
+      </section>
+      <h2 className="mb-3 text-lg font-semibold">{dict.labs.profile.lessons}</h2>
       {empty ? (
         <EmptyState title={p.empty} action={<ButtonLink href="/student/learn">{dict.student.dashboard.startLearning}</ButtonLink>} />
       ) : (
