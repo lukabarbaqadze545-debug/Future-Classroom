@@ -87,6 +87,22 @@ describe("class-linked classroom sessions", () => {
     expect(lessonsForSessions(nino, "en").map((l) => l.id)).toContain(draft.id);
   });
 
+  it("removes a participant and their answers; only the session's teacher can", () => {
+    const session = createSessionFromLesson({ user: nino, lessonId: lessonFor(nino).id });
+    const other = createSessionFromLesson({ user: nino, lessonId: lessonFor(nino).id });
+    const prank = joinSession({ code: session.joinCode, displayName: "Prank", user: null });
+    controlSession(session.id, nino, { type: "next" });
+    const current = getStudentSessionView(session.id, prank.participant).current!;
+    submitResponse({ sessionId: session.id, participant: prank.participant, activityId: current.id, answer: { optionIds: [current.options[0].id], text: "" } });
+
+    expectApiError(() => controlSession(session.id, davit, { type: "remove", participantId: prank.participant.id }), 403);
+    expectApiError(() => controlSession(other.id, nino, { type: "remove", participantId: prank.participant.id }), 404);
+    controlSession(session.id, nino, { type: "remove", participantId: prank.participant.id });
+    const view = getTeacherSessionView(session.id, nino);
+    expect(view.participants).toHaveLength(0);
+    expect(getDb().prepare("SELECT COUNT(*) AS n FROM responses WHERE participant_id = ?").get(prank.participant.id)).toEqual({ n: 0 });
+  });
+
   it("counts a retried answer once and tells students only what changes their screen", () => {
     const session = createSessionFromLesson({ user: nino, lessonId: lessonFor(nino).id });
     const a = joinSession({ code: session.joinCode, displayName: "Ana", user: null });

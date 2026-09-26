@@ -9,7 +9,7 @@ import { publishSessionUpdate } from "@/lib/realtime/bus";
 import type { CurrentUser } from "@/lib/auth/session";
 import { getLessonForEditor, getPublishedLesson, type LessonRecord } from "./lessons";
 import { recordLearningEvent } from "./progress";
-import { getHint, hintLadderInfo, type HintResult } from "@/lib/ai/hint-service";
+import { getHint, hintLadderInfo, isSolutionLevel, type HintResult } from "@/lib/ai/hint-service";
 
 export type SessionStatus = "lobby" | "live" | "ended";
 export type ActivityState = "pending" | "open" | "closed";
@@ -304,7 +304,9 @@ export type ControlAction =
   | { type: "pause" }
   | { type: "resume" }
   | { type: "clear" }
-  | { type: "end" };
+  | { type: "end" }
+  /** Removes a participant (e.g. a prank name); their answers in this session go too. They can join again. */
+  | { type: "remove"; participantId: string };
 
 export function controlSession(sessionId: string, user: CurrentUser, action: ControlAction): SessionRecord {
   const session = getSessionForTeacher(sessionId, user);
@@ -379,6 +381,11 @@ export function controlSession(sessionId: string, user: CurrentUser, action: Con
       case "clear":
         db.prepare("UPDATE classroom_sessions SET current_activity_id = NULL WHERE id = ?").run(sessionId);
         break;
+      case "remove": {
+        const removed = db.prepare("DELETE FROM session_participants WHERE id = ? AND session_id = ?").run(action.participantId, sessionId);
+        if (removed.changes === 0) throw new ApiError(404, "not_found");
+        break;
+      }
       case "end":
         closeOpen();
         db.prepare(
@@ -822,6 +829,11 @@ export async function requestSessionHint(input: {
 }): Promise<HintResult> {
   const record = requireOpenActivity(input.sessionId, input.activityId);
   const used = hintsUsedFor(record.id, input.participant.id);
+  // The full solution contains the answer: it opens only after a first attempt.
+  if (isSolutionLevel(record.activity, used + 1)) {
+    const answered = getDb().prepare("SELECT 1 FROM responses WHERE session_activity_id = ? AND participant_id = ?").get(record.id, input.participant.id);
+    if (!answered) throw new ApiError(409, "attempt_first");
+  }
   const hint = await getHint({ activity: record.activity, level: used + 1 });
   getDb()
     .prepare(

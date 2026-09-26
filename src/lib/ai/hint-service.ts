@@ -84,6 +84,12 @@ async function generateAIHint(activity: Activity, level: number): Promise<string
   return result.hint.trim();
 }
 
+/** Whether a request for this level would open the full solution (the last rung). */
+export function isSolutionLevel(activity: Activity, level: number): boolean {
+  const { maxLevel } = hintLadderInfo(activity);
+  return Math.max(1, Math.min(level, Math.max(maxLevel, 1))) === 5;
+}
+
 export async function getHint(input: { activity: Activity; level: number; cachedOnly?: boolean }): Promise<HintResult> {
   const { activity } = input;
   const { maxLevel } = hintLadderInfo(activity);

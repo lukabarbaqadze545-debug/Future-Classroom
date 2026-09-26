@@ -14,7 +14,7 @@ function safeNext(next: string | null): string | null {
   return next && next.startsWith("/") && !next.startsWith("//") ? next : null;
 }
 
-export function LoginForm({ next }: { next: string | null }) {
+export function LoginForm({ next, allowRegister = true }: { next: string | null; allowRegister?: boolean }) {
   const { dict } = useI18n();
   const router = useRouter();
   const [busy, setBusy] = useState(false);
@@ -48,12 +48,16 @@ export function LoginForm({ next }: { next: string | null }) {
         {busy ? dict.auth.signingIn : dict.auth.signIn}
       </Button>
       <div className="space-y-1 pt-2 text-center text-sm text-ink-muted">
-        <p>
-          {dict.auth.noAccount}{" "}
-          <Link href="/register" className="font-medium text-brand hover:underline">
-            {dict.auth.createStudentAccount}
-          </Link>
-        </p>
+        {allowRegister ? (
+          <p>
+            {dict.auth.noAccount}{" "}
+            <Link href="/register" className="font-medium text-brand hover:underline">
+              {dict.auth.createStudentAccount}
+            </Link>
+          </p>
+        ) : (
+          <p>{dict.auth.askTeacher}</p>
+        )}
         <p>
           <Link href="/join" className="font-medium text-brand hover:underline">
             {dict.auth.joinWithoutAccount}

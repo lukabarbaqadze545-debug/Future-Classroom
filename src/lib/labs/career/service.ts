@@ -7,6 +7,7 @@ import type { CurrentUser } from "@/lib/auth/session";
 import { portfolioSkillCounts } from "@/lib/services/portfolio";
 import { FIELD_IDS } from "./careers";
 import { SKILL_IDS, SKILLS } from "./skills";
+import { canViewWork } from "@/lib/services/classes";
 
 /*
  * University research cards hold time-sensitive facts (requirements, fees,
@@ -102,7 +103,7 @@ export function listSharedCards(): UniversityCard[] {
 export function getCardFor(id: string, viewer: CurrentUser): UniversityCard {
   const row = getDb().prepare(`${SELECT_CARD} WHERE c.id = ?`).get(id) as CardRow | undefined;
   const card = row ? toCard(row) : null;
-  if (!card || (card.ownerId !== viewer.id && !card.shared && viewer.role === "student")) throw new ApiError(404, "not_found");
+  if (!card || (!card.shared && !canViewWork(viewer, card.ownerId))) throw new ApiError(404, "not_found");
   return card;
 }
 

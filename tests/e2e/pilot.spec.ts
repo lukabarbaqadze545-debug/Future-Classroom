@@ -126,6 +126,25 @@ test("classroom pilot: class, accounts, live lesson and saved results", async ({
   await expect(teacher.getByTestId("participant-count")).toHaveText("3/3");
   students.push(late);
 
+  // --- Someone joins with a prank name; the teacher removes it -------------------
+  const code = (await teacher.getByTestId("join-code-display").innerText()).trim();
+  const prankContext = await browser.newContext();
+  const prank = await prankContext.newPage();
+  await prank.goto("/join");
+  await prank.getByTestId("join-code").fill(code.replace("FC-", ""));
+  await prank.getByTestId("join-name").fill("Prank");
+  await prank.getByTestId("join-submit").click();
+  await expect(prank.getByTestId("student-activity")).toBeVisible();
+  await expect(teacher.getByTestId("participant-count")).toHaveText("4/4");
+  await teacher.getByTestId("console-students").locator("li").filter({ hasText: "Prank" }).getByTestId("remove-participant").click();
+  await teacher.getByTestId("confirm-remove-participant").click();
+  await expect(teacher.getByTestId("participant-count")).toHaveText("3/3");
+  await expect(teacher.getByTestId("console-students")).not.toContainText("Prank");
+  await expect(prank.getByTestId("removed-from-session")).toBeVisible();
+  await prank.reload();
+  await expect(prank).toHaveURL(/\/join/);
+  await prankContext.close();
+
   // --- End and review ----------------------------------------------------------
   await teacher.getByTestId("end-session").click();
   await teacher.getByTestId("confirm-end-session").click();

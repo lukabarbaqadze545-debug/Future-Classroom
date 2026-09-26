@@ -25,12 +25,15 @@ export function HintPanel({
   maxLevel,
   onRequest,
   disabled,
+  solutionLocked,
   className,
 }: {
   hints: HintResult[];
   maxLevel: number;
   onRequest: () => Promise<void>;
   disabled?: boolean;
+  /** The solution contains the answer: it opens only after a first attempt (enforced on the server too). */
+  solutionLocked?: boolean;
   className?: string;
 }) {
   const { dict } = useI18n();
@@ -62,7 +65,11 @@ export function HintPanel({
           </h2>
           <p className="mt-0.5 text-sm text-ink-muted">{dict.hints.philosophy}</p>
         </div>
-        {canRequest ? (
+        {canRequest && nextIsSolution && solutionLocked ? (
+          <p className="max-w-56 text-sm text-ink-muted" data-testid="solution-locked">
+            {dict.hints.solutionAfterAttempt}
+          </p>
+        ) : canRequest ? (
           <Button
             variant={nextIsSolution ? "secondary" : "subtle"}
             onClick={() => (nextIsSolution ? setConfirmOpen(true) : void request())}

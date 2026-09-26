@@ -90,7 +90,7 @@ export function StudentSession({ initial, signedIn }: { initial: View; signedIn:
   const { dict } = useI18n();
   const s = dict.session;
   const sessionId = initial.session.id;
-  const { data, refetch, connection, clockOffset } = useLiveState<View>({
+  const { data, refetch, connection, clockOffset, error: liveError } = useLiveState<View>({
     stateUrl: `/api/sessions/${sessionId}/me`,
     eventsUrl: `/api/sessions/${sessionId}/events`,
     initial,
@@ -240,6 +240,16 @@ export function StudentSession({ initial, signedIn }: { initial: View; signedIn:
 
       <main id="main" className="mx-auto max-w-4xl px-4 py-6 sm:py-10">
         {error ? <Notice tone="danger" className="mb-4">{error}</Notice> : null}
+        {liveError?.status === 401 ? (
+          <div className="mb-4" data-testid="removed-from-session">
+            <Notice tone="warn" title={s.removedTitle}>
+              {s.removedText}{" "}
+              <a href={signedIn ? "/student" : "/join"} className="font-medium underline">
+                {s.joinAgain}
+              </a>
+            </Notice>
+          </div>
+        ) : null}
         {queued ? (
           <div className="mb-4" data-testid="answer-queued">
             <Notice tone="warn">{s.queued}</Notice>
@@ -335,7 +345,7 @@ export function StudentSession({ initial, signedIn }: { initial: View; signedIn:
             </section>
 
             {current.type !== "poll" && response?.isCorrect !== true ? (
-              <HintPanel hints={hints} maxLevel={current.hints.maxLevel} onRequest={requestHint} disabled={current.state !== "open"} />
+              <HintPanel hints={hints} maxLevel={current.hints.maxLevel} onRequest={requestHint} disabled={current.state !== "open"} solutionLocked={!response} />
             ) : null}
 
             {current.revealed && current.results ? (

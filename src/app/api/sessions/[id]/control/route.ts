@@ -16,6 +16,7 @@ const actionSchema = z.discriminatedUnion("type", [
   z.object({ type: z.literal("resume") }),
   z.object({ type: z.literal("clear") }),
   z.object({ type: z.literal("end") }),
+  z.object({ type: z.literal("remove"), participantId: z.string().max(40) }),
 ]);
 
 /** Teacher controls. Returns the fresh console state so the UI updates instantly. */

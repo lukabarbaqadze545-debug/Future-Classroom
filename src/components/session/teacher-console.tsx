@@ -45,6 +45,7 @@ export function TeacherConsole({ initial }: { initial: TeacherSessionView }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [endOpen, setEndOpen] = useState(false);
+  const [removing, setRemoving] = useState<{ id: string; name: string } | null>(null);
   const joinUrl = useJoinUrl();
 
   const control = async (action: ControlAction) => {
@@ -344,6 +345,18 @@ export function TeacherConsole({ initial }: { initial: TeacherSessionView }) {
                   ) : (
                     <span className={cn("text-xs", p.online ? "text-success" : "text-ink-subtle")}>{p.online ? c.online : c.offline}</span>
                   )}
+                  {session.status !== "ended" ? (
+                    <button
+                      type="button"
+                      onClick={() => setRemoving({ id: p.id, name: p.name })}
+                      aria-label={`${c.remove}: ${p.name}`}
+                      title={c.removeTitle}
+                      className="-mr-2 rounded-md p-1.5 text-ink-subtle hover:bg-danger-soft hover:text-danger"
+                      data-testid="remove-participant"
+                    >
+                      <X aria-hidden className="size-4" />
+                    </button>
+                  ) : null}
                 </li>
               ))}
             </ul>
@@ -381,6 +394,31 @@ export function TeacherConsole({ initial }: { initial: TeacherSessionView }) {
               data-testid="confirm-end-session"
             >
               {c.end}
+            </Button>
+          </>
+        }
+      />
+      <Dialog
+        open={removing !== null}
+        onClose={() => setRemoving(null)}
+        title={c.removeTitle}
+        description={removing ? fmt(c.removeConfirm, { name: removing.name }) : ""}
+        closeLabel={dict.common.close}
+        footer={
+          <>
+            <Button variant="ghost" onClick={() => setRemoving(null)}>
+              {dict.common.cancel}
+            </Button>
+            <Button
+              variant="danger"
+              onClick={async () => {
+                const target = removing;
+                setRemoving(null);
+                if (target) await control({ type: "remove", participantId: target.id });
+              }}
+              data-testid="confirm-remove-participant"
+            >
+              {c.remove}
             </Button>
           </>
         }

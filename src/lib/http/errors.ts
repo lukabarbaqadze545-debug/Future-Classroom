@@ -21,6 +21,7 @@ export type ErrorCode =
   | "file_invalid"
   | "bad_origin"
   | "conflict"
+  | "attempt_first"
   | "internal";
 
 export class ApiError extends Error {

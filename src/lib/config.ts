@@ -20,6 +20,14 @@ export function demoModeEnabled(): boolean {
   return flag("DEMO_MODE", developmentDefault());
 }
 
+/**
+ * Students may create their own accounts (SELF_REGISTRATION). Off by default
+ * in production: teachers create student accounts from the class page.
+ */
+export function selfRegistrationEnabled(): boolean {
+  return flag("SELF_REGISTRATION", developmentDefault());
+}
+
 /** Seed the demo school into an empty database (SEED_DEMO). */
 export function seedDemoEnabled(): boolean {
   return flag("SEED_DEMO", developmentDefault());

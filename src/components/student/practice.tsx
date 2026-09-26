@@ -59,8 +59,13 @@ export function Practice({ lessonId, items }: { lessonId: string; items: Practic
   };
 
   const hint = async () => {
-    const { hint: next } = await api<{ hint: HintResult }>("/api/practice/hint", { body: { lessonId, activityId: item.id, level: state.hints.length + 1 } });
-    setState({ hints: [...state.hints, next] });
+    setError(null);
+    try {
+      const { hint: next } = await api<{ hint: HintResult }>("/api/practice/hint", { body: { lessonId, activityId: item.id, level: state.hints.length + 1 } });
+      setState({ hints: [...state.hints, next] });
+    } catch (e) {
+      setError(errorMessage(dict, e));
+    }
   };
 
   return (
@@ -108,7 +113,7 @@ export function Practice({ lessonId, items }: { lessonId: string; items: Practic
           </div>
         </div>
       </section>
-      {state.result?.isCorrect !== true ? <HintPanel key={item.id} hints={state.hints} maxLevel={item.maxLevel} onRequest={hint} /> : null}
+      {state.result?.isCorrect !== true ? <HintPanel key={item.id} hints={state.hints} maxLevel={item.maxLevel} onRequest={hint} solutionLocked={!state.result} /> : null}
     </div>
   );
 }

@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { getDictionary, pageTitle } from "@/lib/i18n/server";
 import { getCurrentUser } from "@/lib/auth/session";
-import { demoModeEnabled } from "@/lib/config";
+import { demoModeEnabled, selfRegistrationEnabled } from "@/lib/config";
 import { fmt } from "@/lib/i18n/config";
 import { DEMO_PASSWORD } from "@/lib/db/seed";
 import { AuthShell } from "@/components/layout/auth-shell";
@@ -32,7 +32,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
         ) : null
       }
     >
-      <LoginForm next={params.next ?? null} />
+      <LoginForm next={params.next ?? null} allowRegister={selfRegistrationEnabled()} />
     </AuthShell>
   );
 }

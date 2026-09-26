@@ -3,9 +3,12 @@ import { clientKey, handler, json, readJson } from "@/lib/http/api";
 import { rateLimit } from "@/lib/http/rate-limit";
 import { createUser } from "@/lib/services/users";
 import { createAuthSession } from "@/lib/auth/session";
+import { ApiError } from "@/lib/http/errors";
+import { selfRegistrationEnabled } from "@/lib/config";
 
 /** Self-registration is for students only; teacher accounts are created by the school. */
 export const POST = handler(async (req) => {
+  if (!selfRegistrationEnabled()) throw new ApiError(404, "not_found");
   rateLimit(`register:${clientKey(req)}`, 10, 60 * 60_000);
   const body = await readJson(
     req,
