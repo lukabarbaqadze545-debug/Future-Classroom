@@ -70,8 +70,8 @@ describe("Georgian terminology", () => {
   });
 
   it("has Georgian built-in content wherever there is prose", () => {
-    // Formulas, code, names and units may be Latin; sentences may not.
-    const untranslated = [...georgianLessons, ...georgianCatalogs].filter(({ text }) => !GEORGIAN.test(text) && latinWords(text).length >= 4 && !/[=(){};<>]|print|cout|def /.test(text));
+    // Formulas, code, names, units and sample passwords may be Latin; sentences (which have spaces) may not.
+    const untranslated = [...georgianLessons, ...georgianCatalogs].filter(({ text }) => !GEORGIAN.test(text) && /\s/.test(text.trim()) && latinWords(text).length >= 4 && !/[=(){};<>]|print|cout|def /.test(text));
     expect(untranslated.map((t) => `${t.where}: ${t.text.slice(0, 80)}`)).toEqual([]);
   });
 

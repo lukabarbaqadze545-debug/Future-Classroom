@@ -7,9 +7,11 @@ import { lessonVersions, type BiLesson } from "../bilingual";
 import { algorithmsKa, ecosystemsKa, mapReadingKa, newtonKa } from "./ka-versions";
 import { MATHEMATICS } from "./mathematics";
 import { PHYSICS } from "./physics";
+import { PHYSICS_WAVES } from "./physics-waves";
 import { CHEMISTRY } from "./chemistry";
 import { BIOLOGY } from "./biology";
 import { COMPUTER_SCIENCE } from "./computer-science";
+import { COMPUTER_SCIENCE_DIGITAL } from "./computer-science-digital";
 import { GEORGIAN } from "./georgian";
 import { ENGLISH } from "./english";
 import { HISTORY } from "./history";
@@ -24,9 +26,11 @@ import { WELLBEING } from "./wellbeing";
 const BILINGUAL: BiLesson[] = [
   ...MATHEMATICS,
   ...PHYSICS,
+  ...PHYSICS_WAVES,
   ...CHEMISTRY,
   ...BIOLOGY,
   ...COMPUTER_SCIENCE,
+  ...COMPUTER_SCIENCE_DIGITAL,
   ...GEORGIAN,
   ...ENGLISH,
   ...HISTORY,

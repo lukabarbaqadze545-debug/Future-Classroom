@@ -104,16 +104,17 @@ export const SUBJECT_CATALOG: SubjectEntry[] = [
     category: "sciences",
     grades: [7, 12],
     description: l(
-      "Motion, forces, energy and electricity — explained, simulated and tested with real classroom experiments.",
-      "მოძრაობა, ძალები, ენერგია და ელექტრობა — ახსნით, სიმულაციებითა და რეალური საკლასო ექსპერიმენტებით.",
+      "Motion, forces, energy, electricity, waves and light — explained, simulated and tested with real classroom experiments.",
+      "მოძრაობა, ძალები, ენერგია, ელექტრობა, ტალღები და სინათლე — ახსნით, სიმულაციებითა და რეალური საკლასო ექსპერიმენტებით.",
     ),
     topics: [
       { id: "motion", name: l("Motion and forces", "მოძრაობა და ძალები"), items: [lesson("motion"), sim("motion"), lesson("newton"), sim("projectile"), exp("pendulum"), book("lib-newton-notes"), book("lib-newton-notes-ka")] },
       { id: "energy", name: l("Energy", "ენერგია"), items: [lesson("energy"), exp("insulation"), circuit("power")] },
       { id: "electricity", name: l("Electricity", "ელექტრობა"), items: [lesson("simple-circuits"), sim("circuit"), exp("conductors"), circuit("circuit"), circuit("series-parallel"), challenge("ohm-practice")] },
+      { id: "waves", name: l("Waves, sound and light", "ტალღები, ბგერა და სინათლე"), items: [lesson("waves"), lesson("light")] },
       { id: "matter", name: l("Matter and measurement", "ნივთიერება და გაზომვა"), items: [exp("density"), book("lib-openstax-physics"), book("lib-brief-history")] },
     ],
-    path: [lesson("motion"), sim("motion"), lesson("newton"), exp("pendulum"), lesson("energy"), lesson("simple-circuits"), sim("circuit")],
+    path: [lesson("motion"), sim("motion"), lesson("newton"), exp("pendulum"), lesson("energy"), lesson("simple-circuits"), sim("circuit"), lesson("waves"), lesson("light")],
   },
   {
     id: "chemistry",
@@ -152,14 +153,15 @@ export const SUBJECT_CATALOG: SubjectEntry[] = [
     category: "mathematics_computing",
     grades: [6, 12],
     description: l(
-      "Computational thinking, Python and C++, algorithms and data structures — with programs checked automatically in the Programming Laboratory.",
-      "გამოთვლითი აზროვნება, Python და C++, ალგორითმები და მონაცემთა სტრუქტურები — პროგრამებით, რომლებსაც პროგრამირების ლაბორატორია ავტომატურად ამოწმებს.",
+      "Computational thinking, Python and C++, algorithms and data structures, networks, security and AI literacy — with programs checked automatically in the Programming Laboratory.",
+      "გამოთვლითი აზროვნება, Python და C++, ალგორითმები და მონაცემთა სტრუქტურები, ქსელები, უსაფრთხოება და AI-ის წიგნიერება — პროგრამებით, რომლებსაც პროგრამირების ლაბორატორია ავტომატურად ამოწმებს.",
     ),
     topics: [
       { id: "computational-thinking", name: l("Computational thinking", "გამოთვლითი აზროვნება"), items: [lesson("computational-thinking"), sim("grid-robot"), challenge("robot-logic")] },
       { id: "programming", name: l("Programming in Python and C++", "პროგრამირება Python-სა და C++-ზე"), items: [lesson("python-basics"), code("l1-hello"), code("l1-greeting"), code("l1-even-odd"), code("l1-sum-to-n"), lesson("cpp-basics"), code("l4-overflow"), book("lib-think-python")] },
       { id: "algorithms", name: l("Algorithms", "ალგორითმები"), items: [lesson("algorithms"), code("l3-binary-search"), code("l3-sort"), code("l2-complexity-pairs"), book("lib-cph")] },
       { id: "data-structures", name: l("Data structures", "მონაცემთა სტრუქტურები (Data Structures)"), items: [code("l2-list-max-min"), code("l3-brackets"), code("l4-distinct")] },
+      { id: "digital-world", name: l("Networks, security and AI", "ქსელები, უსაფრთხოება და AI"), items: [lesson("networks"), lesson("cybersecurity"), lesson("ai-literacy")] },
       { id: "robotics", name: l("Robotics", "რობოტიკა"), items: [robot("line-follower"), robot("obstacle-car")] },
     ],
     path: [lesson("computational-thinking"), sim("grid-robot"), lesson("python-basics"), code("l1-hello"), code("l1-sum-to-n"), lesson("algorithms"), code("l3-binary-search"), lesson("cpp-basics")],

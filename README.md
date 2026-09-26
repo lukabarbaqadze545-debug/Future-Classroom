@@ -64,7 +64,7 @@ Also worth showing: *Class overview* (teacher insights), the student dashboard/p
 
 | | |
 | --- | --- |
-| Built-in lessons | 46 topics in all 18 subjects (`src/lib/content/lessons/`), written in Georgian and English side by side (Georgian literature in Georgian only): objectives, sections, 455 activities with hint ladders and solutions, 312 quiz questions. Georgian lessons use Georgian examples (lari, cities, history, literature) and Georgian units. |
+| Built-in lessons | 51 topics in all 18 subjects (`src/lib/content/lessons/`), written in Georgian and English side by side (Georgian literature in Georgian only): objectives, sections, 529 activities with hint ladders and solutions, 352 quiz questions (both languages counted). Georgian lessons use Georgian examples (lari, cities, history, literature) and Georgian units. |
 | Installation | Built-in lessons are installed into every database at startup, including an empty one, and updated when the platform is updated (`src/lib/db/builtin.ts`). Teachers duplicate a lesson to adapt it. |
 | Language | Each reader sees the version in their interface language; a link opens the other version. The interface language comes from the switcher, then `DEFAULT_LANGUAGE`, then the browser; Georgian is the fallback. |
 | Terminology | `src/lib/i18n/terminology.ts` fixes the Georgian terms (and rules out calques such as „დაშბორდი“); `tests/unit/terminology.test.ts` checks every dictionary and every Georgian lesson and lab text against it. |
