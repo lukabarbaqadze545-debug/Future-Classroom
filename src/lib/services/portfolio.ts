@@ -5,6 +5,7 @@ import { newId } from "@/lib/domain/ids";
 import { ApiError } from "@/lib/http/errors";
 import type { CurrentUser } from "@/lib/auth/session";
 import { SKILL_IDS } from "@/lib/labs/career/skills";
+import { canViewWork } from "./classes";
 
 /*
  * The portfolio collects evidence of a student's work: projects, certificates,
@@ -93,10 +94,10 @@ export function listPortfolio(userId: string): PortfolioItem[] {
   return (getDb().prepare("SELECT * FROM portfolio_items WHERE user_id = ? ORDER BY item_date DESC, created_at DESC").all(userId) as Row[]).map(toItem);
 }
 
-/** Owners and staff may see an item. */
+/** Owners and the student's teachers may see an item. */
 export function getPortfolioItem(id: string, viewer: CurrentUser): PortfolioItem {
   const row = getDb().prepare("SELECT * FROM portfolio_items WHERE id = ?").get(id) as Row | undefined;
-  if (!row || (row.user_id !== viewer.id && viewer.role === "student")) throw new ApiError(404, "not_found");
+  if (!row || !canViewWork(viewer, row.user_id)) throw new ApiError(404, "not_found");
   return toItem(row);
 }
 

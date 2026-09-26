@@ -23,9 +23,14 @@ export default async function SessionsPage() {
         title={s.title}
         description={s.lead}
         actions={
-          <ButtonLink href="/teacher/sessions/labs" variant="secondary">
-            {s.newLabSession}
-          </ButtonLink>
+          <>
+            <ButtonLink href="/teacher/sessions/new" data-testid="sessions-start-lesson">
+              {dict.newSession.start}
+            </ButtonLink>
+            <ButtonLink href="/teacher/sessions/labs" variant="secondary">
+              {s.newLabSession}
+            </ButtonLink>
+          </>
         }
       />
       {sessions.length ? (

@@ -36,7 +36,9 @@ test("complete classroom demo flow", async ({ browser }) => {
 
   // --- Teacher: start the classroom session -------------------------------
   await teacher.getByTestId("start-session").click();
-  await teacher.getByTestId("confirm-start-session").click();
+  await expect(teacher).toHaveURL(/\/teacher\/sessions\/new\?lesson=/);
+  await expect(teacher.getByTestId("chosen-lesson")).toContainText("Quadratic");
+  await teacher.getByTestId("start-session-confirm").click();
   await expect(teacher).toHaveURL(/\/teacher\/sessions\/\w+$/);
   const code = (await teacher.getByTestId("join-code-display").innerText()).trim();
   expect(code).toMatch(/^FC-\d{4}$/);

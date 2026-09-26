@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useMemo, useState, type ReactNode } from "react";
-import { CircleCheck, CircleDot, ClipboardList, Eye, Radio } from "lucide-react";
+import { CircleCheck, CircleDot, ClipboardList, Eye, Play, Radio } from "lucide-react";
 import { useI18n } from "@/lib/i18n/client";
 import { DIFFICULTIES, type Difficulty } from "@/lib/domain/catalog";
 import { ACTIVITY_KINDS, type ActivityKind, type ResolvedItem } from "@/lib/content/subject-kinds";
@@ -17,10 +17,10 @@ export interface Viewer {
   staff: boolean;
 }
 
-/** Where a lesson opens for this viewer: students read it, teachers edit their own or preview others'. */
+/** Where a lesson opens for this viewer: students read it, teachers edit their own or preview others' (with the answer key). */
 export function itemHref(item: ResolvedItem, viewer: Viewer): string {
   if (item.source !== "lesson" || !item.lessonId || !viewer.staff) return item.href;
-  return item.lessonOwnerId === viewer.id ? `/teacher/lessons/${item.lessonId}` : `/present/lesson/${item.lessonId}`;
+  return item.lessonOwnerId === viewer.id ? `/teacher/lessons/${item.lessonId}` : `/teacher/lessons/${item.lessonId}/preview`;
 }
 
 export function StatusIcon({ status }: { status: ResolvedItem["status"] }) {
@@ -59,6 +59,12 @@ export function ItemRow({ item, viewer, prefix }: { item: ResolvedItem; viewer: 
               </Link>
               <DuplicateLessonButton lessonId={item.lessonId} />
             </>
+          ) : null}
+          {item.source === "lesson" && item.lessonId ? (
+            <Link href={`/teacher/sessions/new?lesson=${item.lessonId}`} className="inline-flex h-9 items-center gap-1.5 rounded-lg px-2.5 text-sm font-medium text-brand hover:bg-brand-soft" data-testid="subject-start-lesson">
+              <Play aria-hidden className="size-4" />
+              {c.startInClass}
+            </Link>
           ) : null}
           {item.assign ? (
             <Link href={`/teacher/assignments/new?kind=${item.assign.kind}&ref=${encodeURIComponent(item.assign.ref)}`} className="inline-flex h-9 items-center gap-1.5 rounded-lg px-2.5 text-sm font-medium text-brand hover:bg-brand-soft">

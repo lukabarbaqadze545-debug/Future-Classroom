@@ -14,6 +14,7 @@ import { findTemplate, PROJECT_TEMPLATES } from "./projects";
 import { ROBOTICS_CHALLENGES } from "./robotics";
 import { SIMULATIONS, findSimulation } from "./simulations";
 import type { ChallengeSet, StemItem } from "./types";
+import { canViewWork } from "@/lib/services/classes";
 
 /*
  * STEM records (experiments, simulation and challenge answers) and
@@ -182,7 +183,7 @@ export function getRecord(userId: string, kind: RecordKind, itemId: string): Ste
 
 export function getRecordFor(id: string, viewer: CurrentUser): StemRecord {
   const row = getDb().prepare(`${SELECT_RECORD} WHERE r.id = ?`).get(id) as RecordRow | undefined;
-  if (!row || (row.user_id !== viewer.id && viewer.role === "student")) throw new ApiError(404, "not_found");
+  if (!row || !canViewWork(viewer, row.user_id)) throw new ApiError(404, "not_found");
   return toRecord(row);
 }
 
@@ -330,7 +331,7 @@ export function createProject(user: CurrentUser, templateId: string | null, titl
 
 export function getProjectFor(id: string, viewer: CurrentUser): StemProject {
   const row = getDb().prepare(`${SELECT_PROJECT} WHERE p.id = ?`).get(id) as ProjectRow | undefined;
-  if (!row || (row.user_id !== viewer.id && viewer.role === "student")) throw new ApiError(404, "not_found");
+  if (!row || !canViewWork(viewer, row.user_id)) throw new ApiError(404, "not_found");
   return toProject(row);
 }
 

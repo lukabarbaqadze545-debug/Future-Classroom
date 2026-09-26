@@ -4,7 +4,7 @@ import { useState } from "react";
 import { ChevronRight, Eye, EyeOff, LogOut, Pause, Play, Power, Timer } from "lucide-react";
 import { useI18n } from "@/lib/i18n/client";
 import { fmt, fmtCount } from "@/lib/i18n/config";
-import { api } from "@/lib/client/api";
+import { api, errorMessage } from "@/lib/client/api";
 import type { ControlAction, TeacherSessionView } from "@/lib/services/sessions";
 import { cn } from "@/components/ui/cn";
 import { Dialog } from "@/components/ui/dialog";
@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { useLiveState } from "@/components/session/use-live-state";
 import { Countdown } from "@/components/session/countdown";
 import { ResultBars } from "@/components/session/result-bars";
+import { ConnectionBadge } from "@/components/session/connection-badge";
 import { useJoinUrl } from "@/components/session/teacher-console";
 import { PresentButton, PresentShell } from "./present-shell";
 
@@ -19,7 +20,7 @@ export function PresentSession({ initial }: { initial: TeacherSessionView }) {
   const { dict } = useI18n();
   const p = dict.present;
   const sessionId = initial.session.id;
-  const { data, replace, clockOffset } = useLiveState<TeacherSessionView>({
+  const { data, replace, clockOffset, connection } = useLiveState<TeacherSessionView>({
     stateUrl: `/api/sessions/${sessionId}`,
     eventsUrl: `/api/sessions/${sessionId}/events`,
     initial,
@@ -31,12 +32,17 @@ export function PresentSession({ initial }: { initial: TeacherSessionView }) {
   const [busy, setBusy] = useState(false);
   const [timerOpen, setTimerOpen] = useState(false);
   const [endOpen, setEndOpen] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const pending = view.activities.some((a) => a.state === "pending");
 
   const control = async (action: ControlAction) => {
     setBusy(true);
+    setError(null);
     try {
       replace(await api<TeacherSessionView>(`/api/sessions/${sessionId}/control`, { body: action }));
+    } catch (e) {
+      // Shown on the screen: a tap that did nothing must not look like it worked.
+      setError(errorMessage(dict, e));
     } finally {
       setBusy(false);
     }
@@ -55,6 +61,12 @@ export function PresentSession({ initial }: { initial: TeacherSessionView }) {
           ) : null}
           {current && results ? <p className="text-xl tabular-nums opacity-80">{fmt(p.responses, { a: results.responseCount, b: results.participantCount })}</p> : null}
           {session.paused ? <p className="rounded-full bg-amber-500/20 px-4 py-1 text-lg font-semibold text-amber-600">{p.paused}</p> : null}
+          {connection !== "live" ? <ConnectionBadge state={connection} className="text-base" /> : null}
+          {error ? (
+            <p role="alert" className="rounded-xl bg-red-500/15 px-4 py-1.5 text-lg font-semibold text-red-600" data-testid="present-error">
+              {error}
+            </p>
+          ) : null}
         </div>
       }
       controls={(theme) =>
@@ -178,13 +190,25 @@ export function PresentSession({ initial }: { initial: TeacherSessionView }) {
         }
         const activity = current.activity;
         const isOptions = activity.type === "multiple_choice" || activity.type === "poll";
+        const position = view.activities.findIndex((a) => a.id === current.id);
+        const answered = results && results.participantCount ? Math.round((results.responseCount / results.participantCount) * 100) : 0;
         return (
           <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col">
             <div className="flex flex-wrap items-center justify-between gap-4">
-              <span className={cn("rounded-full px-4 py-1.5 text-lg font-semibold", dark ? "bg-white/10" : "bg-brand-soft text-brand-ink")}>{dict.activityTypes[activity.type]}</span>
+              <span className="flex flex-wrap items-center gap-3">
+                <span className={cn("rounded-full px-4 py-1.5 text-lg font-semibold", dark ? "bg-white/10" : "bg-brand-soft text-brand-ink")}>{dict.activityTypes[activity.type]}</span>
+                <span className="text-lg font-semibold tabular-nums opacity-70" data-testid="present-position">{fmt(p.slide, { n: position + 1, m: view.activities.length })}</span>
+              </span>
               {current.timerEndsAt ? <Countdown endsAt={current.timerEndsAt} clockOffset={clockOffset} label={dict.session.timeLeft} large /> : null}
             </div>
             <h1 className="fc-prose mt-8 text-[clamp(26px,4.2vw,60px)] leading-tight font-semibold">{activity.prompt}</h1>
+            {results && current.state === "open" && !revealed ? (
+              <div className="mt-6" aria-hidden>
+                <div className={cn("h-3 overflow-hidden rounded-full", dark ? "bg-white/10" : "bg-muted")}>
+                  <div className="h-full rounded-full bg-brand transition-[width] duration-500" style={{ width: `${answered}%` }} />
+                </div>
+              </div>
+            ) : null}
             <div className="mt-10">
               {isOptions && revealed && results ? (
                 <ResultBars distribution={results.distribution} showCorrect={activity.type === "multiple_choice"} large correctLabel={p.correct} />

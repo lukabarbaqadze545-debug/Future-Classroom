@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import type { Dictionary } from "@/lib/i18n/en";
-import { fmt, relativeTime, type Locale } from "@/lib/i18n/config";
+import { fmt, fmtCount, formatDateTime, relativeTime, type Locale } from "@/lib/i18n/config";
 import { tr } from "@/lib/labs/localized";
 import type { LearningProfile } from "@/lib/services/learning-profile";
 import type { LabId } from "@/lib/labs/registry";
@@ -34,7 +34,7 @@ function Row({ label, value }: { label: string; value: ReactNode }) {
 }
 
 /** Server-rendered overview of one student's work across all laboratories. */
-export function LearningProfileView({ profile, dict, locale, studentId }: { profile: LearningProfile; dict: Dictionary; locale: Locale; studentId: string }) {
+export function LearningProfileView({ profile, dict, locale, studentId, audience = "student" }: { profile: LearningProfile; dict: Dictionary; locale: Locale; studentId: string; audience?: "student" | "staff" }) {
   const p = dict.labs.profile;
   const a = dict.labs.assignments;
   const labName = dict.labs.hub.rooms;
@@ -105,6 +105,15 @@ export function LearningProfileView({ profile, dict, locale, studentId }: { prof
           <Row label={p.portfolioItems} value={profile.career.portfolio} />
           <Row label={p.universities} value={profile.career.universities} />
           <Row label={p.goals} value={profile.career.activeGoals} />
+          {profile.portfolioItems.length ? (
+            <ul className="space-y-0.5 text-xs text-ink-muted" data-testid="profile-portfolio">
+              {profile.portfolioItems.map((i) => (
+                <li key={i.id} className="truncate">
+                  {i.title}
+                </li>
+              ))}
+            </ul>
+          ) : null}
           <Link href={`/portfolio/${studentId}`} className="inline-block text-sm font-medium text-brand hover:underline">
             {p.viewPortfolio}
           </Link>
@@ -134,21 +143,118 @@ export function LearningProfileView({ profile, dict, locale, studentId }: { prof
           )}
         </Card>
         <Card>
-          <CardHeader title={p.assignments} />
-          {profile.assignments.recent.length ? (
-            <ul className="divide-y divide-line">
-              {profile.assignments.recent.map((x) => (
-                <li key={x.id} className="flex items-center justify-between gap-3 px-5 py-2.5 text-sm">
-                  <span className="min-w-0 truncate font-medium">{x.title}</span>
-                  <span className="flex shrink-0 items-center gap-2">
-                    {x.recipient.score !== null && x.recipient.maxScore ? <span className="tabular-nums">{`${x.recipient.score}/${x.recipient.maxScore}`}</span> : null}
-                    <Badge tone={x.overdue ? "danger" : STATUS_TONE[x.recipient.status]}>{x.overdue ? dict.labs.common.overdue : a.status[x.recipient.status]}</Badge>
+          <CardHeader title={p.liveLessons} />
+          {profile.liveLessons.length ? (
+            <ul className="divide-y divide-line" data-testid="profile-live-lessons">
+              {profile.liveLessons.map((l) => (
+                <li key={l.sessionId} className="flex items-center justify-between gap-3 px-5 py-2.5 text-sm">
+                  <span className="min-w-0">
+                    <span className="block truncate font-medium">{l.title}</span>
+                    <span className="text-xs text-ink-muted">
+                      {formatDateTime(locale, l.at)}
+                      {l.classLabel ? ` · ${l.classLabel}` : ""}
+                    </span>
+                  </span>
+                  <span className="shrink-0 tabular-nums text-ink-muted">{l.graded ? fmt(p.liveResult, { correct: l.correct, graded: l.graded }) : fmtCount(p.answeredOnly, l.answered)}</span>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="px-5 py-4 text-sm text-ink-muted">{p.nothing}</p>
+          )}
+        </Card>
+      </div>
+      <div className="grid gap-6 lg:grid-cols-2">
+        <Card>
+          <CardHeader title={p.lessonsWorked} />
+          {profile.lessonsWorked.length ? (
+            <ul className="divide-y divide-line" data-testid="profile-lessons">
+              {profile.lessonsWorked.map((l) => (
+                <li key={l.lessonId} className="px-5 py-2.5 text-sm">
+                  <div className="flex items-center justify-between gap-3">
+                    {audience === "student" ? (
+                      <Link href={`/student/learn/${l.lessonId}`} className="min-w-0 truncate font-medium hover:text-brand hover:underline">
+                        {l.title}
+                      </Link>
+                    ) : (
+                      <span className="min-w-0 truncate font-medium">{l.title}</span>
+                    )}
+                    <span className="flex shrink-0 items-center gap-2 text-xs text-ink-muted">
+                      {l.quizBestPercent !== null ? <span className="tabular-nums">{fmt(p.quizBest, { n: l.quizBestPercent })}</span> : null}
+                      {l.completed ? <Badge tone="success">{p.completed}</Badge> : null}
+                    </span>
+                  </div>
+                  {l.activitiesTotal ? (
+                    <div className="mt-1">
+                      <p className="text-xs text-ink-muted">{fmt(p.exercisesDone, { done: l.activitiesDone, total: l.activitiesTotal })}</p>
+                      <Meter value={(l.activitiesDone / l.activitiesTotal) * 100} tone="success" className="mt-0.5 h-1.5" label={l.title} />
+                    </div>
+                  ) : null}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="px-5 py-4 text-sm text-ink-muted">{p.nothing}</p>
+          )}
+        </Card>
+        <Card>
+          <CardHeader title={p.quizzesTitle} />
+          {profile.quizzes.length ? (
+            <ul className="divide-y divide-line" data-testid="profile-quizzes">
+              {profile.quizzes.map((q) => (
+                <li key={q.quizId} className="flex items-center justify-between gap-3 px-5 py-2.5 text-sm">
+                  {audience === "student" ? (
+                    <Link href={`/student/quizzes/${q.quizId}`} className="min-w-0 truncate font-medium hover:text-brand hover:underline">
+                      {q.title}
+                    </Link>
+                  ) : (
+                    <span className="min-w-0 truncate font-medium">{q.title}</span>
+                  )}
+                  <span className="shrink-0 text-xs text-ink-muted tabular-nums">
+                    {q.bestPercent === null ? "—" : fmt(p.best, { n: q.bestPercent })} · {fmtCount(p.attempts, q.attempts)}
                   </span>
                 </li>
               ))}
             </ul>
           ) : (
-            <p className="px-5 py-4 text-sm text-ink-muted">{a.studentEmpty}</p>
+            <p className="px-5 py-4 text-sm text-ink-muted">{p.nothing}</p>
+          )}
+        </Card>
+        <Card>
+          <CardHeader title={p.toDo} />
+          {profile.assignments.pending.length ? (
+            <ul className="divide-y divide-line" data-testid="profile-pending">
+              {profile.assignments.pending.map((x) => (
+                <li key={x.id}>
+                  <Link href={audience === "student" ? `/student/assignments/${x.id}` : `/teacher/assignments/${x.id}`} className="flex items-center justify-between gap-3 px-5 py-2.5 text-sm hover:bg-muted/50">
+                    <span className="min-w-0 truncate font-medium">{x.title}</span>
+                    <Badge tone={x.overdue ? "danger" : STATUS_TONE[x.recipient.status]}>{x.overdue ? dict.labs.common.overdue : a.status[x.recipient.status]}</Badge>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="px-5 py-4 text-sm text-ink-muted">{p.nothingToDo}</p>
+          )}
+        </Card>
+        <Card>
+          <CardHeader title={p.doneWork} />
+          {profile.assignments.done.length ? (
+            <ul className="divide-y divide-line" data-testid="profile-done">
+              {profile.assignments.done.map((x) => (
+                <li key={x.id}>
+                  <Link href={audience === "student" ? `/student/assignments/${x.id}` : `/teacher/assignments/${x.id}`} className="flex items-center justify-between gap-3 px-5 py-2.5 text-sm hover:bg-muted/50">
+                    <span className="min-w-0 truncate font-medium">{x.title}</span>
+                    <span className="flex shrink-0 items-center gap-2">
+                      {x.recipient.score !== null && x.recipient.maxScore ? <span className="tabular-nums">{`${x.recipient.score}/${x.recipient.maxScore}`}</span> : null}
+                      <Badge tone={STATUS_TONE[x.recipient.status]}>{a.status[x.recipient.status]}</Badge>
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="px-5 py-4 text-sm text-ink-muted">{p.nothing}</p>
           )}
         </Card>
       </div>

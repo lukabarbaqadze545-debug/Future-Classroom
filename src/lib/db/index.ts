@@ -4,6 +4,7 @@ import path from "node:path";
 import { MIGRATIONS } from "./schema";
 import { seedDemoSchool } from "./seed";
 import { syncBuiltInContent } from "./builtin";
+import { seedDemoEnabled } from "@/lib/config";
 
 export type DB = Database.Database;
 
@@ -45,13 +46,13 @@ export function openDatabase(file: string): DB {
 
 /**
  * Process-wide database connection. The first call creates the schema and,
- * on an empty database, seeds the demo school (unless SEED_DEMO=false).
+ * on an empty database, seeds the demo school (see `seedDemoEnabled`).
  */
 export function getDb(): DB {
   if (g.__fcDb) return g.__fcDb;
   const db = openDatabase(databasePath());
   g.__fcDb = db;
-  if (process.env.SEED_DEMO !== "false" && !g.__fcDbSeeding) {
+  if (seedDemoEnabled() && !g.__fcDbSeeding) {
     const users = db.prepare("SELECT COUNT(*) AS n FROM users").get() as { n: number };
     if (users.n === 0) {
       g.__fcDbSeeding = true;

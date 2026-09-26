@@ -7,7 +7,7 @@ import { OPTION_ACTIVITY_TYPES, type Subject } from "@/lib/domain/catalog";
 import { ApiError } from "@/lib/http/errors";
 import { publishSessionUpdate } from "@/lib/realtime/bus";
 import type { CurrentUser } from "@/lib/auth/session";
-import { getLessonForEditor } from "./lessons";
+import { getLessonForEditor, getPublishedLesson, type LessonRecord } from "./lessons";
 import { recordLearningEvent } from "./progress";
 import { getHint, hintLadderInfo, type HintResult } from "@/lib/ai/hint-service";
 
@@ -18,6 +18,7 @@ export interface SessionRecord {
   id: string;
   teacherId: string;
   lessonId: string | null;
+  classId: string | null;
   joinCode: string;
   title: string;
   subject: Subject;
@@ -56,6 +57,7 @@ interface SessionRow {
   id: string;
   teacher_id: string;
   lesson_id: string | null;
+  class_id: string | null;
   join_code: string;
   title: string;
   subject: Subject;
@@ -100,6 +102,7 @@ function toSession(row: SessionRow): SessionRecord {
     id: row.id,
     teacherId: row.teacher_id,
     lessonId: row.lesson_id,
+    classId: row.class_id,
     joinCode: row.join_code,
     title: row.title,
     subject: row.subject,
@@ -190,12 +193,12 @@ export function listParticipants(sessionId: string): ParticipantRecord[] {
   ).map(toParticipant);
 }
 
-/** Bumps the session version and notifies connected clients. */
-function touch(sessionId: string): number {
+/** Bumps the session version and notifies connected clients (see SessionEvent.audience). */
+function touch(sessionId: string, audience: "all" | "staff" = "all"): number {
   const db = getDb();
   db.prepare("UPDATE classroom_sessions SET version = version + 1 WHERE id = ?").run(sessionId);
   const { version } = db.prepare("SELECT version FROM classroom_sessions WHERE id = ?").get(sessionId) as { version: number };
-  publishSessionUpdate({ sessionId, version });
+  publishSessionUpdate({ sessionId, version, audience });
   return version;
 }
 
@@ -203,13 +206,38 @@ function touch(sessionId: string): number {
 // Teacher: create and run a session
 // ---------------------------------------------------------------------------
 
+/**
+ * The lesson a teacher may run: their own (any status) or any published lesson,
+ * including the built-in ones. A session copies the activities, so running
+ * someone else's lesson never changes it.
+ */
+export function lessonForSession(lessonId: string, user: CurrentUser): LessonRecord {
+  try {
+    return getLessonForEditor(lessonId, user);
+  } catch (error) {
+    if (!(error instanceof ApiError) || error.status !== 403) throw error;
+    return getPublishedLesson(lessonId);
+  }
+}
+
+/** The teacher's class for a session (null when none was chosen). */
+function classForSession(classId: string | null | undefined, user: CurrentUser): { id: string; name: string } | null {
+  if (!classId) return null;
+  const row = getDb().prepare("SELECT id, name, teacher_id FROM classes WHERE id = ?").get(classId) as { id: string; name: string; teacher_id: string } | undefined;
+  if (!row) throw new ApiError(404, "not_found");
+  if (row.teacher_id !== user.id && user.role !== "admin") throw new ApiError(403, "forbidden");
+  return { id: row.id, name: row.name };
+}
+
 export function createSessionFromLesson(input: {
   user: CurrentUser;
   lessonId: string;
   classLabel?: string;
+  classId?: string | null;
   activityIds?: string[];
 }): SessionRecord {
-  const lesson = getLessonForEditor(input.lessonId, input.user);
+  const lesson = lessonForSession(input.lessonId, input.user);
+  const cls = classForSession(input.classId, input.user);
   const selected = input.activityIds?.length
     ? lesson.content.activities.filter((a) => input.activityIds!.includes(a.id))
     : lesson.content.activities;
@@ -220,7 +248,8 @@ export function createSessionFromLesson(input: {
     title: lesson.title,
     subject: lesson.subject,
     grade: lesson.grade,
-    classLabel: input.classLabel ?? "",
+    classLabel: cls?.name ?? input.classLabel ?? "",
+    classId: cls?.id ?? null,
     activities: selected,
   });
 }
@@ -232,6 +261,7 @@ export function createSession(input: {
   subject: Subject;
   grade: number;
   classLabel: string;
+  classId?: string | null;
   activities: Activity[];
   id?: string;
   createdAt?: number;
@@ -240,8 +270,8 @@ export function createSession(input: {
   const id = input.id ?? newId();
   const timestamp = input.createdAt ?? now();
   const insertSession = db.prepare(
-    `INSERT INTO classroom_sessions (id, teacher_id, lesson_id, join_code, title, subject, grade, class_label, status, created_at)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'lobby', ?)`,
+    `INSERT INTO classroom_sessions (id, teacher_id, lesson_id, class_id, join_code, title, subject, grade, class_label, status, created_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'lobby', ?)`,
   );
   const insertActivity = db.prepare(
     `INSERT INTO session_activities (id, session_id, position, data, state) VALUES (?, ?, ?, ?, 'pending')`,
@@ -250,7 +280,7 @@ export function createSession(input: {
     let inserted = false;
     for (let attempt = 0; attempt < 50 && !inserted; attempt++) {
       try {
-        insertSession.run(id, input.teacherId, input.lessonId, newJoinCode(), input.title, input.subject, input.grade, input.classLabel.trim(), timestamp);
+        insertSession.run(id, input.teacherId, input.lessonId, input.classId ?? null, newJoinCode(), input.title, input.subject, input.grade, input.classLabel.trim(), timestamp);
         inserted = true;
       } catch (error) {
         if (!(error instanceof Error) || !/UNIQUE/.test(error.message)) throw error;
@@ -372,20 +402,25 @@ export function listSessionsForTeacher(teacherId: string) {
   return rows.map((row) => ({ ...toSession(row), participantCount: row.participant_count, activityCount: row.activity_count }));
 }
 
-/** Live sessions a signed-in student has joined (for "rejoin" on the dashboard). */
+/**
+ * Live sessions for a signed-in student: ones they joined ("rejoin") and ones
+ * started for one of their classes ("join" without typing the code).
+ */
 export function listActiveSessionsForStudent(userId: string) {
   return (
     getDb()
       .prepare(
-        `SELECT s.id, s.title, s.subject, s.join_code, s.class_label, u.display_name AS teacher_name
-           FROM session_participants p
-           JOIN classroom_sessions s ON s.id = p.session_id
+        `SELECT s.id, s.title, s.subject, s.join_code, s.class_label, u.display_name AS teacher_name,
+                EXISTS (SELECT 1 FROM session_participants p WHERE p.session_id = s.id AND p.user_id = ?) AS joined
+           FROM classroom_sessions s
            JOIN users u ON u.id = s.teacher_id
-          WHERE p.user_id = ? AND s.status != 'ended'
+          WHERE s.status != 'ended' AND (
+                s.id IN (SELECT p.session_id FROM session_participants p WHERE p.user_id = ?)
+             OR s.class_id IN (SELECT m.class_id FROM class_members m WHERE m.student_id = ?))
           ORDER BY s.created_at DESC LIMIT 5`,
       )
-      .all(userId) as { id: string; title: string; subject: Subject; join_code: string; class_label: string; teacher_name: string }[]
-  ).map((r) => ({ id: r.id, title: r.title, subject: r.subject, joinCode: r.join_code, classLabel: r.class_label, teacherName: r.teacher_name }));
+      .all(userId, userId, userId) as { id: string; title: string; subject: Subject; join_code: string; class_label: string; teacher_name: string; joined: number }[]
+  ).map((r) => ({ id: r.id, title: r.title, subject: r.subject, joinCode: r.join_code, classLabel: r.class_label, teacherName: r.teacher_name, joined: r.joined === 1 }));
 }
 
 export function deleteSession(sessionId: string, user: CurrentUser): void {
@@ -476,18 +511,38 @@ export function getTeacherSessionView(sessionId: string, user: CurrentUser) {
     )
     .all(sessionId) as { id: string; n: number }[];
   const countById = new Map(counts.map((c) => [c.id, c.n]));
+  const results = current ? computeActivityResults(current, participants) : null;
+  const answerOf = new Map(results?.answers.map((a) => [a.participantId, a]) ?? []);
+  // Class members who have not joined yet (only for sessions started for a class).
+  const joinedUsers = new Set(participants.map((p) => p.userId).filter(Boolean));
+  const absent = session.classId
+    ? (
+        getDb()
+          .prepare(
+            `SELECT u.id, u.display_name AS name FROM class_members m JOIN users u ON u.id = m.student_id
+              WHERE m.class_id = ? ORDER BY u.display_name COLLATE NOCASE`,
+          )
+          .all(session.classId) as { id: string; name: string }[]
+      ).filter((m) => !joinedUsers.has(m.id))
+    : [];
   return {
     session,
     serverTime: timestamp,
-    participants: participants.map((p) => ({
-      id: p.id,
-      name: p.displayName,
-      hasAccount: p.userId !== null,
-      online: timestamp - p.lastSeenAt < ONLINE_WINDOW_MS,
-      joinedAt: p.joinedAt,
-    })),
+    participants: participants.map((p) => {
+      const answer = answerOf.get(p.id);
+      return {
+        id: p.id,
+        name: p.displayName,
+        hasAccount: p.userId !== null,
+        online: timestamp - p.lastSeenAt < ONLINE_WINDOW_MS,
+        joinedAt: p.joinedAt,
+        /** Where this student is on the current activity. */
+        current: !current ? null : !answer ? ("waiting" as const) : answer.isCorrect === null ? ("answered" as const) : answer.isCorrect ? ("correct" as const) : ("incorrect" as const),
+      };
+    }),
+    absent,
     activities: activities.map((a) => ({ ...a, responseCount: countById.get(a.id) ?? 0, gradable: isActivityGradable(a.activity) })),
-    current: current ? { ...current, gradable: isActivityGradable(current.activity), results: computeActivityResults(current, participants) } : null,
+    current: current && results ? { ...current, gradable: isActivityGradable(current.activity), results } : null,
   };
 }
 export type TeacherSessionView = ReturnType<typeof getTeacherSessionView>;
@@ -560,7 +615,7 @@ export function joinSession(input: {
       .get(session.id, input.user.id) as Parameters<typeof toParticipant>[0] | undefined;
     if (existing) {
       db.prepare("UPDATE session_participants SET token_hash = ?, last_seen_at = ? WHERE id = ?").run(hashToken(token), timestamp, existing.id);
-      touch(session.id);
+      touch(session.id, "staff");
       return { session, participant: toParticipant({ ...existing, last_seen_at: timestamp }), token };
     }
   }
@@ -580,7 +635,7 @@ export function joinSession(input: {
   db.prepare(
     `INSERT INTO session_participants (id, session_id, user_id, display_name, token_hash, joined_at, last_seen_at) VALUES (?, ?, ?, ?, ?, ?, ?)`,
   ).run(participant.id, session.id, participant.userId, participant.displayName, hashToken(token), timestamp, timestamp);
-  touch(session.id);
+  touch(session.id, "staff");
   return { session, participant, token };
 }
 
@@ -597,7 +652,7 @@ function markSeen(participant: ParticipantRecord): void {
   if (timestamp - participant.lastSeenAt < 10_000) return;
   getDb().prepare("UPDATE session_participants SET last_seen_at = ? WHERE id = ?").run(timestamp, participant.id);
   // A participant coming back online changes the teacher's roster.
-  if (timestamp - participant.lastSeenAt > ONLINE_WINDOW_MS) touch(participant.sessionId);
+  if (timestamp - participant.lastSeenAt > ONLINE_WINDOW_MS) touch(participant.sessionId, "staff");
 }
 
 function hintsUsedFor(activityId: string, participantId: string): number {
@@ -714,28 +769,34 @@ export function submitResponse(input: {
   participant: ParticipantRecord;
   activityId: string;
   answer: Answer;
+  /** Generated by the student's browser per answer; a retried request with the same id is not counted twice. */
+  submissionId?: string;
 }): { isCorrect: boolean | null; attempts: number } {
   const record = requireOpenActivity(input.sessionId, input.activityId);
   const session = getSessionOrThrow(input.sessionId);
   if (session.paused) throw new ApiError(409, "activity_closed", "The teacher has paused the session.");
   const answer = answerSchema.parse(input.answer);
   if (isAnswerEmpty(answer)) throw new ApiError(400, "invalid_input", "Please enter an answer.");
+  const db = getDb();
+  const existing = db
+    .prepare("SELECT attempts, is_correct, client_submission_id FROM responses WHERE session_activity_id = ? AND participant_id = ?")
+    .get(record.id, input.participant.id) as { attempts: number; is_correct: number | null; client_submission_id: string | null } | undefined;
+  if (input.submissionId && existing?.client_submission_id === input.submissionId) {
+    // The same answer arrived again (the first response was lost on the way back).
+    return { isCorrect: existing.is_correct === null ? null : existing.is_correct === 1, attempts: existing.attempts };
+  }
   const isCorrect = gradeActivity(record.activity, answer);
   const hintsUsed = hintsUsedFor(record.id, input.participant.id);
-  const db = getDb();
   const timestamp = now();
-  const existing = db
-    .prepare("SELECT attempts FROM responses WHERE session_activity_id = ? AND participant_id = ?")
-    .get(record.id, input.participant.id) as { attempts: number } | undefined;
   const attempts = (existing?.attempts ?? 0) + 1;
   db.transaction(() => {
     db.prepare(
-      `INSERT INTO responses (id, session_activity_id, participant_id, answer, is_correct, attempts, hints_used, submitted_at)
-       VALUES (?, ?, ?, ?, ?, 1, ?, ?)
+      `INSERT INTO responses (id, session_activity_id, participant_id, answer, is_correct, attempts, hints_used, submitted_at, client_submission_id)
+       VALUES (?, ?, ?, ?, ?, 1, ?, ?, ?)
        ON CONFLICT (session_activity_id, participant_id) DO UPDATE SET
          answer = excluded.answer, is_correct = excluded.is_correct, attempts = responses.attempts + 1,
-         hints_used = excluded.hints_used, submitted_at = excluded.submitted_at`,
-    ).run(newId(), record.id, input.participant.id, JSON.stringify(answer), isCorrect === null ? null : isCorrect ? 1 : 0, hintsUsed, timestamp);
+         hints_used = excluded.hints_used, submitted_at = excluded.submitted_at, client_submission_id = excluded.client_submission_id`,
+    ).run(newId(), record.id, input.participant.id, JSON.stringify(answer), isCorrect === null ? null : isCorrect ? 1 : 0, hintsUsed, timestamp, input.submissionId ?? null);
     if (input.participant.userId) {
       recordLearningEvent({
         userId: input.participant.userId,
@@ -749,7 +810,8 @@ export function submitResponse(input: {
       });
     }
   })();
-  touch(input.sessionId);
+  // Students only need to re-fetch when the class results are on their screens.
+  touch(input.sessionId, record.revealed ? "all" : "staff");
   return { isCorrect, attempts };
 }
 
@@ -767,7 +829,7 @@ export async function requestSessionHint(input: {
        ON CONFLICT (session_activity_id, participant_id) DO UPDATE SET hints_used = MAX(hints_used, excluded.hints_used)`,
     )
     .run(record.id, input.participant.id, hint.level);
-  touch(input.sessionId);
+  touch(input.sessionId, "staff");
   return hint;
 }
 

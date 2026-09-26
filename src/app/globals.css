@@ -163,4 +163,17 @@ dialog::backdrop {
   body {
     background: white;
   }
+  /* Sign-in slips: print only the slips, not the page around them. */
+  body:has(.fc-print-slips) * {
+    visibility: hidden;
+  }
+  body:has(.fc-print-slips) .fc-print-slips,
+  body:has(.fc-print-slips) .fc-print-slips * {
+    visibility: visible;
+  }
+  body:has(.fc-print-slips) .fc-print-slips {
+    position: absolute;
+    inset: 0 0 auto 0;
+    border: 0;
+  }
 }

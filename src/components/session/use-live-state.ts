@@ -52,6 +52,8 @@ export function useLiveState<T>({
         version.current = versionOfRef.current(next);
         setData(next);
         setError(null);
+        // The server answered, so the class is reachable again even if the event stream is still reconnecting.
+        setConnection((c) => (c === "offline" ? "reconnecting" : c));
       } while (again.current);
     } catch (e) {
       if (e instanceof ClientApiError) {

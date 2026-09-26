@@ -13,6 +13,7 @@ import { Card, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ButtonLink } from "@/components/ui/button";
 import { JoinForm } from "@/components/session/join-form";
+import { JoinSessionButton } from "@/components/session/join-button";
 import { ActivityChart } from "@/components/student/activity-chart";
 import { listAssignmentsForStudent } from "@/lib/services/assignments";
 import { listClassesForStudent } from "@/lib/services/classes";
@@ -49,6 +50,25 @@ export default async function StudentHome() {
   return (
     <PageContainer>
       <PageHeader title={fmt(d.greeting, { name: user.displayName.split(" ")[0] })} description={d.lead} />
+      {activeSessions.length ? (
+        <Card className="mb-6 border-success/40 bg-success-soft/30" data-testid="live-sessions">
+          <CardHeader title={<span className="flex items-center gap-2"><span className="fc-pulse size-2.5 rounded-full bg-success" />{d.activeTitle}</span>} />
+          <ul className="divide-y divide-line">
+            {activeSessions.map((s) => (
+              <li key={s.id} className="flex flex-wrap items-center justify-between gap-3 px-5 py-3">
+                <div className="min-w-0">
+                  <p className="font-semibold">{s.title}</p>
+                  <p className="text-sm text-ink-muted">
+                    {s.teacherName}
+                    {s.classLabel ? ` · ${s.classLabel}` : ""}
+                  </p>
+                </div>
+                <JoinSessionButton code={s.joinCode} label={s.joined ? d.rejoin : d.joinNow} />
+              </li>
+            ))}
+          </ul>
+        </Card>
+      ) : null}
       <nav aria-label={dict.labs.hub.title} className="mb-6">
         <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-6" data-testid="dashboard-labs">
           {LAB_IDS.map((id) => (
@@ -144,27 +164,6 @@ export default async function StudentHome() {
         </div>
 
         <div className="space-y-6">
-          {activeSessions.length ? (
-            <Card className="border-success/30">
-              <CardHeader title={<span className="flex items-center gap-2"><span className="fc-pulse size-2.5 rounded-full bg-success" />{d.activeTitle}</span>} />
-              <ul className="divide-y divide-line">
-                {activeSessions.map((s) => (
-                  <li key={s.id} className="flex items-center justify-between gap-3 px-5 py-3">
-                    <div className="min-w-0">
-                      <p className="truncate font-medium">{s.title}</p>
-                      <p className="text-sm text-ink-muted">
-                        {s.teacherName}
-                        {s.classLabel ? ` · ${s.classLabel}` : ""}
-                      </p>
-                    </div>
-                    <ButtonLink href={`/join?code=${encodeURIComponent(s.joinCode)}`} size="sm">
-                      {d.rejoin}
-                    </ButtonLink>
-                  </li>
-                ))}
-              </ul>
-            </Card>
-          ) : null}
           <Card className="p-5">
             <h2 className="text-lg font-semibold">{dict.labs.classes.myClasses}</h2>
             {classes.length ? (

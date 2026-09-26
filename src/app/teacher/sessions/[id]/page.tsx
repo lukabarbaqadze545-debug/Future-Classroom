@@ -25,14 +25,14 @@ export default async function SessionPage({ params }: { params: Promise<{ id: st
   }
   if (session.status === "ended") {
     const lesson = session.lessonId ? getLesson(session.lessonId) : null;
-    const canRerun = lesson && (lesson.teacherId === user.id || user.role === "admin") && lesson.content.activities.length > 0;
+    const canRerun = lesson && (lesson.teacherId === user.id || user.role === "admin" || lesson.status === "published") && lesson.content.activities.length > 0;
     return (
       <PageContainer>
         <SessionSummaryView
           summary={getSessionSummary(id, user)}
           dict={dict}
           locale={locale}
-          rerun={canRerun ? <StartSessionButton size="md" label={dict.teacher.summary.runAgain} lessons={[{ id: lesson.id, title: lesson.title, grade: lesson.grade }]} fixedLessonId={lesson.id} /> : null}
+          rerun={canRerun ? <StartSessionButton size="md" label={dict.teacher.summary.runAgain} lessonId={lesson.id} classId={session.classId} /> : null}
         />
       </PageContainer>
     );

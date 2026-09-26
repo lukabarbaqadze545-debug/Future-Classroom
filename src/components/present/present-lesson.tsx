@@ -55,7 +55,7 @@ export function PresentLesson({ lesson }: { lesson: { id: string; title: string;
             <ChevronRight aria-hidden className="size-7" />
             <span className="sr-only">{dict.common.next}</span>
           </PresentButton>
-          {lesson.activityCount > 0 ? <StartSessionButton size="xl" label={p.startSession} lessons={[{ id: lesson.id, title: lesson.title, grade: lesson.grade }]} fixedLessonId={lesson.id} /> : null}
+          {lesson.activityCount > 0 ? <StartSessionButton size="xl" label={p.startSession} lessonId={lesson.id} /> : null}
           <PresentButton theme={theme} href={`/teacher/lessons/${lesson.id}`}>
             <LogOut aria-hidden className="size-6" />
             <span className="sr-only">{p.exit}</span>

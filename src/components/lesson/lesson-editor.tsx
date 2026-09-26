@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { ArrowLeft, ClipboardList, Copy, MonitorPlay, Plus, Save, Trash2, Upload } from "lucide-react";
+import { ArrowLeft, ClipboardList, Copy, Eye, MonitorPlay, Plus, Save, Trash2, Upload } from "lucide-react";
 import { useI18n } from "@/lib/i18n/client";
 import { fmt, fmtCount, relativeTime } from "@/lib/i18n/config";
 import { api, errorMessage } from "@/lib/client/api";
@@ -23,6 +23,7 @@ import { SectionEditor } from "./section-editor";
 import { ActivityEditor } from "./activity-editor";
 import { ItemToolbar } from "./item-toolbar";
 import { StartSessionButton } from "@/components/teacher/start-session-dialog";
+import { ReviewBadge } from "@/components/lesson/review-badge";
 
 type TabId = "overview" | "structure" | "activities" | "extras" | "materials";
 
@@ -228,7 +229,6 @@ export function LessonEditor({
   };
 
   const totalMinutes = useMemo(() => content.sections.reduce((sum, s) => sum + s.minutes, 0), [content.sections]);
-  const sessionActivities = content.activities.map((a, i) => ({ id: a.id, label: `${i + 1}. ${a.title || a.prompt.slice(0, 60)} — ${dict.activityTypes[a.type]}` }));
   const originTone = lesson.origin === "ai" ? "ai" : lesson.origin === "template" ? "brand" : "neutral";
 
   return (
@@ -246,17 +246,23 @@ export function LessonEditor({
               {dict.status[status]}
             </Badge>
             <Badge tone={originTone}>{dict.origin[lesson.origin]}</Badge>
+            <Link href={`/teacher/lessons/${lesson.id}/preview`} className="rounded-full hover:opacity-80" title={dict.review.preview} data-testid="editor-review-status">
+              <ReviewBadge status={lesson.reviewStatus} />
+            </Link>
             <span>{dict.subjects[meta.subject]}</span>·<span>{fmt(dict.common.grade, { n: meta.grade })}</span>·<span>{fmt(dict.common.minutes, { n: meta.durationMin })}</span>
           </div>
         </div>
         <div className="flex flex-wrap gap-2">
+          <ButtonLink href={`/teacher/lessons/${lesson.id}/preview`} variant="secondary" data-testid="editor-preview">
+            <Eye aria-hidden className="size-4" />
+            {dict.review.preview}
+          </ButtonLink>
           <ButtonLink href={`/present/lesson/${lesson.id}`} variant="secondary">
             <MonitorPlay aria-hidden className="size-4" />
             {e.present}
           </ButtonLink>
           <StartSessionButton
-            lessons={[{ id: lesson.id, title: meta.title, grade: meta.grade, activities: sessionActivities }]}
-            fixedLessonId={lesson.id}
+            lessonId={lesson.id}
             size="md"
             disabledReason={content.activities.length === 0 ? e.noActivities : null}
             beforeStart={async () => (dirty ? save() : true)}

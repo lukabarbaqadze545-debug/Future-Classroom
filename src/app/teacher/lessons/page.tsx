@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Plus } from "lucide-react";
+import { Eye, ListChecks, Plus } from "lucide-react";
 import { getCurrentUser } from "@/lib/auth/session";
 import { getDictionary, pageTitle } from "@/lib/i18n/server";
 import { fmt, fmtCount, relativeTime } from "@/lib/i18n/config";
@@ -11,6 +11,7 @@ import { EmptyState, PageHeader } from "@/components/ui/misc";
 import { ButtonLink } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { DuplicateLessonButton } from "@/components/lesson/duplicate-button";
+import { ReviewBadge } from "@/components/lesson/review-badge";
 
 export async function generateMetadata() {
   return pageTitle((p) => p.lessons);
@@ -32,10 +33,16 @@ export default async function LessonsPage() {
         title={l.title}
         description={l.lead}
         actions={
-          <ButtonLink href="/teacher/lessons/new" size="lg">
-            <Plus aria-hidden className="size-5" />
-            {l.new}
-          </ButtonLink>
+          <div className="flex flex-wrap gap-2">
+            <ButtonLink href="/teacher/lessons/review" size="lg" variant="secondary" data-testid="lessons-review-queue">
+              <ListChecks aria-hidden className="size-5" />
+              {dict.review.queue}
+            </ButtonLink>
+            <ButtonLink href="/teacher/lessons/new" size="lg">
+              <Plus aria-hidden className="size-5" />
+              {l.new}
+            </ButtonLink>
+          </div>
         }
       />
       {lessons.length ? (
@@ -48,6 +55,7 @@ export default async function LessonsPage() {
                 </Badge>
                 <Badge tone={lesson.origin === "ai" ? "ai" : lesson.origin === "template" ? "brand" : "neutral"}>{dict.origin[lesson.origin]}</Badge>
                 {lesson.language !== locale ? <Badge>{dict.contentLanguages[lesson.language]}</Badge> : null}
+                <ReviewBadge status={lesson.reviewStatus} />
               </div>
               <h2 className="mt-3 text-lg font-semibold group-hover:text-brand" lang={lesson.language}>
                 {lesson.title}
@@ -85,7 +93,14 @@ export default async function LessonsPage() {
                           {lesson.language !== locale ? ` · ${dict.contentLanguages[lesson.language]}` : ""}
                         </p>
                       </div>
-                      <DuplicateLessonButton lessonId={lesson.id} />
+                      <span className="flex flex-wrap items-center gap-2">
+                        <ReviewBadge status={lesson.reviewStatus} />
+                        <ButtonLink href={`/teacher/lessons/${lesson.id}/preview`} size="sm" variant="ghost">
+                          <Eye aria-hidden className="size-4" />
+                          {dict.subjectCatalog.preview}
+                        </ButtonLink>
+                        <DuplicateLessonButton lessonId={lesson.id} />
+                      </span>
                     </li>
                   ))}
                 </ul>

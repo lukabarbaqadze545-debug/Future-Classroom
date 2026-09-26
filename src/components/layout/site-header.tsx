@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { getCurrentUser } from "@/lib/auth/session";
 import { getDictionary } from "@/lib/i18n/server";
 import { getAIStatus } from "@/lib/ai";
@@ -17,10 +18,10 @@ export async function SiteHeader() {
         { href: "/subjects", label: dict.nav.subjects },
         { href: "/teacher/lessons", label: dict.nav.lessons },
         { href: "/teacher/sessions", label: dict.nav.sessions },
+        { href: "/teacher/students", label: dict.nav.classes },
+        { href: "/teacher/assignments", label: dict.nav.assignments },
         { href: "/teacher/quizzes", label: dict.nav.quizzes },
         { href: "/labs", label: dict.nav.labs },
-        { href: "/teacher/assignments", label: dict.nav.assignments },
-        { href: "/teacher/students", label: dict.nav.students },
         { href: "/library", label: dict.nav.library },
         { href: "/teacher/materials", label: dict.nav.materials },
         { href: "/teacher/insights", label: dict.nav.insights },
@@ -50,10 +51,10 @@ export async function SiteHeader() {
           <LanguageSwitcher />
           {user ? (
             <div className="flex items-center gap-2">
-              <div className="hidden text-right leading-tight md:block">
+              <Link href="/account" className="hidden rounded-lg px-1 text-right leading-tight hover:bg-muted md:block" data-testid="account-link">
                 <div className="text-sm font-medium text-ink">{user.displayName}</div>
                 <div className="text-xs text-ink-subtle">{dict.roles[user.role]}</div>
-              </div>
+              </Link>
               <SignOutButton label={dict.nav.signOut} />
             </div>
           ) : (
@@ -63,6 +64,14 @@ export async function SiteHeader() {
           )}
         </div>
       </div>
+      {user?.mustChangePassword ? (
+        <div className="border-t border-warn/30 bg-warn-soft px-4 py-2 text-center text-sm" role="status" data-testid="temporary-password">
+          {dict.account.temporaryBanner}{" "}
+          <Link href="/account" className="font-semibold underline">
+            {dict.account.temporaryAction}
+          </Link>
+        </div>
+      ) : null}
     </header>
   );
 }

@@ -20,12 +20,14 @@ export function AssignmentForm({
   students,
   initialKind,
   initialRef,
+  initialClassId = null,
 }: {
   items: Record<AssignmentKind, AssignableItem[]>;
   classes: { id: string; name: string; memberIds: string[] }[];
   students: { id: string; name: string }[];
   initialKind: AssignmentKind;
   initialRef: string | null;
+  initialClassId?: string | null;
 }) {
   const { dict } = useI18n();
   const a = dict.labs.assignments;
@@ -37,7 +39,7 @@ export function AssignmentForm({
   const [titleTouched, setTitleTouched] = useState(false);
   const [instructions, setInstructions] = useState("");
   const [due, setDue] = useState("");
-  const [classId, setClassId] = useState(classes[0]?.id ?? "");
+  const [classId, setClassId] = useState(initialClassId ?? classes[0]?.id ?? "");
   const [picked, setPicked] = useState<Set<string>>(new Set());
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");

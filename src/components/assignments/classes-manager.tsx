@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Pencil, Plus, Trash2 } from "lucide-react";
@@ -36,7 +37,9 @@ export function ClassesManager({ initial, students }: { initial: ClassView[]; st
         setClasses((list) => list.map((x) => (x.id === editing.id ? { ...x, name: editing.name, memberIds: [...editing.members] } : x)));
       } else {
         const res = await api<{ class: { id: string } }>("/api/classes", { body });
-        setClasses((list) => [...list, { id: res.class.id, name: editing.name, memberIds: [...editing.members] }]);
+        // A new class opens on its own page, where students are added.
+        router.push(`/teacher/classes/${res.class.id}`);
+        return;
       }
       setEditing(null);
       router.refresh();
@@ -53,7 +56,9 @@ export function ClassesManager({ initial, students }: { initial: ClassView[]; st
             <li key={cls.id}>
               <Card className="flex items-start justify-between gap-3 p-4">
                 <div className="min-w-0">
-                  <p className="font-semibold">{cls.name}</p>
+                  <Link href={`/teacher/classes/${cls.id}`} className="font-semibold hover:text-brand hover:underline" data-testid="class-link">
+                    {cls.name}
+                  </Link>
                   <p className="text-sm text-ink-muted">{fmtCount(c.membersCount, cls.memberIds.length)}</p>
                   <p className="mt-1 line-clamp-2 text-xs text-ink-subtle">
                     {cls.memberIds

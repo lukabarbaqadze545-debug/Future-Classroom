@@ -1,4 +1,5 @@
 import "server-only";
+import { createHash } from "node:crypto";
 import { getDb, now, parseJson } from "@/lib/db";
 import { newId } from "@/lib/domain/ids";
 import {
@@ -9,6 +10,7 @@ import {
 import type { ContentLanguage, Subject } from "@/lib/domain/catalog";
 import { ApiError } from "@/lib/http/errors";
 import type { CurrentUser } from "@/lib/auth/session";
+import { isReviewStatus, type ReviewStatus } from "@/lib/domain/review";
 
 export type LessonStatus = "draft" | "published";
 export type ContentOrigin = "ai" | "template" | "manual";
@@ -26,6 +28,8 @@ export interface LessonRecord extends LessonMeta {
   contentKey: string | null;
   /** Language versions of the same built-in lesson share a group. */
   contentGroup: string | null;
+  /** Internal content review (never shown to students). */
+  reviewStatus: ReviewStatus;
   createdAt: number;
   updatedAt: number;
 }
@@ -53,6 +57,7 @@ interface LessonRow {
   content: string;
   content_key: string | null;
   content_group: string | null;
+  review_status: string;
   created_at: number;
   updated_at: number;
 }
@@ -78,6 +83,7 @@ function toSummary(row: LessonRow): LessonSummary {
     aiModel: row.ai_model,
     contentKey: row.content_key,
     contentGroup: row.content_group,
+    reviewStatus: isReviewStatus(row.review_status) ? row.review_status : "draft",
     createdAt: row.created_at,
     updatedAt: row.updated_at,
     activityCount: content.activities.length,
@@ -212,6 +218,12 @@ export function getPublishedLesson(id: string): LessonRecord {
   return lesson;
 }
 
+/** Fingerprint of everything a class sees, so a review applies to one exact version. */
+export function lessonContentHash(lesson: { title: string; topic: string; objective: string; language: string; content: LessonContent }): string {
+  const { title, topic, objective, language, content } = lesson;
+  return createHash("sha256").update(JSON.stringify([title, topic, objective, language, content])).digest("hex");
+}
+
 export function updateLesson(
   id: string,
   user: CurrentUser,
@@ -238,6 +250,13 @@ export function updateLesson(
       id,
     );
     if (update.materialIds) setLessonMaterials(id, update.materialIds);
+    // A review covers the version that was reviewed: changing the content
+    // after a review sends the lesson back to draft.
+    const review = db.prepare("SELECT review_status, reviewed_hash FROM lessons WHERE id = ?").get(id) as { review_status: string; reviewed_hash: string | null };
+    if (review.review_status !== "draft" && review.reviewed_hash !== lessonContentHash({ ...update.meta, content })) {
+      db.prepare("UPDATE lessons SET review_status = 'draft', reviewed_hash = NULL WHERE id = ?").run(id);
+      db.prepare("INSERT INTO lesson_reviews (id, lesson_id, status, kind, user_id, note, created_at) VALUES (?, ?, 'draft', 'edited', ?, '', ?)").run(newId(), id, user.id, now());
+    }
   })();
   return getLessonOrThrow(id);
 }
@@ -283,4 +302,43 @@ export function duplicateLesson(id: string, user: CurrentUser): LessonRecord {
     origin: source.origin,
     aiModel: source.aiModel,
   });
+}
+
+export interface SessionLessonOption {
+  id: string;
+  title: string;
+  subject: Subject;
+  grade: number;
+  language: ContentLanguage;
+  mine: boolean;
+  reviewStatus: ReviewStatus;
+  activities: { id: string; label: string }[];
+}
+
+/** Lessons a teacher can run in class: their own and every published lesson, in the reader's language. */
+export function lessonsForSessions(user: CurrentUser, locale: ContentLanguage): SessionLessonOption[] {
+  const db = getDb();
+  const own = db.prepare(`${SELECT} WHERE l.teacher_id = ? ORDER BY l.updated_at DESC`).all(user.id) as LessonRow[];
+  const published = db.prepare(`${SELECT} WHERE l.status = 'published' AND l.teacher_id != ? ORDER BY l.subject, l.grade, l.title`).all(user.id) as LessonRow[];
+  const option = (row: LessonRow, mine: boolean): SessionLessonOption & { contentGroup: string | null } => {
+    const content = parseContent(row.content);
+    return {
+      id: row.id,
+      title: row.title,
+      subject: row.subject,
+      grade: row.grade,
+      language: row.language,
+      mine,
+      reviewStatus: isReviewStatus(row.review_status) ? row.review_status : "draft",
+      contentGroup: row.content_group,
+      activities: content.activities.map((a) => ({ id: a.id, label: a.title || a.prompt.slice(0, 80) })),
+    };
+  };
+  const strip = ({ contentGroup: _g, ...rest }: SessionLessonOption & { contentGroup: string | null }): SessionLessonOption => {
+    void _g;
+    return rest;
+  };
+  return [...inLocale(own.map((r) => option(r, true)), locale), ...inLocale(published.map((r) => option(r, false)), locale)]
+    .filter((l) => l.activities.length > 0)
+    .map(strip);
 }

@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth/session";
 import { getDictionary, pageTitle } from "@/lib/i18n/server";
-import { getStudent, listClassesForStudent } from "@/lib/services/classes";
+import { canViewStudent, getStudent, listClassesForStudent } from "@/lib/services/classes";
 import { learningProfile } from "@/lib/services/learning-profile";
 import { PageContainer } from "@/components/layout/site-header";
 import { Badge } from "@/components/ui/badge";
@@ -16,8 +16,8 @@ export async function generateMetadata() {
 export default async function StudentProfilePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const student = getStudent(id);
-  if (!student) notFound();
   const user = (await getCurrentUser())!;
+  if (!student || !canViewStudent(user, id)) notFound();
   const { dict, locale } = await getDictionary();
   const classes = listClassesForStudent(id);
   return (
@@ -38,7 +38,7 @@ export default async function StudentProfilePage({ params }: { params: Promise<{
           </span>
         }
       />
-      <LearningProfileView profile={learningProfile(id, user, locale)} dict={dict} locale={locale} studentId={id} />
+      <LearningProfileView profile={learningProfile(id, user, locale)} dict={dict} locale={locale} studentId={id} audience="staff" />
     </PageContainer>
   );
 }

@@ -1,11 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useId, useState } from "react";
+import { useCallback, useEffect, useId, useState } from "react";
 import { CheckCircle2, Coffee, Hourglass, Lock, PartyPopper, XCircle } from "lucide-react";
 import { useI18n } from "@/lib/i18n/client";
 import { fmt } from "@/lib/i18n/config";
-import { api, errorMessage } from "@/lib/client/api";
+import { api, ClientApiError, errorMessage } from "@/lib/client/api";
 import type { StudentSessionView } from "@/lib/services/sessions";
 import type { HintResult } from "@/lib/ai/hint-service";
 import type { Answer } from "@/lib/domain/schemas";
@@ -47,6 +47,44 @@ function saveDraft(sessionId: string, activityId: string, answer: Answer) {
   }
 }
 
+/** An answer that could not be sent yet (no connection). Kept across reloads. */
+interface QueuedAnswer {
+  activityId: string;
+  answer: Answer;
+  submissionId: string;
+}
+
+function queueKey(sessionId: string) {
+  return `fc:queued:${sessionId}`;
+}
+
+function loadQueued(sessionId: string): QueuedAnswer | null {
+  try {
+    const raw = window.localStorage.getItem(queueKey(sessionId));
+    return raw ? (JSON.parse(raw) as QueuedAnswer) : null;
+  } catch {
+    return null;
+  }
+}
+
+function storeQueued(sessionId: string, queued: QueuedAnswer | null) {
+  try {
+    if (queued) window.localStorage.setItem(queueKey(sessionId), JSON.stringify(queued));
+    else window.localStorage.removeItem(queueKey(sessionId));
+  } catch {
+    // Without storage the queue still lives in memory until the page closes.
+  }
+}
+
+/** Failures worth retrying: the request never reached the server or the server is restarting. */
+function isTransient(error: unknown): boolean {
+  return error instanceof ClientApiError && (error.code === "network" || error.status === 502 || error.status === 503 || error.status === 504);
+}
+
+function newSubmissionId(): string {
+  return typeof crypto !== "undefined" && "randomUUID" in crypto ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+}
+
 /** A student's screen during a live classroom session. */
 export function StudentSession({ initial, signedIn }: { initial: View; signedIn: boolean }) {
   const { dict } = useI18n();
@@ -68,6 +106,8 @@ export function StudentSession({ initial, signedIn }: { initial: View; signedIn:
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [hints, setHints] = useState<HintResult[]>(initial.unlockedHints);
+  const [queued, setQueued] = useState<QueuedAnswer | null>(null);
+  const [sentLate, setSentLate] = useState(false);
 
   // When a new activity arrives: restore the local draft or the submitted answer.
   const currentId = current?.id ?? null;
@@ -100,20 +140,73 @@ export function StudentSession({ initial, signedIn }: { initial: View; signedIn:
     if (currentId) saveDraft(sessionId, currentId, next);
   };
 
+  const send = useCallback(
+    (item: QueuedAnswer) => api(`/api/sessions/${sessionId}/respond`, { body: { activityId: item.activityId, answer: item.answer, submissionId: item.submissionId } }),
+    [sessionId],
+  );
+
   const submit = async () => {
     if (!current || isAnswerEmpty(answer)) return;
+    const item: QueuedAnswer = { activityId: current.id, answer, submissionId: newSubmissionId() };
     setSubmitting(true);
     setError(null);
+    setSentLate(false);
     try {
-      await api(`/api/sessions/${sessionId}/respond`, { body: { activityId: current.id, answer } });
+      await send(item);
+      setQueued(null);
+      storeQueued(sessionId, null);
       setEditing(false);
       await refetch();
     } catch (e) {
-      setError(errorMessage(dict, e));
+      if (isTransient(e)) {
+        // Keep the answer and send it as soon as the server can be reached.
+        setQueued(item);
+        storeQueued(sessionId, item);
+      } else {
+        setError(errorMessage(dict, e));
+      }
     } finally {
       setSubmitting(false);
     }
   };
+
+  // An answer queued before a reload is picked up again.
+  useEffect(() => {
+    const saved = loadQueued(sessionId);
+    // Restoring a queued answer from localStorage (an external store) after hydration.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    if (saved) setQueued(saved);
+  }, [sessionId]);
+
+  // Retry a queued answer every few seconds and as soon as the browser is back online.
+  useEffect(() => {
+    if (!queued) return;
+    let stopped = false;
+    const attempt = async () => {
+      try {
+        await send(queued);
+        if (stopped) return;
+        setQueued(null);
+        storeQueued(sessionId, null);
+        setSentLate(true);
+        setEditing(false);
+        await refetch();
+      } catch (e) {
+        if (stopped || isTransient(e)) return;
+        // The activity closed meanwhile (or the answer was refused): stop retrying and say why.
+        setQueued(null);
+        storeQueued(sessionId, null);
+        setError(errorMessage(dict, e));
+      }
+    };
+    const timer = setInterval(() => void attempt(), 4000);
+    window.addEventListener("online", attempt);
+    return () => {
+      stopped = true;
+      clearInterval(timer);
+      window.removeEventListener("online", attempt);
+    };
+  }, [queued, send, sessionId, refetch, dict]);
 
   const requestHint = async () => {
     if (!current) return;
@@ -147,6 +240,15 @@ export function StudentSession({ initial, signedIn }: { initial: View; signedIn:
 
       <main id="main" className="mx-auto max-w-4xl px-4 py-6 sm:py-10">
         {error ? <Notice tone="danger" className="mb-4">{error}</Notice> : null}
+        {queued ? (
+          <div className="mb-4" data-testid="answer-queued">
+            <Notice tone="warn">{s.queued}</Notice>
+          </div>
+        ) : sentLate ? (
+          <div className="mb-4" data-testid="answer-sent-late">
+            <Notice tone="success">{s.sentAfterReconnect}</Notice>
+          </div>
+        ) : null}
 
         {view.session.status === "ended" && view.summary ? (
           <div className="fc-fade-in rounded-3xl border border-line bg-surface p-6 text-center shadow-[var(--shadow-card)] sm:p-10" data-testid="session-ended">

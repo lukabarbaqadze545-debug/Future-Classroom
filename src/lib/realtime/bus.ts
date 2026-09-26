@@ -12,6 +12,13 @@ import { EventEmitter } from "node:events";
 export interface SessionEvent {
   sessionId: string;
   version: number;
+  /**
+   * Who needs to re-fetch. "staff" changes (a student joined, answered or asked
+   * for a hint while results are hidden) do not change any student's screen, so
+   * students are not notified — otherwise every answer would make the whole
+   * class re-fetch at once.
+   */
+  audience: "all" | "staff";
 }
 
 const g = globalThis as typeof globalThis & { __fcBus?: EventEmitter };

@@ -134,7 +134,7 @@ const STUDENT_PAGES = [
   "/student/progress",
 ];
 
-const TEACHER_PAGES = ["/teacher", "/teacher/assignments", "/teacher/assignments/new", "/teacher/students", "/teacher/sessions/labs", "/library/labels", "/labs/programming/new"];
+const TEACHER_PAGES = ["/teacher", "/teacher/sessions/new", "/teacher/lessons/review", "/account", "/teacher/assignments", "/teacher/assignments/new", "/teacher/students", "/teacher/sessions/labs", "/library/labels", "/labs/programming/new"];
 
 for (const [label, width, height, touch, locale] of [
   ["phone", 390, 844, true, "en"],

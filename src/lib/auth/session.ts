@@ -14,6 +14,8 @@ export interface CurrentUser {
   role: Role;
   username: string;
   displayName: string;
+  /** Signed in with a temporary password set by a teacher or administrator. */
+  mustChangePassword?: boolean;
 }
 
 /** Whether cookies should carry the Secure flag for this request. */
@@ -56,12 +58,14 @@ export async function getCurrentUser(): Promise<CurrentUser | null> {
   if (!token) return null;
   const row = getDb()
     .prepare(
-      `SELECT u.id, u.role, u.username, u.display_name AS displayName
+      `SELECT u.id, u.role, u.username, u.display_name AS displayName, u.must_change_password AS mustChange
          FROM auth_sessions s JOIN users u ON u.id = s.user_id
         WHERE s.token_hash = ? AND s.expires_at > ?`,
     )
-    .get(hashToken(token), now()) as CurrentUser | undefined;
-  return row ?? null;
+    .get(hashToken(token), now()) as (Omit<CurrentUser, "mustChangePassword"> & { mustChange: number }) | undefined;
+  if (!row) return null;
+  const { mustChange, ...user } = row;
+  return { ...user, mustChangePassword: mustChange === 1 };
 }
 
 export function isStaff(user: CurrentUser | null): boolean {

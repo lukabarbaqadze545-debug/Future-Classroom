@@ -499,4 +499,35 @@ ALTER TABLE quizzes ADD COLUMN content_key TEXT;
 CREATE UNIQUE INDEX quizzes_content_key ON quizzes(content_key) WHERE content_key IS NOT NULL;
 `,
   },
+  {
+    id: 4,
+    name: "pilot_readiness",
+    sql: `
+-- A live session can belong to a class, so the teacher sees who has not joined
+-- and the results count towards that class.
+ALTER TABLE classroom_sessions ADD COLUMN class_id TEXT REFERENCES classes(id) ON DELETE SET NULL;
+CREATE INDEX classroom_sessions_class ON classroom_sessions(class_id) WHERE class_id IS NOT NULL;
+
+-- A client-generated id per answer: a retry after a lost network response is
+-- recognised instead of counting as another attempt.
+ALTER TABLE responses ADD COLUMN client_submission_id TEXT;
+
+-- Passwords set by a teacher or administrator are temporary.
+ALTER TABLE users ADD COLUMN must_change_password INTEGER NOT NULL DEFAULT 0;
+
+-- Human review of lesson content before classroom use (never shown to students).
+ALTER TABLE lessons ADD COLUMN review_status TEXT NOT NULL DEFAULT 'draft';
+ALTER TABLE lessons ADD COLUMN reviewed_hash TEXT;
+CREATE TABLE lesson_reviews (
+  id          TEXT PRIMARY KEY,
+  lesson_id   TEXT NOT NULL REFERENCES lessons(id) ON DELETE CASCADE,
+  status      TEXT NOT NULL,
+  kind        TEXT NOT NULL DEFAULT 'review',
+  user_id     TEXT REFERENCES users(id) ON DELETE SET NULL,
+  note        TEXT NOT NULL DEFAULT '',
+  created_at  INTEGER NOT NULL
+);
+CREATE INDEX lesson_reviews_lesson ON lesson_reviews(lesson_id, created_at);
+`,
+  },
 ];

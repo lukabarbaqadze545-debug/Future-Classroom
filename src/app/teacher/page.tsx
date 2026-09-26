@@ -7,12 +7,12 @@ import { inLocale, listLessonsForTeacher } from "@/lib/services/lessons";
 import { listSessionsForTeacher } from "@/lib/services/sessions";
 import { listQuizzesForTeacher } from "@/lib/services/quizzes";
 import { listMaterials } from "@/lib/services/materials";
+import { listClassesForTeacher } from "@/lib/services/classes";
 import { PageContainer } from "@/components/layout/site-header";
 import { PageHeader } from "@/components/ui/misc";
 import { Card, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ButtonLink } from "@/components/ui/button";
-import { StartSessionButton } from "@/components/teacher/start-session-dialog";
 import { listAssignmentsForTeacher } from "@/lib/services/assignments";
 import { LAB_IDS, LAB_ROUTES } from "@/lib/labs/registry";
 import { LabIcon } from "@/components/labs/lab-shell";
@@ -33,26 +33,43 @@ export default async function TeacherDashboard() {
   const materials = listMaterials(user).slice(0, 4);
   const assignments = listAssignmentsForTeacher(user.id).sort((a, b) => b.toReview - a.toReview);
   const firstName = user.displayName.split(" ")[0];
+  const classes = listClassesForTeacher(user.id);
 
   return (
     <PageContainer>
       <PageHeader title={fmt(d.greeting, { name: firstName })} description={d.lead} />
 
+      {live.length ? (
+        <Card className="mb-6 border-success/40 bg-success-soft/30" data-testid="teacher-live-sessions">
+          <CardHeader title={<span className="flex items-center gap-2"><span className="fc-pulse size-2.5 rounded-full bg-success" />{d.liveNow}</span>} />
+          <ul className="divide-y divide-line">
+            {live.map((s) => (
+              <li key={s.id} className="flex flex-wrap items-center justify-between gap-3 px-5 py-3">
+                <div>
+                  <p className="font-medium">{s.title} {s.classLabel ? <span className="text-ink-subtle">· {s.classLabel}</span> : null}</p>
+                  <p className="text-sm text-ink-muted">
+                    <span className="font-mono font-semibold text-ink">{s.joinCode}</span> · {fmtCount(d.participants, s.participantCount)} · {dict.status[s.status]}
+                  </p>
+                </div>
+                <ButtonLink href={`/teacher/sessions/${s.id}`} size="lg">{d.resume}</ButtonLink>
+              </li>
+            ))}
+          </ul>
+        </Card>
+      ) : null}
+
       {/* Quick actions */}
       <div className="grid gap-4 md:grid-cols-3">
-        <Link href="/teacher/lessons/new" className="group rounded-2xl border border-brand/20 bg-brand p-6 text-white shadow-[var(--shadow-card)] transition-colors hover:bg-brand-hover" data-testid="create-lesson">
-          <BookPlus aria-hidden className="size-7" />
-          <p className="mt-4 text-lg font-semibold">{d.createLesson}</p>
-          <p className="mt-1 text-sm text-white/80">{d.createLessonText}</p>
-        </Link>
-        <div className="flex flex-col rounded-2xl border border-line bg-surface p-6 shadow-[var(--shadow-card)]">
-          <Radio aria-hidden className="size-7 text-brand" />
+        <Link href="/teacher/sessions/new" className="group rounded-2xl border border-brand/20 bg-brand p-6 text-white shadow-[var(--shadow-card)] transition-colors hover:bg-brand-hover" data-testid="dashboard-start-session">
+          <Radio aria-hidden className="size-7" />
           <p className="mt-4 text-lg font-semibold">{d.startSession}</p>
-          <p className="mt-1 mb-4 text-sm text-ink-muted">{d.startSessionText}</p>
-          <div className="mt-auto">
-            <StartSessionButton size="md" variant="secondary" label={d.startSession} lessons={lessons.filter((l) => l.activityCount > 0).map((l) => ({ id: l.id, title: l.title, grade: l.grade }))} />
-          </div>
-        </div>
+          <p className="mt-1 text-sm text-white/80">{d.startSessionText}</p>
+        </Link>
+        <Link href="/teacher/lessons/new" className="rounded-2xl border border-line bg-surface p-6 shadow-[var(--shadow-card)] transition-colors hover:border-line-strong" data-testid="create-lesson">
+          <BookPlus aria-hidden className="size-7 text-brand" />
+          <p className="mt-4 text-lg font-semibold">{d.createLesson}</p>
+          <p className="mt-1 text-sm text-ink-muted">{d.createLessonText}</p>
+        </Link>
         <Link href="/teacher/materials" className="rounded-2xl border border-line bg-surface p-6 shadow-[var(--shadow-card)] transition-colors hover:border-line-strong">
           <FileUp aria-hidden className="size-7 text-brand" />
           <p className="mt-4 text-lg font-semibold">{d.uploadMaterial}</p>
@@ -111,26 +128,32 @@ export default async function TeacherDashboard() {
         </Card>
       </div>
 
-      {live.length ? (
-        <Card className="mt-6 border-success/30">
-          <CardHeader title={<span className="flex items-center gap-2"><span className="fc-pulse size-2.5 rounded-full bg-success" />{d.liveNow}</span>} />
-          <ul className="divide-y divide-line">
-            {live.map((s) => (
-              <li key={s.id} className="flex flex-wrap items-center justify-between gap-3 px-5 py-3">
-                <div>
-                  <p className="font-medium">{s.title} {s.classLabel ? <span className="text-ink-subtle">· {s.classLabel}</span> : null}</p>
-                  <p className="text-sm text-ink-muted">
-                    <span className="font-mono font-semibold text-ink">{s.joinCode}</span> · {fmtCount(d.participants, s.participantCount)} · {dict.status[s.status]}
-                  </p>
-                </div>
-                <ButtonLink href={`/teacher/sessions/${s.id}`} size="sm">{d.resume}</ButtonLink>
-              </li>
-            ))}
-          </ul>
-        </Card>
-      ) : null}
 
       <div className="mt-6 grid gap-6 lg:grid-cols-2">
+        <Card>
+          <CardHeader title={dict.labs.classes.myClasses} action={<ButtonLink href="/teacher/students" variant="ghost" size="sm">{dict.common.viewAll}</ButtonLink>} />
+          {classes.length ? (
+            <ul className="divide-y divide-line" data-testid="dashboard-classes">
+              {classes.map((c) => (
+                <li key={c.id} className="flex flex-wrap items-center justify-between gap-3 px-5 py-3">
+                  <Link href={`/teacher/classes/${c.id}`} className="min-w-0 hover:text-brand hover:underline">
+                    <span className="block font-medium">{c.name}</span>
+                    <span className="text-sm text-ink-muted">{fmtCount(dict.labs.classes.membersCount, c.members.length)}</span>
+                  </Link>
+                  <ButtonLink href={`/teacher/sessions/new?class=${c.id}`} size="sm" variant="secondary">
+                    {dict.labs.classes.startLesson}
+                  </ButtonLink>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="px-5 py-5 text-sm text-ink-muted">
+              <Link href="/teacher/students" className="font-medium text-brand hover:underline">
+                {dict.labs.classes.noClasses}
+              </Link>
+            </p>
+          )}
+        </Card>
         <Card>
           <CardHeader title={d.recentLessons} action={<ButtonLink href="/teacher/lessons" variant="ghost" size="sm">{dict.common.viewAll}</ButtonLink>} />
           {lessons.length ? (

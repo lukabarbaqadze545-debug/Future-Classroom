@@ -11,6 +11,6 @@ export const POST = handler(async (req, { params }: Ctx) => {
   const { id } = await params;
   const participant = await requireParticipant(id);
   rateLimit(`respond:${participant.id}`, 60, 60_000);
-  const body = await readJson(req, z.object({ activityId: z.string().max(40), answer: answerSchema }));
-  return json(submitResponse({ sessionId: id, participant, activityId: body.activityId, answer: body.answer }));
+  const body = await readJson(req, z.object({ activityId: z.string().max(40), answer: answerSchema, submissionId: z.string().min(8).max(64).optional() }));
+  return json(submitResponse({ sessionId: id, participant, activityId: body.activityId, answer: body.answer, submissionId: body.submissionId }));
 });

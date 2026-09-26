@@ -32,7 +32,10 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
         }
       };
       send(`retry: 3000\nevent: version\ndata: ${JSON.stringify({ version: session.version })}\n\n`);
-      const unsubscribe = subscribeToSession(id, (event) => send(`event: version\ndata: ${JSON.stringify({ version: event.version })}\n\n`));
+      const unsubscribe = subscribeToSession(id, (event) => {
+        if (event.audience === "staff" && !isOwner) return;
+        send(`event: version\ndata: ${JSON.stringify({ version: event.version })}\n\n`);
+      });
       const heartbeat = setInterval(() => send(`: keep-alive\n\n`), 20_000);
       cleanup = () => {
         clearInterval(heartbeat);

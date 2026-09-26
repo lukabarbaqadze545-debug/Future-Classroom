@@ -326,20 +326,38 @@ export function TeacherConsole({ initial }: { initial: TeacherSessionView }) {
             </span>
           </div>
           {participants.length ? (
-            <ul className="max-h-[480px] divide-y divide-line overflow-y-auto">
+            <ul className="max-h-[520px] divide-y divide-line overflow-y-auto" data-testid="console-students">
               {participants.map((p) => (
-                <li key={p.id} className="flex items-center justify-between gap-2 px-4 py-2">
-                  <span className="truncate text-sm">{p.name}</span>
-                  <span className={cn("inline-flex items-center gap-1 text-xs", p.online ? "text-success" : "text-ink-subtle")}>
-                    <CircleDot aria-hidden className="size-3" />
-                    {p.online ? c.online : c.offline}
+                <li key={p.id} className="flex items-center justify-between gap-2 px-4 py-2" data-status={p.current ?? "none"}>
+                  <span className="flex min-w-0 items-center gap-2">
+                    <CircleDot aria-label={p.online ? c.online : c.offline} className={cn("size-3 shrink-0", p.online ? "text-success" : "text-ink-subtle")} />
+                    <span className="truncate text-sm">{p.name}</span>
                   </span>
+                  {p.current === "correct" ? (
+                    <Badge tone="success">{c.correctMark}</Badge>
+                  ) : p.current === "incorrect" ? (
+                    <Badge tone="warn">{c.incorrectMark}</Badge>
+                  ) : p.current === "answered" ? (
+                    <Badge tone="brand">{c.statusAnswered}</Badge>
+                  ) : p.current === "waiting" ? (
+                    <span className="text-xs text-ink-subtle">{c.statusWaiting}</span>
+                  ) : (
+                    <span className={cn("text-xs", p.online ? "text-success" : "text-ink-subtle")}>{p.online ? c.online : c.offline}</span>
+                  )}
                 </li>
               ))}
             </ul>
           ) : (
             <p className="px-4 py-6 text-sm text-ink-muted">{c.noStudents}</p>
           )}
+          {view.absent.length ? (
+            <div className="border-t border-line px-4 py-3" data-testid="console-absent">
+              <p className="text-xs font-semibold text-ink-muted">
+                {c.notJoined} ({view.absent.length})
+              </p>
+              <p className="mt-1 text-sm text-ink-muted">{view.absent.map((a) => a.name).join(", ")}</p>
+            </div>
+          ) : null}
         </Card>
       </div>
 

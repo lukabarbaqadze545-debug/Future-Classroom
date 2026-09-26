@@ -5,6 +5,7 @@ import { ApiError } from "@/lib/http/errors";
 import type { CurrentUser } from "@/lib/auth/session";
 import { recordLabProgress } from "@/lib/services/assignments";
 import { datasetSchema, noteSchema, projectDataSchema, sourceSchema, type DatasetInput, type NoteInput, type ResearchProjectData, type SourceInput } from "./model";
+import { canViewWork } from "@/lib/services/classes";
 
 export interface ResearchProject {
   id: string;
@@ -74,10 +75,10 @@ export function createResearchProject(user: CurrentUser, input: { title: string;
   return getResearchProjectFor(id, user);
 }
 
-/** Owners and staff may open a project. */
+/** Owners and the student's teachers may open a project. */
 export function getResearchProjectFor(id: string, viewer: CurrentUser): ResearchProject {
   const row = getDb().prepare(`${SELECT_PROJECT} WHERE p.id = ?`).get(id) as ProjectRow | undefined;
-  if (!row || (row.user_id !== viewer.id && viewer.role === "student")) throw new ApiError(404, "not_found");
+  if (!row || !canViewWork(viewer, row.user_id)) throw new ApiError(404, "not_found");
   return toProject(row);
 }
 

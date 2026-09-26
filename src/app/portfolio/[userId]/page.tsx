@@ -7,7 +7,7 @@ import { tr } from "@/lib/labs/localized";
 import { SKILLS } from "@/lib/labs/career/skills";
 import { listGoals, skillProfile } from "@/lib/labs/career/service";
 import { listPortfolio } from "@/lib/services/portfolio";
-import { getStudent } from "@/lib/services/classes";
+import { canViewStudent, getStudent } from "@/lib/services/classes";
 import { SiteHeader, PageContainer } from "@/components/layout/site-header";
 import { Badge } from "@/components/ui/badge";
 import { PrintButton } from "@/components/labs/library/print-button";
@@ -20,9 +20,8 @@ export async function generateMetadata() {
 export default async function PortfolioOverviewPage({ params }: { params: Promise<{ userId: string }> }) {
   const { userId } = await params;
   const viewer = await requirePageUser(["student", "teacher", "admin"], `/portfolio/${userId}`);
-  if (viewer.role === "student" && viewer.id !== userId) notFound();
   const student = getStudent(userId);
-  if (!student) notFound();
+  if (!student || !canViewStudent(viewer, userId)) notFound();
   const { dict, locale } = await getDictionary();
   const p = dict.labs.career.portfolio;
   const items = listPortfolio(userId);

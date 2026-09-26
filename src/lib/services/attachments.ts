@@ -7,6 +7,7 @@ import { ApiError } from "@/lib/http/errors";
 import { sanitizeFileName, validateAttachment } from "@/lib/files/validate";
 import type { CurrentUser } from "@/lib/auth/session";
 import { uploadDir } from "./materials";
+import { canViewWork } from "./classes";
 
 /** Photos and documents students attach to projects, experiments and portfolio items. */
 export type AttachmentTarget = "stem_project" | "stem_record" | "portfolio" | "research" | "assignment";
@@ -107,7 +108,8 @@ export function listAttachments(targetKind: AttachmentTarget, targetId: string):
 export function getAttachmentFile(id: string, user: CurrentUser): { path: string; record: AttachmentRecord } {
   const row = getDb().prepare("SELECT * FROM attachments WHERE id = ?").get(id) as Row | undefined;
   if (!row) throw new ApiError(404, "not_found");
-  if (row.owner_id !== user.id && user.role === "student") throw new ApiError(404, "not_found");
+  // Students see their own files; staff see the files of students they teach.
+  if (!canViewWork(user, row.owner_id)) throw new ApiError(404, "not_found");
   return { path: path.join(dir(), path.basename(row.stored_name)), record: toRecord(row) };
 }
 

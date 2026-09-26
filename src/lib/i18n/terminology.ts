@@ -57,6 +57,8 @@ export const TERMS: Record<string, Term> = {
   features: { en: "Features", ka: "შესაძლებლობები", avoid: ["ფუნქციონალ"] },
   user: { en: "User", ka: "მომხმარებელი", avoid: ["იუზერ"] },
   bookmark: { en: "Bookmark", ka: "სანიშნე" },
+  contentReview: { en: "Content review", ka: "შინაარსის შემოწმება", note: "Teachers checking a lesson before classroom use." },
+  classroomReady: { en: "Classroom ready", ka: "საკლასოდ მზა" },
 
   // --- Laboratories --------------------------------------------------------
   laboratory: { en: "Laboratory", ka: "ლაბორატორია" },

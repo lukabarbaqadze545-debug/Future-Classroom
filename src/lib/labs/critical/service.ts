@@ -7,6 +7,7 @@ import { recordLabProgress } from "@/lib/services/assignments";
 import { CT_EXERCISES, findExercise } from "./catalog";
 import { answersSchemaFor, grade, type CtResult } from "./grade";
 import { FALLACIES, type CtExercise, type CtKind, type CtTopic } from "./types";
+import { canViewWork } from "@/lib/services/classes";
 
 /*
  * Critical thinking attempts. The student view never contains answer keys,
@@ -125,10 +126,10 @@ export function getAttempt(id: string): AttemptRecord | null {
   return row ? toAttempt(row) : null;
 }
 
-/** Owners and staff may read an attempt. */
+/** Owners and the student's teachers may read an attempt. */
 export function getAttemptFor(id: string, viewer: CurrentUser): AttemptRecord {
   const attempt = getAttempt(id);
-  if (!attempt || (attempt.userId !== viewer.id && viewer.role === "student")) throw new ApiError(404, "not_found");
+  if (!attempt || !canViewWork(viewer, attempt.userId)) throw new ApiError(404, "not_found");
   return attempt;
 }
 
