@@ -25,11 +25,16 @@ const flag = (name: string) => process.env[name];
 for (const [name, what] of [
   ["DEMO_MODE", "one-click demo sign-in"],
   ["SEED_DEMO", "demo accounts with the public password demo1234"],
-  ["SELF_REGISTRATION", "students creating their own accounts"],
 ] as const) {
-  if (flag(name) === "true") report(name === "SELF_REGISTRATION" ? "WARN" : "FAIL", `${name}=true: ${what} is on. Turn it off for real school use.`);
+  if (flag(name) === "true") report("FAIL", `${name}=true: ${what} is on. Turn it off for real school use.`);
   else report("OK", `${name} is off in production (${flag(name) === undefined ? "default" : `set to ${flag(name)}`}).`);
 }
+report(
+  "OK",
+  flag("SELF_REGISTRATION") === "false"
+    ? "Self-registration is off: only teachers create student accounts."
+    : "Self-registration is on: anyone who can open the site can create a student account (name + password). Set SELF_REGISTRATION=false to allow only teacher-created accounts.",
+);
 report("OK", flag("ANTHROPIC_API_KEY") ? "AI is configured (optional)." : "AI is not configured: the platform runs fully without it (built-in lessons, teacher hints).");
 if (flag("COOKIE_SECURE") !== "true") report("WARN", "COOKIE_SECURE is not true: fine on plain HTTP inside the school network; set it when serving over HTTPS.");
 

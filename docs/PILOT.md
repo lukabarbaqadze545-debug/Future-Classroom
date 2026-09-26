@@ -13,7 +13,7 @@ The lesson is the built-in **Quadratic Equations / კვადრატულ�
 ## A. One week before (IT person + teacher, 30 minutes)
 
 1. The server runs as described in `docs/OPERATIONS.md`; `npm run doctor`
-   shows no problems. Demo mode, demo data and self-registration are off.
+   shows no problems. Demo mode and demo data are off.
 2. The teacher signs in with their own account and changes the temporary
    password (**My account / ჩემი ანგარიში**).
 3. **Classes / კლასები → New class / ახალი კლასი**, e.g. "11ა".

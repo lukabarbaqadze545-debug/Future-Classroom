@@ -16,7 +16,7 @@ async function studentPage(browser: Browser, username: string, password: string)
   const errors: string[] = [];
   page.on("pageerror", (error) => errors.push(error.message));
   await page.goto("/login");
-  await page.getByLabel("Username").fill(username);
+  await page.getByLabel("Name or username").fill(username);
   await page.getByLabel("Password").fill(password);
   await page.getByRole("button", { name: "Sign in" }).click();
   await expect(page).toHaveURL(/\/student$/);

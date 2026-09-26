@@ -20,7 +20,7 @@ show that the system is secure. Nobody outside the project has reviewed it.
 | 4 | Medium | Join codes have four digits (9,000 values). Anyone on the network can guess a live code and join anonymously under any name; the name is shown on the projector lobby and in the teacher console. Guests never receive answers, only prompts. | **Mitigated.** The teacher can remove a participant (their answers go too) and the student screen says so. Joining is rate-limited per client address. **Open:** there is no "lock this lesson" switch and codes stay short so young students can type them. |
 | 5 | Medium | Rate limits are keyed by `X-Forwarded-For`. When the app is reached directly (no reverse proxy), a client can set this header and get a fresh limit for every request. | **Mitigated for sign-in:** failed sign-ins are also counted per username (10 per 15 minutes) whatever the address. **Open** for joining and registration. Put the app behind a reverse proxy that overwrites the header, or keep it on the school network only. |
 | 6 | Low | The per-username failure limit can be used to lock a classmate out for 15 minutes by typing wrong passwords. | Accepted. A teacher's password reset clears the counter. |
-| 7 | Low | Anyone who could reach the server could create a student account on `/register`. | **Fixed.** Self-registration is off in a production build unless `SELF_REGISTRATION=true`; teachers create accounts from the class page. |
+| 7 | Low | Anyone who can reach the server can create a student account on `/register` (name and password only). | **Accepted by design:** open registration is wanted; accounts are always students and cannot reach staff pages or other students' work. `SELF_REGISTRATION=false` turns it off; registrations are limited per client address. |
 | 8 | Low | Temporary passwords are 8 characters from a 31-symbol alphabet (about 40 bits). Changing them is asked for (banner), not forced. | Accepted for a pilot with the sign-in limits above. |
 | 9 | Low | No Content-Security-Policy on pages. React escapes all output and there is no HTML built from user input (the two `dangerouslySetInnerHTML` uses render QR-code SVG generated on the server). | Open. |
 | 10 | Low (deployment) | Plain HTTP on the school network sends passwords and session cookies in clear text. | Open — depends on the school's setup. Use HTTPS (e.g. a Caddy reverse proxy) where possible; `COOKIE_SECURE=true` then. |
@@ -49,7 +49,7 @@ show that the system is secure. Nobody outside the project has reviewed it.
 
 ## Before the pilot
 
-1. Start with `DEMO_MODE`, `SEED_DEMO` and `SELF_REGISTRATION` unset or `false` (see `docs/OPERATIONS.md`).
+1. Start with `DEMO_MODE` and `SEED_DEMO` unset or `false`; decide whether students may register themselves (`SELF_REGISTRATION`, see `docs/OPERATIONS.md`).
 2. Create one administrator and the teachers with `npm run user:create`; teachers create student accounts from their class page.
 3. Keep the server on the school network; use HTTPS if the network allows it.
 4. Tell teachers how to remove a participant and how to reset a student's password.

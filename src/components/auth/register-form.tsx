@@ -22,7 +22,7 @@ export function RegisterForm() {
     setError(null);
     try {
       const { redirect } = await api<{ redirect: string }>("/api/auth/register", {
-        body: { displayName: String(data.get("displayName")), username: String(data.get("username")), password: String(data.get("password")) },
+        body: { name: String(data.get("name")), password: String(data.get("password")) },
       });
       router.push(redirect);
       router.refresh();
@@ -35,16 +35,13 @@ export function RegisterForm() {
   return (
     <form onSubmit={submit} className="space-y-4">
       {error ? <Notice tone="danger">{error}</Notice> : null}
-      <Field label={dict.auth.displayName} hint={dict.auth.displayNameHelp}>
-        {(ids) => <Input {...ids} name="displayName" required maxLength={40} autoComplete="nickname" />}
-      </Field>
-      <Field label={dict.auth.username} hint={dict.auth.usernameHelp}>
-        {(ids) => <Input {...ids} name="username" required pattern="[a-zA-Z0-9._\-]{3,30}" autoCapitalize="none" spellCheck={false} autoComplete="username" />}
+      <Field label={dict.auth.name} hint={dict.auth.nameHelp}>
+        {(ids) => <Input {...ids} name="name" required minLength={2} maxLength={40} autoComplete="username" spellCheck={false} data-testid="register-name" />}
       </Field>
       <Field label={dict.auth.password} hint={dict.auth.passwordHelp}>
-        {(ids) => <Input {...ids} name="password" type="password" required minLength={8} autoComplete="new-password" />}
+        {(ids) => <Input {...ids} name="password" type="password" required minLength={8} autoComplete="new-password" data-testid="register-password" />}
       </Field>
-      <Button type="submit" size="lg" className="w-full" disabled={busy}>
+      <Button type="submit" size="lg" className="w-full" disabled={busy} data-testid="register-submit">
         {busy ? dict.auth.registering : dict.auth.register}
       </Button>
       <p className="pt-2 text-center text-sm text-ink-muted">

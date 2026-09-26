@@ -119,7 +119,7 @@ describe("answers stay on the server until the student has answered", () => {
   });
 });
 
-describe("demo sign-in, demo accounts and self-registration are opt-in for production builds", () => {
+describe("demo sign-in and demo accounts are opt-in for production builds; registration can be switched off", () => {
   const saved = { NODE_ENV: process.env.NODE_ENV, DEMO_MODE: process.env.DEMO_MODE, SEED_DEMO: process.env.SEED_DEMO, SELF_REGISTRATION: process.env.SELF_REGISTRATION };
   const env = process.env as Record<string, string | undefined>;
   afterEach(() => {
@@ -136,6 +136,8 @@ describe("demo sign-in, demo accounts and self-registration are opt-in for produ
     env.NODE_ENV = "production";
     expect(demoModeEnabled()).toBe(false);
     expect(seedDemoEnabled()).toBe(false);
+    expect(selfRegistrationEnabled()).toBe(true);
+    env.SELF_REGISTRATION = "false";
     expect(selfRegistrationEnabled()).toBe(false);
     env.DEMO_MODE = "true";
     expect(demoModeEnabled()).toBe(true);

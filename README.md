@@ -96,7 +96,7 @@ npm run user:create -- --role teacher --username nbe --name "Nino Beridze"
 npm run doctor              # checks settings, database, backups, disk
 ```
 
-A production build (`npm start`) has demo sign-in, demo accounts and student self-registration **off** unless `DEMO_MODE`, `SEED_DEMO` or `SELF_REGISTRATION` is set to `true`. Teachers create student accounts on their class page and print sign-in slips.
+A production build (`npm start`) has demo sign-in and demo accounts **off** unless `DEMO_MODE` or `SEED_DEMO` is set to `true`. Anyone can create a student account with just a name and a password (`/register`; turn off with `SELF_REGISTRATION=false`); teachers can also create accounts on their class page and print sign-in slips.
 
 **Guides:** [docs/OPERATIONS.md](docs/OPERATIONS.md) (install, service, backups, accounts, updates, checklists) · [docs/PILOT.md](docs/PILOT.md) (a 45-minute pilot lesson, minute by minute) · [docs/SECURITY-REVIEW.md](docs/SECURITY-REVIEW.md) · [docs/DATA-ARCHITECTURE.md](docs/DATA-ARCHITECTURE.md) (SQLite assessment, PostgreSQL plan) · [docs/CONTENT-ROADMAP.md](docs/CONTENT-ROADMAP.md) · [docs/LIBRARY-AND-UNIVERSITY-DATA.md](docs/LIBRARY-AND-UNIVERSITY-DATA.md) · [docs/AUDIT.md](docs/AUDIT.md) (pilot-readiness audit).
 

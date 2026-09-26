@@ -29,10 +29,27 @@ export function createUser(input: {
   return { id, role: input.role, username: input.username, displayName: input.displayName };
 }
 
+/** The form people type their sign-in name in: extra spaces removed, Unicode normalised. */
+export function normalizeSignInName(value: string): string {
+  return value.normalize("NFC").trim().replace(/\s+/g, " ");
+}
+
+/**
+ * Self-registration: a name and a password, nothing else. The name is both
+ * what others see and what the person signs in with, so it must be unique
+ * (letter case does not matter). New accounts are always students.
+ */
+export function registerStudent(name: string, password: string): UserRecord {
+  const clean = normalizeSignInName(name);
+  if (clean.length < 2 || clean.length > 40 || !/\p{L}/u.test(clean) || /[\p{C}<>]/u.test(clean)) throw new ApiError(400, "invalid_input");
+  if (password.length < 8 || password.length > 200) throw new ApiError(400, "invalid_input");
+  return createUser({ role: "student", username: clean, displayName: clean, password });
+}
+
 export function authenticate(username: string, password: string): UserRecord | null {
   const row = getDb()
     .prepare("SELECT id, role, username, display_name AS displayName, password_hash AS hash FROM users WHERE username = ?")
-    .get(username) as (UserRecord & { hash: string }) | undefined;
+    .get(normalizeSignInName(username)) as (UserRecord & { hash: string }) | undefined;
   if (!row || !verifyPassword(password, row.hash)) return null;
   return { id: row.id, role: row.role, username: row.username, displayName: row.displayName };
 }

@@ -42,7 +42,7 @@ export function LoginForm({ next, allowRegister = true }: { next: string | null;
   return (
     <form onSubmit={submit} className="space-y-4" noValidate>
       {error ? <Notice tone="danger">{error}</Notice> : null}
-      <Field label={dict.auth.username}>{(ids) => <Input {...ids} name="username" autoComplete="username" required autoCapitalize="none" spellCheck={false} />}</Field>
+      <Field label={dict.auth.loginName}>{(ids) => <Input {...ids} name="username" autoComplete="username" required autoCapitalize="none" spellCheck={false} />}</Field>
       <Field label={dict.auth.password}>{(ids) => <Input {...ids} name="password" type="password" autoComplete="current-password" required />}</Field>
       <Button type="submit" size="lg" className="w-full" disabled={busy}>
         {busy ? dict.auth.signingIn : dict.auth.signIn}

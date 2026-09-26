@@ -26,7 +26,7 @@ check these lines:
 ```
 DEMO_MODE=false
 SEED_DEMO=false
-SELF_REGISTRATION=false
+# SELF_REGISTRATION=false                     ← only if students may not create their own accounts
 DEFAULT_LANGUAGE=ka
 # PUBLIC_BASE_URL=http://192.168.1.10:3000   ← the address students type
 # ANTHROPIC_API_KEY=                          ← optional; everything works without it
@@ -142,7 +142,7 @@ teachers wrote or copied are never changed by an update.
 ## 7. Checklists
 
 **Before the first lesson**
-- [ ] `npm run doctor` shows no problems; demo mode, demo data and self-registration are off.
+- [ ] `npm run doctor` shows no problems; demo mode and demo data are off; the school has decided whether students may register themselves (`SELF_REGISTRATION`).
 - [ ] One administrator account and all teacher accounts exist; the initial passwords were changed.
 - [ ] Each class exists with its students; the slips are printed.
 - [ ] The address works from a classroom computer and from the projector computer.

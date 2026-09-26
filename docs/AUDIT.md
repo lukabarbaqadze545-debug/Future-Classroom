@@ -77,8 +77,8 @@ passed. Now: **254 unit tests** in 14 files (two new: `pilot.test.ts`,
 Full findings in `docs/SECURITY-REVIEW.md`. Fixed in this phase, each with a
 test:
 
-- demo sign-in, demo accounts and self-registration were on by default in
-  production → now opt-in;
+- demo sign-in and demo accounts were on by default in production → now
+  opt-in (student self-registration stays on by design, with a switch);
 - the last hint rung (the full solution, which contains the answer) could be
   opened before answering → now only after a first attempt;
 - any teacher could read any student's work, files and profile → now only the
