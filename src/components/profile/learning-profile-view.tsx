@@ -84,7 +84,7 @@ export function LearningProfileView({ profile, dict, locale, studentId }: { prof
           <Row label={dict.labs.stem.tabs.experiments} value={`${profile.stem.experiments}/${profile.stem.experimentsTotal}`} />
           <Row label={dict.labs.stem.tabs.simulations} value={`${profile.stem.simulations}/${profile.stem.simulationsTotal}`} />
           <Row label={dict.labs.stem.challenges} value={`${profile.stem.challenges}/${profile.stem.challengesTotal}`} />
-          <Row label={p.projects} value={`${profile.stem.projectsSubmitted}/${profile.stem.projects}`} />
+          <Row label={p.projects} value={`${profile.stem.projectsSubmitted}/${profile.stem.projects.length}`} />
         </LabCard>
         <LabCard lab="research" title={labName.research.name} href="/labs/research">
           <Row label={p.researchProjects} value={profile.research.length} />
@@ -120,7 +120,9 @@ export function LearningProfileView({ profile, dict, locale, studentId }: { prof
                   <Link href={w.href} className="flex items-center justify-between gap-3 px-5 py-2.5 hover:bg-muted/50">
                     <span className="flex min-w-0 items-center gap-2.5">
                       {w.lab !== "lessons" ? <LabIcon lab={w.lab} size="sm" /> : null}
-                      <span className="truncate text-sm font-medium">{w.title}</span>
+                      <span className="truncate text-sm font-medium" lang={w.lang}>
+                        {w.title}
+                      </span>
                     </span>
                     <span className="shrink-0 text-xs text-ink-muted">{relativeTime(dict, w.at)}</span>
                   </Link>

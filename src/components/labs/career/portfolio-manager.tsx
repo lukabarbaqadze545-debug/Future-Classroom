@@ -163,7 +163,7 @@ export function PortfolioManager({ initial, attachments }: { initial: PortfolioI
                   ))}
                   {item.evidence.startsWith("/") ? (
                     <Link href={item.evidence} className="text-sm font-medium text-brand hover:underline">
-                      {item.evidence}
+                      {p.openWork}
                     </Link>
                   ) : item.evidence ? (
                     <span className="text-sm text-ink-muted">{item.evidence}</span>

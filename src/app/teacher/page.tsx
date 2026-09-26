@@ -3,7 +3,7 @@ import { BookPlus, FileUp, Radio } from "lucide-react";
 import { getCurrentUser } from "@/lib/auth/session";
 import { getDictionary, pageTitle } from "@/lib/i18n/server";
 import { fmt, fmtCount, relativeTime } from "@/lib/i18n/config";
-import { listLessonsForTeacher } from "@/lib/services/lessons";
+import { inLocale, listLessonsForTeacher } from "@/lib/services/lessons";
 import { listSessionsForTeacher } from "@/lib/services/sessions";
 import { listQuizzesForTeacher } from "@/lib/services/quizzes";
 import { listMaterials } from "@/lib/services/materials";
@@ -23,9 +23,9 @@ export async function generateMetadata() {
 
 export default async function TeacherDashboard() {
   const user = (await getCurrentUser())!;
-  const { dict } = await getDictionary();
+  const { dict, locale } = await getDictionary();
   const d = dict.teacher.dashboard;
-  const lessons = listLessonsForTeacher(user.id);
+  const lessons = inLocale(listLessonsForTeacher(user.id), locale);
   const sessions = listSessionsForTeacher(user.id);
   const live = sessions.filter((s) => s.status !== "ended");
   const ended = sessions.filter((s) => s.status === "ended").slice(0, 5);

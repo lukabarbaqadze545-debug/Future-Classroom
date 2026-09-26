@@ -9,7 +9,7 @@ import { resolveActivity } from "@/lib/labs/activity-links";
 import { findCopyByCode, getReading, getResource, lessonsForResource, listCopies } from "@/lib/labs/library/service";
 import { publicOrigin, qrSvg } from "@/lib/labs/library/qr";
 import { canView, getMaterial } from "@/lib/services/materials";
-import { listLessonsForTeacher } from "@/lib/services/lessons";
+import { inLocale, listLessonsForTeacher } from "@/lib/services/lessons";
 import { listStudents } from "@/lib/services/classes";
 import { isBookmarked } from "@/lib/services/bookmarks";
 import { openAssignmentsFor } from "@/lib/services/assignments";
@@ -69,7 +69,11 @@ export default async function ResourcePage({ params, searchParams }: Props) {
         title={<span lang={resource.language === "ka" ? "ka" : resource.language === "en" ? "en" : undefined}>{resource.title}</span>}
         lead={
           <span className="block space-y-2">
-            {resource.authors ? <span className="block text-ink">{resource.authors}</span> : null}
+            {resource.authors ? (
+              <span className="block text-ink" lang={resource.language === "ka" ? "ka" : resource.language === "en" ? "en" : undefined}>
+                {resource.authors}
+              </span>
+            ) : null}
             <span className="flex flex-wrap items-center gap-1.5">
               <Badge>{b.kinds[resource.kind]}</Badge>
               <Badge>{b.languages[resource.language]}</Badge>
@@ -80,7 +84,11 @@ export default async function ResourcePage({ params, searchParams }: Props) {
               ))}
               {resource.gradeFrom && resource.gradeTo ? <span className="text-sm">{fmt(b.grades, { from: resource.gradeFrom, to: resource.gradeTo })}</span> : null}
               {resource.year ? <span className="text-sm">· {resource.year}</span> : null}
-              {resource.publisher ? <span className="text-sm">· {resource.publisher}</span> : null}
+              {resource.publisher ? (
+                <span className="text-sm" lang={resource.language === "ka" ? "ka" : resource.language === "en" ? "en" : undefined}>
+                  · {resource.publisher}
+                </span>
+              ) : null}
             </span>
           </span>
         }
@@ -176,7 +184,7 @@ export default async function ResourcePage({ params, searchParams }: Props) {
           {staff ? (
             <Card className="p-5">
               <h2 className="mb-3 font-semibold">{b.lessons}</h2>
-              <LessonAttach resourceId={id} lessons={listLessonsForTeacher(user.id).map((l) => ({ id: l.id, title: l.title }))} initial={lessonsForResource(id)} />
+              <LessonAttach resourceId={id} lessons={inLocale(listLessonsForTeacher(user.id), locale).map((l) => ({ id: l.id, title: l.title }))} initial={lessonsForResource(id)} />
             </Card>
           ) : (
             <Card className="p-5">

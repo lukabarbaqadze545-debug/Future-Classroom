@@ -25,6 +25,8 @@ export interface RecentWork {
   detail: string;
   href: string;
   at: number;
+  /** Language of a title that is not interface text (e.g. a book title). */
+  lang?: string;
 }
 
 /**
@@ -66,7 +68,7 @@ export function learningProfile(studentId: string, viewer: CurrentUser, locale: 
   }
   for (const p of projects.slice(0, 4)) recent.push({ lab: "stem", title: p.title, detail: p.status, href: `/labs/stem/projects/${p.id}`, at: p.updatedAt });
   for (const p of research.slice(0, 4)) recent.push({ lab: "research", title: p.title, detail: `${p.done}/${p.total}`, href: `/labs/research/${p.id}`, at: p.updatedAt });
-  for (const r of listReading(studentId).slice(0, 4)) recent.push({ lab: "library", title: r.title, detail: r.status, href: `/library/${r.resourceId}`, at: r.updatedAt });
+  for (const r of listReading(studentId).slice(0, 4)) recent.push({ lab: "library", title: r.title, detail: r.status, href: `/library/${r.resourceId}`, at: r.updatedAt, lang: r.language });
   for (const i of portfolio.slice(0, 4)) recent.push({ lab: "career", title: i.title, detail: i.category, href: `/portfolio/${studentId}`, at: i.updatedAt });
   recent.sort((a, b) => b.at - a.at);
 

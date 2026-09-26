@@ -71,10 +71,13 @@ export default async function StudentAssignmentPage({ params }: { params: Promis
           <Card className="space-y-3 p-5">
             {assignment.instructions ? <p className="text-[15px] leading-relaxed whitespace-pre-line">{assignment.instructions}</p> : null}
             {item ? (
-              <ButtonLink href={item.href} data-testid="open-activity">
-                {item.title ? `${a.openActivity}: ${item.title}` : a.createInLab}
-                <ArrowRight aria-hidden className="size-4" />
-              </ButtonLink>
+              <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-line bg-muted/40 px-4 py-3">
+                {item.title ? <p className="min-w-0 font-medium">{item.title}</p> : null}
+                <ButtonLink href={item.href} data-testid="open-activity" className="shrink-0">
+                  {item.title ? a.openActivity : a.createInLab}
+                  <ArrowRight aria-hidden className="size-4" />
+                </ButtonLink>
+              </div>
             ) : null}
             {auto ? <p className="text-sm text-ink-muted">{a.autoChecked}</p> : null}
           </Card>

@@ -179,7 +179,7 @@ export function listPublishedLessons(filter?: { subject?: Subject }): LessonSumm
  * One entry per built-in lesson, in the reader's language when that version
  * exists; lessons written by teachers are always listed as they are.
  */
-export function inLocale<T extends Pick<LessonSummary, "contentGroup" | "language">>(lessons: T[], locale: ContentLanguage): T[] {
+export function inLocale<T extends { contentGroup: string | null; language: ContentLanguage | null }>(lessons: T[], locale: ContentLanguage): T[] {
   const chosen = new Map<string, T>();
   const out: T[] = [];
   for (const lesson of lessons) {

@@ -112,6 +112,7 @@ export const careerEn = {
       skills: "Skills it shows",
       reflection: "Reflection: what did you learn?",
     },
+    openWork: "Open the work",
     fromLab: "From the laboratories",
     files: "Files",
     all: "All",

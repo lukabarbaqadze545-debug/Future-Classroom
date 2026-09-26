@@ -41,7 +41,7 @@ export function PresentLesson({ lesson }: { lesson: { id: string; title: string;
 
   return (
     <PresentShell
-      top={<p className="text-xl font-semibold opacity-70">{lesson.title}</p>}
+      top={<p className="truncate text-xl font-semibold opacity-70">{lesson.title}</p>}
       controls={(theme) => (
         <>
           <PresentButton theme={theme} onClick={() => go(-1)} disabled={index === 0}>
@@ -72,15 +72,15 @@ export function PresentLesson({ lesson }: { lesson: { id: string; title: string;
                 <p className={cn("text-2xl", muted)}>
                   {dict.subjects[lesson.subject]} · {fmt(dict.common.grade, { n: lesson.grade })}
                 </p>
-                <h1 className="mt-6 text-[clamp(44px,6vw,96px)] leading-tight font-semibold tracking-tight">{lesson.title}</h1>
+                <h1 className="mt-6 text-[clamp(30px,6vw,96px)] leading-tight wrap-break-word font-semibold tracking-tight">{lesson.title}</h1>
               </div>
             ) : null}
             {slide.kind === "objectives" ? (
               <div>
-                <h1 className="text-[clamp(36px,4vw,64px)] font-semibold">{p.objectives}</h1>
+                <h1 className="text-[clamp(28px,4vw,64px)] font-semibold wrap-break-word">{p.objectives}</h1>
                 <ul className="mt-10 space-y-6">
                   {lesson.content.objectives.map((o) => (
-                    <li key={o} className="flex gap-5 text-[clamp(24px,2.4vw,38px)] leading-snug">
+                    <li key={o} className="flex gap-5 text-[clamp(20px,2.4vw,38px)] leading-snug wrap-break-word">
                       <span aria-hidden className="mt-3 size-3.5 shrink-0 rounded-full bg-brand" />
                       {o}
                     </li>
@@ -95,7 +95,7 @@ export function PresentLesson({ lesson }: { lesson: { id: string; title: string;
                     <div className={cn("grid items-start gap-10", section.visual && "lg:grid-cols-[1.1fr_1fr]")}>
                       <div>
                         <p className={cn("text-xl font-semibold tracking-wide uppercase", muted)}>{dict.sectionKinds[section.kind]}</p>
-                        <h1 className="mt-3 text-[clamp(34px,3.6vw,58px)] leading-tight font-semibold">{section.title}</h1>
+                        <h1 className="mt-3 text-[clamp(26px,3.6vw,58px)] leading-tight wrap-break-word font-semibold">{section.title}</h1>
                         <p className="fc-prose mt-8 text-[clamp(20px,1.9vw,30px)] leading-relaxed">{section.body}</p>
                       </div>
                       {section.visual ? <FunctionPlot {...section.visual} large className={theme === "dark" ? "bg-white" : undefined} /> : null}
@@ -105,8 +105,8 @@ export function PresentLesson({ lesson }: { lesson: { id: string; title: string;
               : null}
             {slide.kind === "discussion" ? (
               <div>
-                <h1 className="text-[clamp(36px,4vw,64px)] font-semibold">{p.discussion}</h1>
-                <ol className="mt-10 list-decimal space-y-6 pl-10 text-[clamp(24px,2.4vw,38px)] leading-snug">
+                <h1 className="text-[clamp(28px,4vw,64px)] font-semibold wrap-break-word">{p.discussion}</h1>
+                <ol className="mt-10 list-decimal space-y-6 pl-10 text-[clamp(20px,2.4vw,38px)] leading-snug wrap-break-word">
                   {lesson.content.discussionQuestions.map((q) => (
                     <li key={q}>{q}</li>
                   ))}

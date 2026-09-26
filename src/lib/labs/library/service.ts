@@ -168,9 +168,12 @@ export function listCopies(resourceId: string): LibraryCopy[] {
   return (getDb().prepare(`${SELECT_COPY} WHERE c.resource_id = ? ORDER BY c.code`).all(resourceId) as CopyRow[]).map(toCopy);
 }
 
-export function listAllCopies(): (LibraryCopy & { title: string })[] {
-  const titles = new Map(listResources().map((r) => [r.id, r.title]));
-  return (getDb().prepare(`${SELECT_COPY} ORDER BY c.code`).all() as CopyRow[]).map((row) => ({ ...toCopy(row), title: titles.get(row.resource_id) ?? "" }));
+export function listAllCopies(): (LibraryCopy & { title: string; language?: string })[] {
+  const resources = new Map(listResources().map((r) => [r.id, r]));
+  return (getDb().prepare(`${SELECT_COPY} ORDER BY c.code`).all() as CopyRow[]).map((row) => {
+    const resource = resources.get(row.resource_id);
+    return { ...toCopy(row), title: resource?.title ?? "", language: resource?.language === "other" ? undefined : resource?.language };
+  });
 }
 
 export function findCopyByCode(code: string): LibraryCopy | null {
@@ -245,7 +248,7 @@ export function getReading(userId: string, resourceId: string): ReadingEntry | n
   return row ? { resourceId: row.resource_id, status: row.status, percent: row.percent, note: row.note, updatedAt: row.updated_at } : null;
 }
 
-export function listReading(userId: string): (ReadingEntry & { title: string })[] {
+export function listReading(userId: string): (ReadingEntry & { title: string; language?: string })[] {
   const rows = getDb().prepare("SELECT * FROM reading_progress WHERE user_id = ? ORDER BY updated_at DESC").all(userId) as {
     resource_id: string;
     status: ReadingStatus;
@@ -253,7 +256,11 @@ export function listReading(userId: string): (ReadingEntry & { title: string })[
     note: string;
     updated_at: number;
   }[];
-  return rows.map((row) => ({ resourceId: row.resource_id, status: row.status, percent: row.percent, note: row.note, updatedAt: row.updated_at, title: getResource(row.resource_id)?.title ?? "" }));
+  return rows.map((row) => {
+    const resource = getResource(row.resource_id);
+    const language = resource?.language === "other" ? undefined : resource?.language;
+    return { resourceId: row.resource_id, status: row.status, percent: row.percent, note: row.note, updatedAt: row.updated_at, title: resource?.title ?? "", language };
+  });
 }
 
 export function setReading(user: CurrentUser, resourceId: string, input: { status: ReadingStatus | null; percent?: number; note?: string }, options: { at?: number } = {}): ReadingEntry | null {

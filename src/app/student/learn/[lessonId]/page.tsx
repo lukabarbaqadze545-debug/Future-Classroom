@@ -12,8 +12,12 @@ import { ApiError } from "@/lib/http/errors";
 import { PageContainer } from "@/components/layout/site-header";
 import { TopicView, type StudentLesson } from "@/components/student/topic-view";
 
-export async function generateMetadata() {
-  return pageTitle((p) => p.lesson);
+export async function generateMetadata({ params }: { params: Promise<{ lessonId: string }> }) {
+  try {
+    return { title: getPublishedLesson((await params).lessonId).title };
+  } catch {
+    return pageTitle((p) => p.lesson);
+  }
 }
 
 const PRACTICE_TYPES = new Set(["multiple_choice", "short_answer", "exercise"]);

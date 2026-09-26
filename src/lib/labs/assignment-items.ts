@@ -1,7 +1,7 @@
 import "server-only";
 import type { Locale } from "@/lib/i18n/config";
 import { getDb } from "@/lib/db";
-import { listPublishedLessons } from "@/lib/services/lessons";
+import { inLocale, listPublishedLessons } from "@/lib/services/lessons";
 import { listPublishedQuizzes } from "@/lib/services/quizzes";
 import type { AssignmentKind } from "./registry";
 import { tr } from "./localized";
@@ -32,8 +32,8 @@ export function assignableItems(locale: Locale): Record<AssignmentKind, Assignab
     research: [],
     library: listResources().map((r) => ({ id: r.id, title: r.title })),
     portfolio: [],
-    lesson: listPublishedLessons().map((l) => ({ id: l.id, title: l.title })),
-    quiz: listPublishedQuizzes().map((q) => ({ id: q.id, title: q.title })),
+    lesson: inLocale(listPublishedLessons(), locale).map((l) => ({ id: l.id, title: l.title })),
+    quiz: inLocale(listPublishedQuizzes(), locale).map((q) => ({ id: q.id, title: q.title })),
     custom: [],
   };
 }

@@ -24,7 +24,7 @@ export default async function SessionsPage() {
         description={s.lead}
         actions={
           <ButtonLink href="/teacher/sessions/labs" variant="secondary">
-            {dict.labs.bridge.title}
+            {s.newLabSession}
           </ButtonLink>
         }
       />

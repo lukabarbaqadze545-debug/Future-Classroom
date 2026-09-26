@@ -110,8 +110,9 @@ async function signInAsStudent(page: Page) {
 
 test("student self-study: practice with hints, quiz and library", async ({ page }) => {
   await signInAsStudent(page);
-  await page.getByRole("link", { name: "Learn", exact: true }).click();
-  await page.getByRole("link", { name: /Newton's Laws of Motion/ }).click();
+  await page.getByRole("link", { name: "Subjects", exact: true }).first().click();
+  await page.getByTestId("subject-card").filter({ hasText: "Physics" }).click();
+  await page.getByTestId("subject-item").getByRole("link", { name: /Newton's Laws of Motion/ }).first().click();
   await page.getByRole("tab", { name: /Practice/ }).click();
   // Hints before answers.
   await page.getByTestId("request-hint").click();
@@ -138,7 +139,7 @@ test("student self-study: practice with hints, quiz and library", async ({ page 
 test("interface switches to Georgian", async ({ page }) => {
   await page.goto("/");
   await page.getByRole("button", { name: /ქართული/ }).click();
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("თანამედროვე ციფრული სასწავლო გარემო საკლასო ოთახისთვის");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("ქართული სკოლებისთვის შექმნილი თანამედროვე ციფრული სასწავლო პლატფორმა");
   await expect(page.locator("html")).toHaveAttribute("lang", "ka");
 });
 

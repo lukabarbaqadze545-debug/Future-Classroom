@@ -91,7 +91,7 @@ export const SUBJECT_CATALOG: SubjectEntry[] = [
       "განტოლებები, ფუნქციები, ალბათობა და ამოცანების ამოხსნა — ინტერაქტიური გრაფიკებით, სიმულაციებითა და სავარჯიშოებით, რომლებიც პასუხს ამოწმებს და მინიშნებებს ნაბიჯ-ნაბიჯ გაძლევს.",
     ),
     topics: [
-      { id: "equations", name: l("Equations", "განტოლებები"), items: [lesson("linear-equations"), lesson("quadratic"), book("lib-quadratics")] },
+      { id: "equations", name: l("Equations", "განტოლებები"), items: [lesson("linear-equations"), lesson("quadratic"), book("lib-quadratics-ka"), book("lib-quadratics")] },
       { id: "functions", name: l("Functions and graphs", "ფუნქციები და გრაფიკები"), items: [lesson("functions"), sim("linear-model"), sim("growth")] },
       { id: "probability", name: l("Probability and statistics", "ალბათობა და სტატისტიკა"), items: [lesson("probability-basics"), sim("probability"), exp("reaction-time"), book("lib-openstax-statistics")] },
       { id: "problem-solving", name: l("Problem solving", "ამოცანების ამოხსნა"), items: [code("l1-sum-to-n"), code("l2-gcd"), ct("ct-decision-1")] },

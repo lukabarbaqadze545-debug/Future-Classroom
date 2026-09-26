@@ -151,7 +151,11 @@ export function Catalogue({ items, initialSubject }: { items: CatalogueItem[]; i
                 <h3 className="mt-2.5 font-semibold group-hover:text-lab-library" lang={r.language === "ka" ? "ka" : r.language === "en" ? "en" : undefined}>
                   {r.title}
                 </h3>
-                {r.authors ? <p className="text-sm text-ink-muted">{r.authors}</p> : null}
+                {r.authors ? (
+                  <p className="text-sm text-ink-muted" lang={r.language === "ka" ? "ka" : r.language === "en" ? "en" : undefined}>
+                    {r.authors}
+                  </p>
+                ) : null}
                 <p className="mt-1.5 line-clamp-2 text-sm text-ink-muted">{tr(r.description, locale)}</p>
                 <div className="mt-auto flex flex-wrap items-center gap-x-3 gap-y-1 pt-3 text-xs text-ink-muted">
                   {r.digital ? (

@@ -184,14 +184,14 @@ export function PresentSession({ initial }: { initial: TeacherSessionView }) {
               <span className={cn("rounded-full px-4 py-1.5 text-lg font-semibold", dark ? "bg-white/10" : "bg-brand-soft text-brand-ink")}>{dict.activityTypes[activity.type]}</span>
               {current.timerEndsAt ? <Countdown endsAt={current.timerEndsAt} clockOffset={clockOffset} label={dict.session.timeLeft} large /> : null}
             </div>
-            <h1 className="fc-prose mt-8 text-[clamp(32px,4.2vw,60px)] leading-tight font-semibold">{activity.prompt}</h1>
+            <h1 className="fc-prose mt-8 text-[clamp(26px,4.2vw,60px)] leading-tight font-semibold">{activity.prompt}</h1>
             <div className="mt-10">
               {isOptions && revealed && results ? (
                 <ResultBars distribution={results.distribution} showCorrect={activity.type === "multiple_choice"} large correctLabel={p.correct} />
               ) : isOptions ? (
                 <ul className="grid gap-4 md:grid-cols-2">
                   {activity.options.map((o) => (
-                    <li key={o.id} className={cn("flex items-center gap-5 rounded-3xl border-2 px-6 py-5 text-[clamp(22px,2.2vw,34px)] font-medium", dark ? "border-white/15" : "border-line")}>
+                    <li key={o.id} className={cn("flex items-center gap-5 rounded-3xl border-2 px-6 py-5 text-[clamp(20px,2.2vw,34px)] font-medium wrap-break-word", dark ? "border-white/15" : "border-line")}>
                       <span className="flex size-14 shrink-0 items-center justify-center rounded-2xl bg-brand text-2xl font-bold text-white uppercase">{o.id}</span>
                       {o.text}
                     </li>

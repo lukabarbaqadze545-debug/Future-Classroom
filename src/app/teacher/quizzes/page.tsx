@@ -3,6 +3,7 @@ import { getCurrentUser } from "@/lib/auth/session";
 import { getDictionary, pageTitle } from "@/lib/i18n/server";
 import { fmt, fmtCount, relativeTime } from "@/lib/i18n/config";
 import { listQuizzesForTeacher } from "@/lib/services/quizzes";
+import { inLocale } from "@/lib/services/lessons";
 import { PageContainer } from "@/components/layout/site-header";
 import { EmptyState, PageHeader } from "@/components/ui/misc";
 import { Badge } from "@/components/ui/badge";
@@ -14,9 +15,12 @@ export async function generateMetadata() {
 
 export default async function QuizzesPage() {
   const user = (await getCurrentUser())!;
-  const { dict } = await getDictionary();
+  const { dict, locale } = await getDictionary();
   const q = dict.teacher.quizzes;
-  const quizzes = listQuizzesForTeacher(user.id);
+  // Built-in quizzes in the reader's language; a version with results always stays visible.
+  const all = listQuizzesForTeacher(user.id);
+  const inLanguage = new Set(inLocale(all, locale).map((quiz) => quiz.id));
+  const quizzes = all.filter((quiz) => inLanguage.has(quiz.id) || quiz.attemptCount > 0);
   return (
     <PageContainer>
       <PageHeader title={q.title} description={q.lead} />

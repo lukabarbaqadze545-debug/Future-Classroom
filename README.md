@@ -1,6 +1,6 @@
 # Future Classroom
 
-An AI-assisted digital learning environment for modern classrooms — built for a school with ~16 desktop learning workstations and one interactive touchscreen.
+A modern digital learning platform built for Georgian schools — Georgian first, English alongside — for a school with ~16 desktop learning workstations and one interactive touchscreen. AI helps where it is useful; nothing depends on it.
 
 > Technology should improve the learning environment, not replace the teacher.
 
@@ -10,7 +10,8 @@ An AI-assisted digital learning environment for modern classrooms — built for 
 - **Students** answer on their workstation and get **hint-first help**: a conceptual nudge first, more specific hints next, and the full solution only as the last step (and only if the teacher allows it). Outside class they practise, take quizzes, review mistakes and ask the school library questions.
 - **School materials** (PDF, DOCX, TXT, Markdown) are indexed so students can ask questions and get answers with cited passages.
 - **Six laboratories** that work without AI: Programming (Python and C++), STEM, Research, Critical Thinking, the School Library and Career & University — tied together by teacher assignments, a student portfolio and one learning profile per student.
-- **English and Georgian** throughout the interface.
+- **18 subjects** with a catalogue (`/subjects`): 46 built-in lessons with practice, hint ladders and quizzes, each linked to the lab activities, simulations, books and career pages that fit it.
+- **Georgian and English** throughout: the interface, the built-in lessons, the lab content and the demo school. Georgian is the default.
 
 ---
 
@@ -23,14 +24,15 @@ npm install
 npm run dev          # http://localhost:3000
 ```
 
-On first start the app creates `data/future-classroom.db` and seeds a demo school (teachers, students, lessons, two finished sessions, quizzes and materials). No other setup is needed.
+On first start the app creates `data/future-classroom.db`, installs the built-in lessons and seeds a demo school (teachers, students, two finished sessions, quiz results, materials, lab work and assignments), written in the school's language — Georgian unless `DEFAULT_LANGUAGE=en`. No other setup is needed.
 
 Demo accounts (password `demo1234`), or use the one-click buttons on the home page:
 
 | Role | Username | Notes |
 | --- | --- | --- |
-| Teacher | `nino` | Mathematics, owns the demo sessions |
-| Teacher | `davit`, `eka` | Physics/CS, Biology/Geography |
+| Teacher | `nino` | Mathematics, economics, research, critical thinking; owns the demo sessions |
+| Teachers | `davit`, `eka` | Physics, computer science, engineering · Chemistry, biology, geography, health |
+| Teachers | `manana`, `irakli`, `natia` | Georgian, arts · History, civics · English, career |
 | Student | `mariam` | Has progress history |
 | Students | `giorgi`, `ana`, `luka`, `saba`, `elene`, `nika`, `tamar` | |
 | Admin | `admin` | Can open any teacher's content |
@@ -55,6 +57,18 @@ Without a key everything still works in **offline mode**, and the UI says so eve
 7. **End session** → the session summary (participation, correct %, common wrong answers, per-student table).
 
 Also worth showing: *Class overview* (teacher insights), the student dashboard/progress, and the student **Library** (“What does our physics material say about Newton’s second law?”).
+
+## Subjects and built-in lessons
+
+**Subjects** (`/subjects`) is the entry point for students and teachers: 18 subjects in six groups, filterable by grade and activity type. Each subject page has a recommended learning path, topics that link to real content (lessons, quizzes, programming problems, simulations, experiments, projects, library books, careers), the student's progress on each item and the lessons the school's own teachers have published. Teachers can preview or duplicate a lesson, assign any item, run it in a live session or start a new lesson for the subject.
+
+| | |
+| --- | --- |
+| Built-in lessons | 46 topics in all 18 subjects (`src/lib/content/lessons/`), written in Georgian and English side by side (Georgian literature in Georgian only): objectives, sections, 455 activities with hint ladders and solutions, 312 quiz questions. Georgian lessons use Georgian examples (lari, cities, history, literature) and Georgian units. |
+| Installation | Built-in lessons are installed into every database at startup, including an empty one, and updated when the platform is updated (`src/lib/db/builtin.ts`). Teachers duplicate a lesson to adapt it. |
+| Language | Each reader sees the version in their interface language; a link opens the other version. The interface language comes from the switcher, then `DEFAULT_LANGUAGE`, then the browser; Georgian is the fallback. |
+| Terminology | `src/lib/i18n/terminology.ts` fixes the Georgian terms (and rules out calques such as „დაშბორდი“); `tests/unit/terminology.test.ts` checks every dictionary and every Georgian lesson and lab text against it. |
+| Universities | No admission facts are stored as permanent truth: cards say when they were checked, warn after a year and link to official sites. |
 
 ## The laboratories
 
@@ -104,6 +118,7 @@ npm run user:create -- --role teacher --username nbe --name "Nino Beridze"
 src/
   app/                  routes (pages + /api route handlers)
     teacher/            dashboard, lessons, sessions (live console), quizzes, materials, insights
+    subjects/           subject catalogue and subject pages
     student/            dashboard, learn (topic: learn/practice/quiz/ask), progress, library
     session/[id]        student live-session screen
     present/            touchscreen presentation (live session, lesson slides, research)
@@ -120,7 +135,8 @@ src/
                         session bridge and assignment registry
     domain/             zod schemas, grading, ids/join codes, safe math-expression parser
     db/                 connection, schema, demo seed
-    i18n/               en.ts (source of truth), ka.ts (type-checked against en), helpers
+    content/            built-in lessons (EN + KA), subject catalogue and its resolver
+    i18n/               en.ts (source of truth), ka.ts (type-checked against en), terminology
     files/              upload validation, text extraction (PDF/DOCX), chunking, search query
     http/, auth/, realtime/
 tests/unit, tests/e2e
@@ -148,7 +164,7 @@ tests/unit, tests/e2e
 
 ## Configuration
 
-See `.env.example`: `ANTHROPIC_API_KEY`, `AI_MODEL`, `DATABASE_PATH`, `UPLOAD_DIR`, `SEED_DEMO`, `DEMO_MODE`, `COOKIE_SECURE`, `PUBLIC_BASE_URL`, `JUDGE0_URL`, `JUDGE0_TOKEN`, `JUDGE0_PYTHON_ID`, `JUDGE0_CPP_ID`.
+See `.env.example`: `ANTHROPIC_API_KEY`, `AI_MODEL`, `DATABASE_PATH`, `UPLOAD_DIR`, `SEED_DEMO`, `DEMO_MODE`, `DEFAULT_LANGUAGE` (`ka` or `en`: the school's default interface language and the language of the demo data), `COOKIE_SECURE`, `PUBLIC_BASE_URL`, `JUDGE0_URL`, `JUDGE0_TOKEN`, `JUDGE0_PYTHON_ID`, `JUDGE0_CPP_ID`.
 
 ## Known limitations
 
@@ -157,5 +173,7 @@ See `.env.example`: `ANTHROPIC_API_KEY`, `AI_MODEL`, `DATABASE_PATH`, `UPLOAD_DI
 - Programming tests check output only (no memory or strict performance limits beyond a per-test time limit in the browser). Without Judge0, C++ results are self-reported and labelled as such.
 - STEM simulations are simplified models for teaching (no air resistance, ideal components); physical experiments and robotics projects need real materials and kits the school provides.
 - Single-process deployment (in-memory event bus and rate limits).
-- Georgian UI strings and the Georgian demo lesson should be reviewed by a native-speaking teacher.
+- The Georgian texts were reviewed for natural wording and consistent terminology, but subject teachers who are native speakers should still read the built-in lessons before classroom use, especially literature and history.
+- Starter content is a solid base, not a full curriculum: most subjects have 2–4 built-in lessons, and arts, engineering, entrepreneurship and career one each. Topics such as waves and optics, networks and cybersecurity, databases or AI literacy are not covered yet.
+- The demo library catalogue and university cards are demo data; a real school enters its own.
 - University cards contain only what students and teachers enter; the four shared demo cards have no admission figures on purpose.

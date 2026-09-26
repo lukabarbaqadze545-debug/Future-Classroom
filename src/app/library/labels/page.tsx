@@ -27,7 +27,9 @@ export default async function LabelsPage({ searchParams }: { searchParams: Promi
           <li key={c.id} className="flex break-inside-avoid flex-col items-center rounded-xl border border-dashed border-line-strong bg-white p-3 text-center text-ink">
             <div dangerouslySetInnerHTML={{ __html: c.svg }} aria-hidden />
             <p className="mt-1 font-mono text-sm font-semibold">{c.code}</p>
-            <p className="line-clamp-2 text-xs">{c.title}</p>
+            <p className="line-clamp-2 text-xs" lang={c.language}>
+              {c.title}
+            </p>
             <p className="text-[11px] text-ink-subtle">{c.shelf}</p>
           </li>
         ))}

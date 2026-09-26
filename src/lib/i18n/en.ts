@@ -649,6 +649,7 @@ export const en = {
       participants: "Students",
       activities: "Activities",
       open: "Open console",
+      newLabSession: "New lab session",
       summary: "Summary",
       deleteConfirm: "Delete this session and its results?",
     },

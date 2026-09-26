@@ -27,12 +27,13 @@ export function DemoLoginButtons({ className, size = "lg" }: { className?: strin
   };
   return (
     <div className={cn("space-y-2", className)}>
-      <div className="flex flex-col gap-2 sm:flex-row">
-        <Button size={size} onClick={() => signIn("teacher")} disabled={busy !== null} data-testid="demo-teacher">
+      {/* Each button keeps its label on one line; they wrap onto separate rows when the column is narrow. */}
+      <div className="flex flex-wrap gap-2">
+        <Button size={size} onClick={() => signIn("teacher")} disabled={busy !== null} data-testid="demo-teacher" className="grow basis-52">
           <Presentation aria-hidden className="size-5" />
           {busy === "teacher" ? dict.common.loading : dict.landing.demoTeacher}
         </Button>
-        <Button size={size} variant="secondary" onClick={() => signIn("student")} disabled={busy !== null} data-testid="demo-student">
+        <Button size={size} variant="secondary" onClick={() => signIn("student")} disabled={busy !== null} data-testid="demo-student" className="grow basis-52">
           <GraduationCap aria-hidden className="size-5" />
           {busy === "student" ? dict.common.loading : dict.landing.demoStudent}
         </Button>

@@ -405,7 +405,7 @@ export function seedLabs(db: DB, users: Map<string, string>, materialIds: Map<st
       for (const copy of copies) {
         copyNumber += 1;
         const loan = copy.status === "on_loan" ? loans[loanIndex++ % loans.length] : null;
-        insertCopy.run(newId(), id, `LIB-${String(copyNumber).padStart(4, "0")}`, copy.shelf, copy.status, loan ? u(loan.borrower) : null, loan?.due ?? null, at(20));
+        insertCopy.run(newId(), id, `LIB-${String(copyNumber).padStart(4, "0")}`, copy.shelf[language], copy.status, loan ? u(loan.borrower) : null, loan?.due ?? null, at(20));
       }
     });
     const insertReading = db.prepare("INSERT INTO reading_progress (user_id, resource_id, status, percent, note, updated_at) VALUES (?, ?, ?, ?, ?, ?)");

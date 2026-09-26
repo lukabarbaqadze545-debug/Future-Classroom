@@ -1,4 +1,4 @@
-import { l } from "../localized";
+import { l, type L } from "../localized";
 import type { ResourceInput } from "./model";
 
 /**
@@ -10,7 +10,8 @@ export interface SeedResource extends ResourceInput {
   id: string;
   /** Key of a school-created seed material that is the digital version. */
   materialKey?: string;
-  copies: { shelf: string; status: "available" | "on_loan" | "reference" }[];
+  /** Shelf labels are written in the school's language when the demo is seeded. */
+  copies: { shelf: L; status: "available" | "on_loan" | "reference" }[];
 }
 
 export const SEED_LIBRARY: SeedResource[] = [
@@ -37,7 +38,7 @@ export const SEED_LIBRARY: SeedResource[] = [
       { kind: "simulation", id: "motion" },
       { kind: "simulation", id: "projectile" },
     ],
-    copies: [{ shelf: "B-2 · Physics", status: "reference" }],
+    copies: [{ shelf: l("B-2 · Physics", "B-2 · ფიზიკა"), status: "reference" }],
   },
   {
     id: "lib-newton-notes-ka",
@@ -52,7 +53,7 @@ export const SEED_LIBRARY: SeedResource[] = [
     language: "ka",
     description: l("A short Georgian-language summary of Newton's laws for revision.", "ნიუტონის კანონების მოკლე ქართულენოვანი შეჯამება გასამეორებლად."),
     year: "2025",
-    publisher: "School physics department",
+    publisher: "სკოლის ფიზიკის კათედრა",
     isbn: "",
     license: "school",
     licenseNote: "",
@@ -72,7 +73,7 @@ export const SEED_LIBRARY: SeedResource[] = [
     gradeFrom: 9,
     gradeTo: 11,
     language: "en",
-    description: l("Step-by-step worked examples: factorising, the quadratic formula and the discriminant.", "ნაბიჯ-ნაბიჯ ამოხსნილი მაგალითები: დაშლა მამრავლებად, კვადრატული განტოლების ფორმულა და დისკრიმინანტი."),
+    description: l("Step-by-step worked examples: factorising, the quadratic formula and the discriminant.", "ნაბიჯ-ნაბიჯ ამოხსნილი მაგალითები: დაშლა მამრავლებად, ფესვების ფორმულა და დისკრიმინანტი."),
     year: "2025",
     publisher: "School mathematics department",
     isbn: "",
@@ -81,7 +82,29 @@ export const SEED_LIBRARY: SeedResource[] = [
     digitalUrl: "",
     supplementary: [],
     exercises: [],
-    copies: [{ shelf: "A-1 · Mathematics", status: "available" }],
+    copies: [{ shelf: l("A-1 · Mathematics", "A-1 · მათემატიკა"), status: "available" }],
+  },
+  {
+    id: "lib-quadratics-ka",
+    materialKey: "quadratic-worked-ka",
+    title: "კვადრატული განტოლებები — ამოხსნილი მაგალითები",
+    authors: "ნინო ბერიძე",
+    kind: "worksheet",
+    categories: ["mathematics"],
+    subjects: ["mathematics"],
+    gradeFrom: 9,
+    gradeTo: 11,
+    language: "ka",
+    description: l("The Georgian version of the worked examples: factorising, the quadratic formula and the discriminant.", "ამოხსნილი მაგალითების ქართული ვერსია: დაშლა მამრავლებად, ფესვების ფორმულა და დისკრიმინანტი."),
+    year: "2025",
+    publisher: "სკოლის მათემატიკის კათედრა",
+    isbn: "",
+    license: "school",
+    licenseNote: "",
+    digitalUrl: "",
+    supplementary: [],
+    exercises: [],
+    copies: [],
   },
   {
     id: "lib-ecosystems",
@@ -224,7 +247,7 @@ export const SEED_LIBRARY: SeedResource[] = [
       { kind: "programming", id: "l1-hello" },
       { kind: "programming", id: "l2-count-vowels" },
     ],
-    copies: [{ shelf: "C-1 · Computing", status: "available" }],
+    copies: [{ shelf: l("C-1 · Computing", "C-1 · ინფორმატიკა"), status: "available" }],
   },
   {
     id: "lib-cph",
@@ -273,8 +296,8 @@ export const SEED_LIBRARY: SeedResource[] = [
     supplementary: [],
     exercises: [],
     copies: [
-      { shelf: "D-3 · English literature", status: "available" },
-      { shelf: "D-3 · English literature", status: "on_loan" },
+      { shelf: l("D-3 · English literature", "D-3 · ინგლისური ლიტერატურა"), status: "available" },
+      { shelf: l("D-3 · English literature", "D-3 · ინგლისური ლიტერატურა"), status: "on_loan" },
     ],
   },
   {
@@ -296,7 +319,7 @@ export const SEED_LIBRARY: SeedResource[] = [
     digitalUrl: "https://www.gutenberg.org/ebooks/1661",
     supplementary: [],
     exercises: [{ kind: "critical", id: "ct-claims-3" }],
-    copies: [{ shelf: "D-3 · English literature", status: "available" }],
+    copies: [{ shelf: l("D-3 · English literature", "D-3 · ინგლისური ლიტერატურა"), status: "available" }],
   },
   {
     id: "lib-origin",
@@ -339,9 +362,9 @@ export const SEED_LIBRARY: SeedResource[] = [
     supplementary: [],
     exercises: [],
     copies: [
-      { shelf: "E-1 · Georgian literature", status: "available" },
-      { shelf: "E-1 · Georgian literature", status: "available" },
-      { shelf: "E-1 · Georgian literature", status: "on_loan" },
+      { shelf: l("E-1 · Georgian literature", "E-1 · ქართული ლიტერატურა"), status: "available" },
+      { shelf: l("E-1 · Georgian literature", "E-1 · ქართული ლიტერატურა"), status: "available" },
+      { shelf: l("E-1 · Georgian literature", "E-1 · ქართული ლიტერატურა"), status: "on_loan" },
     ],
   },
   {
@@ -363,11 +386,11 @@ export const SEED_LIBRARY: SeedResource[] = [
     digitalUrl: "",
     supplementary: [],
     exercises: [],
-    copies: [{ shelf: "B-4 · Popular science", status: "available" }],
+    copies: [{ shelf: l("B-4 · Popular science", "B-4 · პოპულარული მეცნიერება"), status: "available" }],
   },
   {
     id: "lib-dictionary",
-    title: "English–Georgian Dictionary",
+    title: "ინგლისურ-ქართული ლექსიკონი",
     authors: "",
     kind: "reference",
     categories: ["reference", "languages"],
@@ -385,8 +408,8 @@ export const SEED_LIBRARY: SeedResource[] = [
     supplementary: [],
     exercises: [],
     copies: [
-      { shelf: "R-1 · Reference", status: "reference" },
-      { shelf: "R-1 · Reference", status: "reference" },
+      { shelf: l("R-1 · Reference", "R-1 · საცნობარო"), status: "reference" },
+      { shelf: l("R-1 · Reference", "R-1 · საცნობარო"), status: "reference" },
     ],
   },
 ];

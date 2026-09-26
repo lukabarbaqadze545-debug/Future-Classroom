@@ -12,7 +12,7 @@ import {
   type QuizQuestion,
 } from "@/lib/domain/schemas";
 import { describeAnswer, gradeQuizQuestion, isAnswerEmpty, normalizeText } from "@/lib/domain/grading";
-import type { Subject } from "@/lib/domain/catalog";
+import type { ContentLanguage, Subject } from "@/lib/domain/catalog";
 import { ApiError } from "@/lib/http/errors";
 import type { CurrentUser } from "@/lib/auth/session";
 import type { ContentOrigin } from "./lessons";
@@ -33,6 +33,9 @@ export interface QuizRecord {
   questions: QuizQuestion[];
   createdAt: number;
   updatedAt: number;
+  /** Built-in quizzes: the translation group and language of their lesson. */
+  contentGroup: string | null;
+  language: ContentLanguage | null;
 }
 
 export interface QuestionResult {
@@ -68,9 +71,12 @@ interface QuizRow {
   questions: string;
   created_at: number;
   updated_at: number;
+  content_group: string | null;
+  lesson_language: ContentLanguage | null;
 }
 
-const SELECT = `SELECT q.*, u.display_name AS teacher_name FROM quizzes q JOIN users u ON u.id = q.teacher_id`;
+const SELECT = `SELECT q.*, u.display_name AS teacher_name, l.content_group AS content_group, l.language AS lesson_language
+  FROM quizzes q JOIN users u ON u.id = q.teacher_id LEFT JOIN lessons l ON l.id = q.lesson_id`;
 
 function toRecord(row: QuizRow): QuizRecord {
   const questions = quizQuestionSchema.array().safeParse(parseJson(row.questions, []));
@@ -89,6 +95,8 @@ function toRecord(row: QuizRow): QuizRecord {
     questions: questions.success ? questions.data : [],
     createdAt: row.created_at,
     updatedAt: row.updated_at,
+    contentGroup: row.content_group,
+    language: row.lesson_language,
   };
 }
 

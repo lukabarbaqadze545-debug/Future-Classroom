@@ -46,7 +46,7 @@ export function ResearchPresentation({
       render: (muted) => (
         <div className="text-center">
           <p className={cn("text-2xl", muted)}>{subject}</p>
-          <h1 className="mt-6 text-[clamp(40px,5.5vw,88px)] leading-tight font-semibold tracking-tight">{title}</h1>
+          <h1 className="mt-6 text-[clamp(30px,5.5vw,88px)] leading-tight wrap-break-word font-semibold tracking-tight">{title}</h1>
           <p className={cn("mt-6 text-2xl", muted)}>{author}</p>
           {data.keyMessage ? <p className="mx-auto mt-10 max-w-4xl text-3xl">{data.keyMessage}</p> : null}
         </div>
@@ -59,7 +59,7 @@ export function ResearchPresentation({
             render: (muted: string) => (
               <div>
                 <p className={cn("text-2xl font-medium", muted)}>{s.question}</p>
-                <h2 className="mt-4 text-[clamp(32px,4vw,64px)] leading-tight font-semibold">{data.question}</h2>
+                <h2 className="mt-4 text-[clamp(26px,4vw,64px)] leading-tight wrap-break-word font-semibold">{data.question}</h2>
                 {data.hypothesis ? (
                   <>
                     <p className={cn("mt-12 text-2xl font-medium", muted)}>{s.hypothesis}</p>

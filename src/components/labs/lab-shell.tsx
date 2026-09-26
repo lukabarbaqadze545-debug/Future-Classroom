@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { BookMarked, Brain, ChevronRight, Code2, FlaskConical, GraduationCap, SearchCheck, type LucideIcon } from "lucide-react";
 import type { LabId } from "@/lib/labs/registry";
-import { getDictionary } from "@/lib/i18n/server";
+import { BreadcrumbNav } from "./breadcrumb-nav";
 import { cn } from "@/components/ui/cn";
 
 export const LAB_ICONS: Record<LabId, LucideIcon> = {
@@ -37,7 +37,7 @@ export function LabIcon({ lab, size = "md" }: { lab: LabId; size?: "sm" | "md" |
 }
 
 /** Page header shared by all laboratories: breadcrumb, accent icon, title, actions. */
-export async function LabHeader({
+export function LabHeader({
   lab,
   hubLabel,
   labName,
@@ -54,11 +54,11 @@ export async function LabHeader({
   actions?: ReactNode;
   crumbs?: { href: string; label: string }[];
 }) {
-  const [accent, { dict }] = [LAB_ACCENT[lab], await getDictionary()];
+  const accent = LAB_ACCENT[lab];
   const trail = [{ href: "/labs", label: hubLabel }, ...(title ? [{ href: lab === "library" ? "/library" : lab === "career" ? "/career" : `/labs/${lab === "critical" ? "critical-thinking" : lab}`, label: labName }] : []), ...crumbs];
   return (
     <div className={cn("mb-6 border-b pb-5", accent.border)}>
-      <nav aria-label={dict.common.breadcrumb} className="mb-3 flex flex-wrap items-center gap-1 text-sm text-ink-muted">
+      <BreadcrumbNav className="mb-3 flex flex-wrap items-center gap-1 text-sm text-ink-muted">
         {trail.map((c, i) => (
           <span key={c.href + i} className="inline-flex items-center gap-1">
             {i > 0 ? <ChevronRight aria-hidden className="size-3.5" /> : null}
@@ -67,7 +67,7 @@ export async function LabHeader({
             </Link>
           </span>
         ))}
-      </nav>
+      </BreadcrumbNav>
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="flex min-w-0 items-start gap-4">
           <LabIcon lab={lab} size="lg" />

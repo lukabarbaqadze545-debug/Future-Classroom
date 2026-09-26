@@ -63,7 +63,9 @@ export default async function LibraryPage({ searchParams }: { searchParams: Prom
               <li key={r.resourceId}>
                 <Link href={`/library/${r.resourceId}`} className="block px-5 py-3 hover:bg-muted/50">
                   <div className="flex items-center justify-between gap-2">
-                    <span className="font-medium">{r.title}</span>
+                    <span className="font-medium" lang={r.language}>
+                      {r.title}
+                    </span>
                     <Badge tone={r.status === "finished" ? "success" : r.status === "reading" ? "brand" : "neutral"}>{b.reading.status[r.status]}</Badge>
                   </div>
                   {r.status === "reading" ? <Meter value={r.percent} tone="success" className="mt-2" label={`${r.percent}%`} /> : null}

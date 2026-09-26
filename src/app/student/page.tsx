@@ -5,6 +5,7 @@ import { getDictionary, pageTitle } from "@/lib/i18n/server";
 import { fmt, fmtCount, relativeTime } from "@/lib/i18n/config";
 import { getStudentProgress } from "@/lib/services/progress";
 import { listAttemptsForStudent, listPublishedQuizzes } from "@/lib/services/quizzes";
+import { inLocale } from "@/lib/services/lessons";
 import { listActiveSessionsForStudent } from "@/lib/services/sessions";
 import { PageContainer } from "@/components/layout/site-header";
 import { PageHeader } from "@/components/ui/misc";
@@ -30,12 +31,15 @@ export default async function StudentHome() {
   const d = dict.student.dashboard;
   const progress = getStudentProgress(user.id);
   const attempts = listAttemptsForStudent(user.id);
-  const quizzes = listPublishedQuizzes();
   const bestByQuiz = new Map<string, { score: number; max: number }>();
   for (const a of attempts) {
     const best = bestByQuiz.get(a.quizId);
     if (!best || a.score / a.maxScore > best.score / best.max) bestByQuiz.set(a.quizId, { score: a.score, max: a.maxScore });
   }
+  // Built-in quizzes in the reader's language (plus any the student has already taken).
+  const published = listPublishedQuizzes();
+  const inLanguage = new Set(inLocale(published, locale).map((q) => q.id));
+  const quizzes = published.filter((q) => inLanguage.has(q.id) || bestByQuiz.has(q.id));
   const continueTopics = progress.topics.filter((t) => t.lessonId).slice(0, 4);
   const activeSessions = listActiveSessionsForStudent(user.id);
   const todo = listAssignmentsForStudent(user.id).filter((a) => !["submitted", "completed", "reviewed"].includes(a.recipient.status));

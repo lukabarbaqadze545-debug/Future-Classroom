@@ -646,6 +646,7 @@ export const ka: Dictionary = {
       participants: "მოსწავლეები",
       activities: "აქტივობები",
       open: "სესიის მართვა",
+      newLabSession: "ახალი ლაბორატორიული სესია",
       summary: "შეჯამება",
       deleteConfirm: "წავშალოთ სესია და მისი შედეგები?",
     },

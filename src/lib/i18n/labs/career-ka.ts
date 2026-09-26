@@ -115,6 +115,7 @@ export const careerKa: Widen<typeof careerEn> = {
       skills: "რა უნარებს აჩვენებს",
       reflection: "რეფლექსია: რა ისწავლე?",
     },
+    openWork: "ნამუშევრის გახსნა",
     fromLab: "ლაბორატორიებიდან",
     files: "ფაილები",
     all: "ყველა",
