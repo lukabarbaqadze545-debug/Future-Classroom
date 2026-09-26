@@ -11,6 +11,8 @@ export function ConnectionBadge({ state, className }: { state: ConnectionState; 
   return (
     <span
       role="status"
+      data-testid="connection-badge"
+      data-state={state}
       className={cn(
         "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium",
         state === "live" ? "bg-success-soft text-success" : state === "reconnecting" ? "bg-warn-soft text-warn" : "bg-danger-soft text-danger",

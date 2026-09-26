@@ -2,7 +2,7 @@ import type { NextRequest } from "next/server";
 import { getCurrentUser, isStaff } from "@/lib/auth/session";
 import { getParticipant } from "@/lib/auth/participant";
 import { getSession } from "@/lib/services/sessions";
-import { subscribeToSession } from "@/lib/realtime/bus";
+import { isShuttingDown, onShutdown, subscribeToSession } from "@/lib/realtime/bus";
 
 export const dynamic = "force-dynamic";
 
@@ -13,6 +13,8 @@ export const dynamic = "force-dynamic";
  */
 export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
+  // A stopping server must not start new long-lived streams; the client retries.
+  if (isShuttingDown()) return new Response("Restarting", { status: 503, headers: { "Retry-After": "5" } });
   const session = getSession(id);
   if (!session) return new Response("Not found", { status: 404 });
   const user = await getCurrentUser();
@@ -37,9 +39,18 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
         send(`event: version\ndata: ${JSON.stringify({ version: event.version })}\n\n`);
       });
       const heartbeat = setInterval(() => send(`: keep-alive\n\n`), 20_000);
+      const stopOnShutdown = onShutdown(() => {
+        cleanup();
+        try {
+          controller.close();
+        } catch {
+          // already closed
+        }
+      });
       cleanup = () => {
         clearInterval(heartbeat);
         unsubscribe();
+        stopOnShutdown();
       };
       req.signal.addEventListener("abort", () => {
         cleanup();

@@ -5,6 +5,7 @@
  *
  * The password is read from --password or generated and printed once.
  */
+import "./env";
 import { randomBytes } from "node:crypto";
 import { openDatabase, databasePath } from "../src/lib/db";
 import { hashPassword } from "../src/lib/auth/password";

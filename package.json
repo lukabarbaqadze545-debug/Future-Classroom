@@ -13,6 +13,11 @@
     "test:e2e": "playwright test",
     "db:reset": "tsx scripts/reset-db.ts",
     "user:create": "tsx scripts/create-user.ts",
+    "user:password": "tsx scripts/user-password.ts",
+    "backup": "tsx scripts/backup.ts",
+    "restore": "tsx scripts/restore.ts",
+    "doctor": "tsx scripts/doctor.ts",
+    "drill": "node scripts/resilience-drill.mjs",
     "check": "npm run typecheck && npm run lint && npm run test"
   },
   "dependencies": {

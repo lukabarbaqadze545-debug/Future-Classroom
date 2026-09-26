@@ -12,8 +12,9 @@
 /out/
 /build
 
-# local data (SQLite database + uploaded materials)
+# local data (SQLite database + uploaded materials) and backups
 /data/
+/backups/
 
 # misc
 .DS_Store

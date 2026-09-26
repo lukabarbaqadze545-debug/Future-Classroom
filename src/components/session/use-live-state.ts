@@ -77,6 +77,7 @@ export function useLiveState<T>({
   useEffect(() => {
     let source: EventSource | null = null;
     let fastPoll: ReturnType<typeof setInterval> | null = null;
+    let reconnectTimer: ReturnType<typeof setTimeout> | null = null;
     let disposed = false;
     const startFastPoll = () => {
       fastPoll ??= setInterval(() => void refetch(), 4000);
@@ -101,6 +102,15 @@ export function useLiveState<T>({
       source.onerror = () => {
         setConnection(navigator.onLine ? "reconnecting" : "offline");
         startFastPoll();
+        // The browser retries by itself after a network error, but gives up for
+        // good on an error response (e.g. while the server restarts): reopen it.
+        if (source?.readyState === EventSource.CLOSED) {
+          source.close();
+          reconnectTimer ??= setTimeout(() => {
+            reconnectTimer = null;
+            connect();
+          }, 5000);
+        }
       };
     };
     connect();
@@ -119,6 +129,7 @@ export function useLiveState<T>({
     return () => {
       disposed = true;
       source?.close();
+      if (reconnectTimer) clearTimeout(reconnectTimer);
       stopFastPoll();
       clearInterval(safetyPoll);
       window.removeEventListener("online", onOnline);

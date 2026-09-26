@@ -50,8 +50,15 @@ export function openDatabase(file: string): DB {
  */
 export function getDb(): DB {
   if (g.__fcDb) return g.__fcDb;
-  const db = openDatabase(databasePath());
+  const file = databasePath();
+  const db = openDatabase(file);
   g.__fcDb = db;
+  // Lets `npm run restore` see that a server is using this database.
+  try {
+    fs.writeFileSync(`${file}.pid`, String(process.pid));
+  } catch {
+    // Read-only data folder: restore then relies on its own lock check.
+  }
   if (seedDemoEnabled() && !g.__fcDbSeeding) {
     const users = db.prepare("SELECT COUNT(*) AS n FROM users").get() as { n: number };
     if (users.n === 0) {
