@@ -24,7 +24,7 @@ npm install
 npm run dev          # http://localhost:3000
 ```
 
-On first start the app creates `data/future-classroom.db`, installs the built-in lessons and seeds a demo school (teachers, students, two finished sessions, quiz results, materials, lab work and assignments), written in the school's language — Georgian unless `DEFAULT_LANGUAGE=en`. No other setup is needed.
+On first start in development (`npm run dev`) the app creates `data/future-classroom.db`, installs the built-in lessons and seeds a demo school (teachers, students, two finished sessions, quiz results, materials, lab work and assignments), written in the school's language — Georgian unless `DEFAULT_LANGUAGE=en`. No other setup is needed.
 
 Demo accounts (password `demo1234`), or use the one-click buttons on the home page:
 
@@ -91,15 +91,20 @@ The app is designed to run as **one Node.js process on a school computer or smal
 
 ```bash
 npm run build
-DEMO_MODE=false SEED_DEMO=false npm start -- -p 3000   # then open http://<server-ip>:3000
+npm start -- -p 3000        # then open http://<server-ip>:3000
 npm run user:create -- --role teacher --username nbe --name "Nino Beridze"
+npm run doctor              # checks settings, database, backups, disk
 ```
 
-- Data lives in `data/` (SQLite database + uploaded files). Back up this folder.
+A production build (`npm start`) has demo sign-in, demo accounts and student self-registration **off** unless `DEMO_MODE`, `SEED_DEMO` or `SELF_REGISTRATION` is set to `true`. Teachers create student accounts on their class page and print sign-in slips.
+
+**Guides:** [docs/OPERATIONS.md](docs/OPERATIONS.md) (install, service, backups, accounts, updates, checklists) · [docs/PILOT.md](docs/PILOT.md) (a 45-minute pilot lesson, minute by minute) · [docs/SECURITY-REVIEW.md](docs/SECURITY-REVIEW.md) · [docs/DATA-ARCHITECTURE.md](docs/DATA-ARCHITECTURE.md) (SQLite assessment, PostgreSQL plan) · [docs/CONTENT-ROADMAP.md](docs/CONTENT-ROADMAP.md) · [docs/LIBRARY-AND-UNIVERSITY-DATA.md](docs/LIBRARY-AND-UNIVERSITY-DATA.md) · [docs/AUDIT.md](docs/AUDIT.md) (pilot-readiness audit).
+
+- Data lives in `data/` (SQLite database + uploaded files). `npm run backup` makes a checked copy while lessons run; `npm run restore` brings one back.
 - Real-time updates use Server-Sent Events with automatic polling fallback, so sessions keep working behind proxies or on unstable Wi-Fi; student drafts are kept in the browser.
 - Serve over HTTPS if the network allows it (`COOKIE_SECURE=true`).
 - Run a single instance (the real-time channel and rate limiter are in-process).
-- Set `PUBLIC_BASE_URL` (e.g. `http://192.168.1.10:3000`) so printed library QR labels point to the address workstations and phones actually use.
+- Set `PUBLIC_BASE_URL` (e.g. `http://192.168.1.10:3000`) so the join address on the projector, account slips and library QR labels show the address workstations and phones actually use. Without it the server uses the request's address, replacing `localhost` with its own network address.
 - C++ checking on the server needs a Judge0 instance you run yourself (`JUDGE0_URL`, optionally `JUDGE0_TOKEN`). Student code is never executed by the Future Classroom server itself.
 
 ## Architecture
@@ -161,19 +166,24 @@ tests/unit, tests/e2e
 | `npm run test:e2e` | Builds, starts a fresh demo server with AI disabled and runs the Playwright suites (set `PLAYWRIGHT_CHROMIUM_PATH` to use a system Chromium, `E2E_SKIP_BUILD=1` to reuse the last build) |
 | `npm run db:reset` | Recreate the database with demo data (`-- --empty` for none) |
 | `npm run user:create` | Create a teacher/student/admin account |
+| `npm run user:password` | New temporary password for an account (`-- --username x`), or `-- --list` |
+| `npm run backup` / `restore` | Checked backup of database and uploads (safe while running) / restore one (server stopped) |
+| `npm run doctor` | Health check: settings, database integrity, demo passwords, backup age, disk space |
+| `npm run drill` | Real browsers against a throwaway server: duplicate tabs, slow network, reloads, server restart mid-lesson |
+| `node scripts/classroom-sim.mjs --base <url> --students 16` | Simulates a teacher, a projector and N students running a whole lesson over HTTP/SSE; prints latencies |
 
 ## Configuration
 
-See `.env.example`: `ANTHROPIC_API_KEY`, `AI_MODEL`, `DATABASE_PATH`, `UPLOAD_DIR`, `SEED_DEMO`, `DEMO_MODE`, `DEFAULT_LANGUAGE` (`ka` or `en`: the school's default interface language and the language of the demo data), `COOKIE_SECURE`, `PUBLIC_BASE_URL`, `JUDGE0_URL`, `JUDGE0_TOKEN`, `JUDGE0_PYTHON_ID`, `JUDGE0_CPP_ID`.
+See `.env.example`: `ANTHROPIC_API_KEY`, `AI_MODEL`, `DATABASE_PATH`, `UPLOAD_DIR`, `SEED_DEMO`, `DEMO_MODE`, `SELF_REGISTRATION`, `BACKUP_DIR`, `DEFAULT_LANGUAGE` (`ka` or `en`: the school's default interface language and the language of the demo data), `COOKIE_SECURE`, `PUBLIC_BASE_URL`, `JUDGE0_URL`, `JUDGE0_TOKEN`, `JUDGE0_PYTHON_ID`, `JUDGE0_CPP_ID`.
 
 ## Known limitations
 
 - Library search is keyword-based (FTS5); semantic search is prepared (`material_chunks.embedding`) but not implemented. Scanned PDFs without a text layer are stored but not searchable.
-- Classes are simple named groups of students for assignments; there is no full admin console. Accounts are created with `npm run user:create` or student self-registration, and live sessions still carry a free-text class label.
+- Classes are simple rosters (add/remove students, create accounts, reset passwords, class progress); there is no full school-administration console, no timetable and no gradebook export.
 - Programming tests check output only (no memory or strict performance limits beyond a per-test time limit in the browser). Without Judge0, C++ results are self-reported and labelled as such.
 - STEM simulations are simplified models for teaching (no air resistance, ideal components); physical experiments and robotics projects need real materials and kits the school provides.
 - Single-process deployment (in-memory event bus and rate limits).
 - The Georgian texts were reviewed for natural wording and consistent terminology, but subject teachers who are native speakers should still read the built-in lessons before classroom use, especially literature and history.
-- Starter content is a solid base, not a full curriculum: most subjects have 2–4 built-in lessons, and arts, engineering, entrepreneurship and career one each. Topics such as waves and optics, networks and cybersecurity, databases or AI literacy are not covered yet.
+- Starter content is a base, not a full curriculum: most subjects have 2–4 built-in lessons (computer science 7, physics 6), and arts, engineering, entrepreneurship and career one each. No built-in lesson has been through the school's review workflow yet; see docs/CONTENT-ROADMAP.md for gaps and order.
 - The demo library catalogue and university cards are demo data; a real school enters its own.
 - University cards contain only what students and teachers enter; the four shared demo cards have no admission figures on purpose.
