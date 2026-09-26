@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState, useSyncExternalStore } from "react";
+import { useState } from "react";
 import { Check, ChevronRight, CircleDot, Eye, EyeOff, Lightbulb, Lock, MonitorPlay, Pause, Play, Power, RotateCcw, Timer, Users, X } from "lucide-react";
 import { useI18n } from "@/lib/i18n/client";
 import { fmt, fmtCount } from "@/lib/i18n/config";
@@ -21,15 +21,10 @@ import { ConnectionBadge } from "./connection-badge";
 import { Countdown } from "./countdown";
 import { ResultBars } from "./result-bars";
 
-const noopSubscribe = () => () => {};
-
-/** Address students type to join, e.g. "192.168.1.10:3000/join" on a school network. */
-export function useJoinUrl(): string {
-  return useSyncExternalStore(noopSubscribe, () => `${window.location.host}/join`, () => "/join");
-}
 
 /** Live control panel for a classroom session (desktop and touchscreen). */
-export function TeacherConsole({ initial }: { initial: TeacherSessionView }) {
+/** `joinUrl`: the address students type, e.g. "192.168.1.10:3000/join" (see `joinAddress`). */
+export function TeacherConsole({ initial, joinUrl }: { initial: TeacherSessionView; joinUrl: string }) {
   const { dict } = useI18n();
   const c = dict.teacher.console;
   const router = useRouter();
@@ -46,7 +41,6 @@ export function TeacherConsole({ initial }: { initial: TeacherSessionView }) {
   const [error, setError] = useState<string | null>(null);
   const [endOpen, setEndOpen] = useState(false);
   const [removing, setRemoving] = useState<{ id: string; name: string } | null>(null);
-  const joinUrl = useJoinUrl();
 
   const control = async (action: ControlAction) => {
     setBusy(true);

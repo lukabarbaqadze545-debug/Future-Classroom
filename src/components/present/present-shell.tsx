@@ -68,7 +68,7 @@ export function PresentShell({ children, controls, top, overlay }: { children: (
         {children(theme)}
       </main>
       <div className={cn("sticky bottom-0 border-t px-4 py-4 lg:px-10", dark ? "border-white/10 bg-[#0b1020]/95" : "border-line bg-surface/95")}>
-        <div className="flex flex-wrap items-center justify-center gap-3">{controls(theme)}</div>
+        <div className="flex flex-wrap items-center justify-center gap-2 xl:gap-3">{controls(theme)}</div>
       </div>
       {overlay}
     </div>
@@ -79,7 +79,7 @@ export function PresentShell({ children, controls, top, overlay }: { children: (
 export function PresentButton({ children, onClick, variant = "default", disabled, theme, href, ...rest }: { children: ReactNode; onClick?: () => void; variant?: "default" | "primary" | "danger"; disabled?: boolean; theme: PresentTheme; href?: string; "data-testid"?: string }) {
   const dark = theme === "dark";
   const cls = cn(
-    "inline-flex h-16 min-w-16 items-center justify-center gap-3 rounded-2xl px-6 text-lg font-semibold transition-colors disabled:opacity-40",
+    "inline-flex h-16 min-w-16 items-center justify-center gap-2 rounded-2xl px-4 text-lg font-semibold transition-colors disabled:opacity-40 xl:gap-3 xl:px-6",
     variant === "primary" && "bg-brand text-white hover:bg-brand-hover",
     variant === "danger" && (dark ? "bg-white/5 text-red-300 hover:bg-red-500/20" : "bg-danger-soft text-danger hover:bg-danger/15"),
     variant === "default" && (dark ? "bg-white/10 text-white hover:bg-white/15" : "bg-muted text-ink hover:bg-line"),

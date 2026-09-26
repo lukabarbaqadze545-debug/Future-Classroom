@@ -4,6 +4,7 @@ import { getTeacherSessionView } from "@/lib/services/sessions";
 import { ApiError } from "@/lib/http/errors";
 import { PresentSession } from "@/components/present/present-session";
 import { pageTitle } from "@/lib/i18n/server";
+import { joinAddress } from "@/lib/labs/library/qr";
 
 export async function generateMetadata() {
   return pageTitle((p) => p.presentation);
@@ -19,5 +20,5 @@ export default async function PresentSessionPage({ params }: { params: Promise<{
     if (error instanceof ApiError) notFound();
     throw error;
   }
-  return <PresentSession initial={view} />;
+  return <PresentSession initial={view} joinUrl={await joinAddress()} />;
 }

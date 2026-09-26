@@ -6,6 +6,7 @@ import { getLesson } from "@/lib/services/lessons";
 import { ApiError } from "@/lib/http/errors";
 import { PageContainer } from "@/components/layout/site-header";
 import { TeacherConsole } from "@/components/session/teacher-console";
+import { joinAddress } from "@/lib/labs/library/qr";
 import { SessionSummaryView } from "@/components/session/session-summary";
 import { StartSessionButton } from "@/components/teacher/start-session-dialog";
 
@@ -39,7 +40,7 @@ export default async function SessionPage({ params }: { params: Promise<{ id: st
   }
   return (
     <PageContainer wide>
-      <TeacherConsole initial={getTeacherSessionView(id, user)} />
+      <TeacherConsole initial={getTeacherSessionView(id, user)} joinUrl={await joinAddress()} />
     </PageContainer>
   );
 }

@@ -13,10 +13,9 @@ import { useLiveState } from "@/components/session/use-live-state";
 import { Countdown } from "@/components/session/countdown";
 import { ResultBars } from "@/components/session/result-bars";
 import { ConnectionBadge } from "@/components/session/connection-badge";
-import { useJoinUrl } from "@/components/session/teacher-console";
 import { PresentButton, PresentShell } from "./present-shell";
 
-export function PresentSession({ initial }: { initial: TeacherSessionView }) {
+export function PresentSession({ initial, joinUrl }: { initial: TeacherSessionView; joinUrl: string }) {
   const { dict } = useI18n();
   const p = dict.present;
   const sessionId = initial.session.id;
@@ -28,7 +27,6 @@ export function PresentSession({ initial }: { initial: TeacherSessionView }) {
   });
   const view = data ?? initial;
   const { session, current, participants } = view;
-  const joinUrl = useJoinUrl();
   const [busy, setBusy] = useState(false);
   const [timerOpen, setTimerOpen] = useState(false);
   const [endOpen, setEndOpen] = useState(false);
@@ -94,11 +92,11 @@ export function PresentSession({ initial }: { initial: TeacherSessionView }) {
             </PresentButton>
             <PresentButton theme={theme} onClick={() => control({ type: session.paused ? "resume" : "pause" })} disabled={busy}>
               {session.paused ? <Play aria-hidden className="size-6" /> : <Pause aria-hidden className="size-6" />}
-              <span className="sr-only lg:not-sr-only">{session.paused ? dict.teacher.console.resume : dict.teacher.console.pause}</span>
+              <span className="sr-only xl:not-sr-only">{session.paused ? dict.teacher.console.resume : dict.teacher.console.pause}</span>
             </PresentButton>
             <PresentButton theme={theme} variant="danger" onClick={() => setEndOpen(true)} disabled={busy}>
               <Power aria-hidden className="size-6" />
-              <span className="sr-only lg:not-sr-only">{p.endSession}</span>
+              <span className="sr-only xl:not-sr-only">{p.endSession}</span>
             </PresentButton>
             <PresentButton theme={theme} href={`/teacher/sessions/${sessionId}`}>
               <LogOut aria-hidden className="size-6" />
