@@ -5,6 +5,7 @@ import { MIGRATIONS } from "./schema";
 import { seedDemoSchool } from "./seed";
 import { syncBuiltInContent } from "./builtin";
 import { upgradeMaterialIndexes } from "./material-index";
+import { syncBuiltInBooks } from "./builtin-books";
 import { seedDemoEnabled } from "@/lib/config";
 
 export type DB = Database.Database;
@@ -73,6 +74,7 @@ export function getDb(): DB {
   }
   // New built-in lessons reach existing schools too.
   syncBuiltInContent(db);
+  syncBuiltInBooks(db);
   // Materials indexed by an older version are brought up to date, once.
   upgradeMaterialIndexes(db);
   return db;

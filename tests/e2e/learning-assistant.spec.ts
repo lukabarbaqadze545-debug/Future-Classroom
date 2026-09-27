@@ -181,3 +181,19 @@ for (const [label, width, height] of [
     await context.close();
   });
 }
+
+test("the built-in books are in the library, with their text searchable", async ({ browser }) => {
+  const { context, page, errors } = await userPage(browser, "mariam");
+  await page.goto("/library");
+  await page.getByTestId("library-search").fill("Business courses");
+  await expect(page.getByTestId("library-results")).toContainText("Business courses");
+  await page.goto("/library/lib-cpp-code-to-olympiad-1");
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("C++: From Code to Olympiad, Vol. 1");
+  await page.getByTestId("ask-about-material").click();
+  await page.getByTestId("assistant-text").fill("რა არის ვექტორი?");
+  await page.getByTestId("assistant-submit").click();
+  await expect(page.getByTestId("assistant-result")).toHaveAttribute("data-found", "yes");
+  await expect(page.getByTestId("assistant-passage").first()).toContainText("C++: From Code to Olympiad, Vol. 1");
+  expect(errors).toEqual([]);
+  await context.close();
+});

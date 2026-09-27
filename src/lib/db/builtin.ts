@@ -9,7 +9,7 @@ import type { CuratedLesson } from "@/lib/ai/templates/types";
  */
 export const SYSTEM_USER_ID = "system-content";
 
-function ensureSystemUser(db: DB): string {
+export function ensureSystemUser(db: DB): string {
   db.prepare(
     "INSERT OR IGNORE INTO users (id, role, username, display_name, password_hash, created_at) VALUES (?, 'admin', 'future-classroom', 'Future Classroom', '!', ?)",
   ).run(SYSTEM_USER_ID, Date.now());

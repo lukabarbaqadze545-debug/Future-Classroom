@@ -4,6 +4,8 @@ import { freshDb, makeUser } from "../helpers";
 import { setAIProviderForTests, type AIProvider } from "@/lib/ai";
 import { syncBuiltInContent } from "@/lib/db/builtin";
 import { upgradeMaterialIndexes } from "@/lib/db/material-index";
+import { syncBuiltInBooks } from "@/lib/db/builtin-books";
+import { getResource } from "@/lib/labs/library/service";
 import { createMaterial } from "@/lib/services/materials";
 import { resetLessonIndexForTests, searchKnowledge } from "@/lib/services/knowledge-search";
 import { deleteSaved, explainSchema, listSaved, runAssistant, saveQuestion, startResearch, updateSavedNote } from "@/lib/services/learning-assistant";
@@ -244,5 +246,24 @@ describe("Learning Assistant", () => {
     expect(passage).toMatchObject({ sourceId: "old1", pageStart: 6 });
     expect(db.prepare("SELECT index_version, page_count FROM materials WHERE id = 'old1'").get()).toEqual({ index_version: 1, page_count: 7 });
     expect(upgradeMaterialIndexes(db)).toBe(0);
+  });
+
+  it("installs the built-in library books once, searchable by students, and never brings back a removed one", async () => {
+    const db = freshDb();
+    const started = Date.now();
+    expect(syncBuiltInBooks(db)).toBe(2);
+    expect(Date.now() - started).toBeLessThan(15_000);
+    expect(syncBuiltInBooks(db)).toBe(0);
+    expect(getResource("lib-business-courses")?.title).toBe("Business courses");
+    const cpp = getResource("lib-cpp-code-to-olympiad-1")!;
+    expect(cpp).toMatchObject({ title: "C++: From Code to Olympiad, Vol. 1", materialId: "book-cpp-code-to-olympiad-1", language: "ka" });
+    const student = makeUser("student", "giorgi");
+    const result = await runAssistant(student, { mode: "locate", text: "რა არის მასივი C++-ში?" });
+    expect(result.passages[0]).toMatchObject({ sourceId: "book-cpp-code-to-olympiad-1", pageStart: null });
+    expect(result.passages[0].section).toBeTruthy();
+    const business = await runAssistant(student, { mode: "explain", text: "ფულადი ნაკადი და მარკეტინგი" });
+    expect(business.passages.some((p) => p.sourceId === "book-business-courses")).toBe(true);
+    db.prepare("DELETE FROM library_resources WHERE id = 'lib-business-courses'").run();
+    expect(syncBuiltInBooks(db)).toBe(0);
   });
 });
