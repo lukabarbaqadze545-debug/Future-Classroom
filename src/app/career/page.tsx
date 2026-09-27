@@ -20,6 +20,7 @@ import { AssignmentBanner } from "@/components/labs/shared/assignment-banner";
 import { TabPanels } from "@/components/labs/shared/tab-panels";
 import { CareerExplorer } from "@/components/labs/career/career-explorer";
 import { UniversityCards } from "@/components/labs/career/university-cards";
+import { UniversityGuidePanel } from "@/components/labs/career/university-guide-panel";
 import { SkillsSelf } from "@/components/labs/career/skills-self";
 import { Goals } from "@/components/labs/career/goals";
 
@@ -111,6 +112,7 @@ export default async function CareerPage({ searchParams }: { searchParams: Promi
         panels={[
           { id: "careers", label: c.tabs.careers, content: <CareerExplorer bookmarked={listBookmarks(user.id, "career").map((b) => b.refId)} /> },
           { id: "fields", label: c.tabs.fields, content: fieldsPanel },
+          { id: "guide", label: c.tabs.guide, content: <UniversityGuidePanel dict={dict} locale={locale} /> },
           {
             id: "universities",
             label: c.tabs.universities,

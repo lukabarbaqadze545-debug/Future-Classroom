@@ -15,6 +15,7 @@ import { SIMULATIONS } from "@/lib/labs/stem/simulations";
 import { SEED_LIBRARY } from "@/lib/labs/library/catalog-seed";
 import { CAREERS, FIELDS } from "@/lib/labs/career/careers";
 import { SKILLS } from "@/lib/labs/career/skills";
+import { ABROAD_STEPS, FIELD_GUIDES, GEORGIA_2026, UNIVERSITY_GUIDE } from "@/lib/labs/career/universities";
 
 type Text = { where: string; text: string };
 
@@ -49,6 +50,7 @@ const CATALOGS: Record<string, unknown> = {
   simulations: SIMULATIONS,
   library: SEED_LIBRARY,
   careers: [CAREERS, FIELDS, SKILLS],
+  universities: [UNIVERSITY_GUIDE, FIELD_GUIDES, GEORGIA_2026, ABROAD_STEPS],
 };
 
 const georgianUi = strings(ka, "ka");

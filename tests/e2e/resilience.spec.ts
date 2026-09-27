@@ -129,7 +129,11 @@ const STUDENT_PAGES = [
   "/library",
   "/library/lib-think-python",
   "/learning-assistant?mode=explain&q=inertia",
+  // The guide tab first: from "/career", "#guide" would be a same-page jump with no response.
+  "/career#guide",
   "/career",
+  "/career/universities/tsu",
+  "/career/universities/for/medicine",
   "/career/portfolio",
   "/student/assignments",
   "/student/progress",

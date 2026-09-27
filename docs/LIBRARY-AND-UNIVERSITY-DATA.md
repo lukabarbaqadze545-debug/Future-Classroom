@@ -10,6 +10,7 @@ has not checked itself is either absent or clearly marked.
 | Library catalogue | **Empty.** The librarian or teachers add the school's own resources. | 18 sample entries (below). |
 | Physical copies, loans, QR labels | Empty | Sample shelves and loans |
 | University cards | **None.** | 4 shared cards and 2 of a demo student's own cards |
+| University guide (`src/lib/labs/career/universities.ts`) | Built in (25 universities, sourced and dated) | Built in |
 | Careers and fields of study (`src/lib/labs/career/careers.ts`) | Built in | Built in |
 | Built-in lessons | Built in | Built in |
 
@@ -74,11 +75,44 @@ platform does not store them as facts:
 When someone checks a card against the official site, they press **I re-checked
 it today**; the date is stored with the card.
 
+### The built-in university guide
+
+The **University guide** tab (`/career#guide`) is a curated, bilingual guide
+to 25 universities for computer science, medicine and the arts — 9 in Georgia
+and 16 abroad (Europe and Türkiye, the USA and Canada, Asia) — written for a
+student finishing school in Georgia: how to get in, what it costs, which
+grants and scholarships exist, deadlines, and what to watch out for. Three
+comparison pages (`/career/universities/for/cs|medicine|art`) explain which
+choice suits which student, and a section covers Georgia's 2025–2026 reform
+(the state study grant abolished, state universities free for Georgian
+citizens from 2026–27, "one city — one faculty").
+
+It follows the same rules as the cards:
+
+- Every entry lists its sources — official university and government pages;
+  Georgian news outlets for the 2025–2026 reform, which official pages do not
+  yet describe in full; the College Board for RISD's estimated total cost —
+  and the whole guide shows the date it was checked
+  (`CHECKED`). After a year the guide warns, in orange, that fees and rules
+  have probably changed.
+- Figures appear only where a current official or clearly attributed figure
+  was found. Otherwise the entry explains how the cost works and links the
+  official page (for example Toronto's Tuition Explorer).
+- **Save to my research** copies an entry into the student's own university
+  cards, in their language, with the guide's check date, so the usual
+  "confirm on the official website" warning applies to it.
+
+To re-check (once a year, before the spring application season): open each
+entry's sources, correct `src/lib/labs/career/universities.ts`, and set
+`CHECKED` to the day you finished. `tests/unit/university-guide.test.ts`
+checks that every entry is complete, sourced and translated.
+
 ## Not done (and why)
 
 - No automatic import from university websites or the national assessment
   centre: that would copy content we have no permission to copy and would go
   stale silently.
 - No list of "all Georgian universities": an incomplete or outdated list is
-  worse than none. Schools add the universities their students actually ask
-  about.
+  worse than none. The built-in guide is a selection for three fields, not a
+  ranking or a full list; schools add the universities their students actually
+  ask about as cards.
