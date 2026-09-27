@@ -6,7 +6,7 @@ import { hashToken, newId, newToken } from "@/lib/domain/ids";
 import { gradeActivity, gradeQuizQuestion, describeAnswer } from "@/lib/domain/grading";
 import type { Activity, Answer, LessonContent, QuizQuestion } from "@/lib/domain/schemas";
 import { CURATED_LESSONS, type CuratedLesson } from "@/lib/ai/templates";
-import { chunkPages } from "@/lib/files/chunk";
+import { indexMaterial, uploadDir } from "./material-index";
 import { SEED_MATERIALS } from "./seed-materials";
 import { seedLabs } from "./seed-labs";
 import { syncBuiltInContent } from "./builtin";
@@ -53,10 +53,6 @@ function prng(seed: number) {
     t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
     return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
   };
-}
-
-function uploadDir(): string {
-  return process.env.UPLOAD_DIR || path.join(process.cwd(), "data", "uploads");
 }
 
 /** The demo school's language: the one it teaches in by default (DEFAULT_LANGUAGE), Georgian unless set to English. */
@@ -346,7 +342,6 @@ function seedMaterials(db: DB, users: Map<string, string>): Map<string, string> 
     `INSERT INTO materials (id, owner_id, title, subject, grade, author, tags, visibility, file_name, stored_name, mime_type, size_bytes, text_status, page_count, created_at)
      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'text/markdown; charset=utf-8', ?, 'indexed', NULL, ?)`,
   );
-  const insertChunk = db.prepare("INSERT INTO material_chunks (material_id, position, page, content) VALUES (?, ?, ?, ?)");
   db.transaction(() => {
     for (const material of SEED_MATERIALS) {
       const id = newId();
@@ -368,7 +363,7 @@ function seedMaterials(db: DB, users: Map<string, string>): Map<string, string> 
         bytes.byteLength,
         Date.now() - material.daysAgo * DAY,
       );
-      chunkPages([{ page: null, text: material.text }]).forEach((chunk, i) => insertChunk.run(id, i, chunk.page, chunk.content));
+      indexMaterial(db, id, [{ page: null, text: material.text }], "markdown");
     }
   })();
   return ids;

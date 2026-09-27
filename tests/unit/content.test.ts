@@ -27,7 +27,8 @@ describe("materials and library", () => {
     expect(material.textStatus).toBe("indexed");
     expect(material.chunkCount).toBeGreaterThan(2);
     const [top] = searchPassages(teacher, "What does our physics material say about Newton's second law?");
-    expect(top.content).toMatch(/second law/i);
+    // The heading is kept as the passage's section, not repeated in its text.
+    expect(top.section).toMatch(/second law/i);
     expect(top.content).toContain("F = m · a");
   });
 

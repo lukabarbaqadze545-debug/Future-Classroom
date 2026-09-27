@@ -17,6 +17,7 @@
     "backup": "tsx scripts/backup.ts",
     "restore": "tsx scripts/restore.ts",
     "doctor": "tsx scripts/doctor.ts",
+    "materials:reindex": "tsx scripts/reindex-materials.ts",
     "drill": "node scripts/resilience-drill.mjs",
     "check": "npm run typecheck && npm run lint && npm run test"
   },

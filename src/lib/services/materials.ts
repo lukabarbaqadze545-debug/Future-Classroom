@@ -2,16 +2,21 @@ import "server-only";
 import fs from "node:fs";
 import path from "node:path";
 import { getDb, now, parseJson } from "@/lib/db";
+import { indexMaterial, uploadDir } from "@/lib/db/material-index";
 import { newId } from "@/lib/domain/ids";
 import { materialMetaSchema, type MaterialMeta } from "@/lib/domain/schemas";
 import type { MaterialVisibility, Subject } from "@/lib/domain/catalog";
 import { ApiError } from "@/lib/http/errors";
 import type { CurrentUser } from "@/lib/auth/session";
 import { extractText, type ExtractedPage } from "@/lib/files/extract";
-import { chunkPages } from "@/lib/files/chunk";
 import { sanitizeFileName, validateUpload } from "@/lib/files/validate";
-import { buildFtsQuery, relevanceBoost } from "@/lib/files/search-query";
+import { ftsQuery, uniqueTerms } from "@/lib/knowledge/language";
+import type { DocumentFormat, IngestWarning } from "@/lib/knowledge/ingest";
+import { canView, visibilityClause } from "./material-access";
+import { searchKnowledge } from "./knowledge-search";
 
+export { canView } from "./material-access";
+export { uploadDir };
 export interface MaterialRecord extends MaterialMeta {
   id: string;
   ownerId: string;
@@ -22,6 +27,9 @@ export interface MaterialRecord extends MaterialMeta {
   textStatus: "indexed" | "no_text" | "failed";
   pageCount: number | null;
   chunkCount: number;
+  /** How well the text came out of the file (null before indexing). */
+  extractionQuality: "good" | "fair" | "poor" | "failed" | null;
+  warnings: IngestWarning[];
   createdAt: number;
 }
 
@@ -42,16 +50,14 @@ interface MaterialRow {
   text_status: MaterialRecord["textStatus"];
   page_count: number | null;
   chunk_count: number;
+  extraction_quality: MaterialRecord["extractionQuality"];
+  warnings: string;
   created_at: number;
 }
 
 const SELECT = `SELECT m.*, u.display_name AS owner_name,
   (SELECT COUNT(*) FROM material_chunks c WHERE c.material_id = m.id) AS chunk_count
   FROM materials m JOIN users u ON u.id = m.owner_id`;
-
-export function uploadDir(): string {
-  return process.env.UPLOAD_DIR || path.join(process.cwd(), "data", "uploads");
-}
 
 function toRecord(row: MaterialRow): MaterialRecord {
   return {
@@ -70,24 +76,10 @@ function toRecord(row: MaterialRow): MaterialRecord {
     textStatus: row.text_status,
     pageCount: row.page_count,
     chunkCount: row.chunk_count,
+    extractionQuality: row.extraction_quality ?? null,
+    warnings: parseJson<IngestWarning[]>(row.warnings, []),
     createdAt: row.created_at,
   };
-}
-
-/**
- * Visibility rules: students see materials marked "students"; teachers see
- * everything shared with teachers or students plus their own private files.
- */
-function visibilityClause(user: CurrentUser): { sql: string; params: string[] } {
-  if (user.role === "admin") return { sql: "1 = 1", params: [] };
-  if (user.role === "teacher") return { sql: "(m.visibility IN ('teachers','students') OR m.owner_id = ?)", params: [user.id] };
-  return { sql: "m.visibility = 'students'", params: [] };
-}
-
-export function canView(material: MaterialRecord, user: CurrentUser): boolean {
-  if (user.role === "admin" || material.ownerId === user.id) return true;
-  if (user.role === "teacher") return material.visibility !== "private";
-  return material.visibility === "students";
 }
 
 export function listMaterials(
@@ -107,7 +99,7 @@ export function listMaterials(
   }
   if (filter.q?.trim()) {
     const like = `%${filter.q.trim().toLowerCase().replace(/[%_]/g, "")}%`;
-    const fts = buildFtsQuery(filter.q);
+    const fts = ftsQuery(uniqueTerms(filter.q));
     where.push(
       `(LOWER(m.title) LIKE ? OR LOWER(m.tags) LIKE ? OR LOWER(m.author) LIKE ?${
         fts ? " OR m.id IN (SELECT c.material_id FROM material_chunks_fts f JOIN material_chunks c ON c.id = f.rowid WHERE material_chunks_fts MATCH ?)" : ""
@@ -145,17 +137,6 @@ export function getMaterialFile(id: string, user: CurrentUser): { path: string; 
   return { path: path.join(uploadDir(), path.basename(row.stored_name)), record };
 }
 
-function indexChunks(materialId: string, pages: ExtractedPage[]): number {
-  const db = getDb();
-  const chunks = chunkPages(pages);
-  const insert = db.prepare("INSERT INTO material_chunks (material_id, position, page, content) VALUES (?, ?, ?, ?)");
-  db.transaction(() => {
-    db.prepare("DELETE FROM material_chunks WHERE material_id = ?").run(materialId);
-    chunks.forEach((chunk, i) => insert.run(materialId, i, chunk.page, chunk.content));
-  })();
-  return chunks.length;
-}
-
 /** Stores a validated upload outside the public folder and indexes its text. */
 export async function createMaterial(input: {
   owner: CurrentUser;
@@ -175,10 +156,12 @@ export async function createMaterial(input: {
   let textStatus: MaterialRecord["textStatus"] = "no_text";
   let pageCount: number | null = null;
   let pages: ExtractedPage[] = [];
+  let format: DocumentFormat = "plain";
   try {
-    const extracted = await extractText(kind, input.bytes);
+    const extracted = await extractText(kind, input.bytes, input.fileName);
     pages = extracted.pages;
     pageCount = extracted.pageCount;
+    format = extracted.format;
     textStatus = pages.some((p) => p.text.trim().length > 20) ? "indexed" : "no_text";
   } catch (error) {
     console.warn("[materials] text extraction failed", error instanceof Error ? error.message : error);
@@ -207,7 +190,11 @@ export async function createMaterial(input: {
       pageCount,
       input.createdAt ?? now(),
     );
-  if (textStatus === "indexed") indexChunks(id, pages);
+  if (textStatus === "indexed") {
+    const summary = indexMaterial(getDb(), id, pages, format);
+    // Text that only looked like text (a scanned PDF's stray characters) yields no passages.
+    if (summary.chunks === 0) getDb().prepare("UPDATE materials SET text_status = 'no_text' WHERE id = ?").run(id);
+  }
   return getMaterial(id, input.owner);
 }
 
@@ -233,54 +220,29 @@ export interface RetrievedPassage {
   materialTitle: string;
   subject: Subject;
   page: number | null;
+  pageEnd: number | null;
+  section: string | null;
   content: string;
   score: number;
 }
 
 /**
- * Keyword retrieval (SQLite FTS5 + BM25) over materials the user may see.
- * This is real retrieval, not a simulation; semantic (embedding) search can
- * later be added behind the same function using `material_chunks.embedding`.
+ * Passages from the materials a user may see, best first. The same search
+ * the Learning Assistant uses (stemmed Georgian and English terms, BM25,
+ * section and quality weighting), limited to uploaded materials.
  */
 export function searchPassages(user: CurrentUser, query: string, options: { subject?: Subject; limit?: number; materialIds?: string[] } = {}): RetrievedPassage[] {
-  const fts = buildFtsQuery(query);
-  if (!fts) return [];
-  const vis = visibilityClause(user);
-  const where = [vis.sql, "material_chunks_fts MATCH ?"];
-  const params: (string | number)[] = [...vis.params, fts];
-  if (options.subject) {
-    where.push("m.subject = ?");
-    params.push(options.subject);
-  }
-  if (options.materialIds?.length) {
-    where.push(`m.id IN (${options.materialIds.map(() => "?").join(",")})`);
-    params.push(...options.materialIds);
-  }
-  // Fetch a wider candidate set by BM25, then re-rank (see relevanceBoost).
-  params.push(40);
-  const rows = getDb()
-    .prepare(
-      `SELECT m.id AS material_id, m.title AS material_title, m.subject AS subject, c.page AS page, c.content AS content,
-              bm25(material_chunks_fts) AS score
-         FROM material_chunks_fts
-         JOIN material_chunks c ON c.id = material_chunks_fts.rowid
-         JOIN materials m ON m.id = c.material_id
-        WHERE ${where.join(" AND ")}
-        ORDER BY score LIMIT ?`,
-    )
-    .all(...params) as { material_id: string; material_title: string; subject: Subject; page: number | null; content: string; score: number }[];
-  return rows
-    .map((r) => ({
-      materialId: r.material_id,
-      materialTitle: r.material_title,
-      subject: r.subject,
-      page: r.page,
-      content: r.content,
-      // bm25() is lower-is-better; flip it and add the re-ranking boost.
-      score: relevanceBoost(query, r.content) - r.score,
-    }))
-    .sort((a, b) => b.score - a.score)
-    .slice(0, options.limit ?? 5);
+  const result = searchKnowledge(user, query, { subject: options.subject, materialIds: options.materialIds, includeLessons: false }, { limit: options.limit ?? 5 });
+  return result.passages.map((p) => ({
+    materialId: p.sourceId,
+    materialTitle: p.sourceTitle,
+    subject: p.subject,
+    page: p.pageStart,
+    pageEnd: p.pageEnd,
+    section: p.section,
+    content: p.text,
+    score: p.score,
+  }));
 }
 
 export function listMaterialsForLesson(lessonId: string, user: CurrentUser): MaterialRecord[] {

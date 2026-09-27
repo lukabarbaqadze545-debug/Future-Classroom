@@ -530,4 +530,83 @@ CREATE TABLE lesson_reviews (
 CREATE INDEX lesson_reviews_lesson ON lesson_reviews(lesson_id, created_at);
 `,
   },
+  {
+    id: 5,
+    name: "learning_assistant",
+    sql: `
+-- How well each material's text was extracted, and which version of the
+-- indexing pipeline produced its passages (older ones are re-indexed).
+ALTER TABLE materials ADD COLUMN index_version INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE materials ADD COLUMN language TEXT;
+ALTER TABLE materials ADD COLUMN extraction_quality TEXT;
+ALTER TABLE materials ADD COLUMN quality_score REAL;
+ALTER TABLE materials ADD COLUMN warnings TEXT NOT NULL DEFAULT '[]';
+
+-- Passages keep their page range, section and extraction quality. The
+-- stemmed terms are what the search index sees.
+ALTER TABLE material_chunks ADD COLUMN page_end INTEGER;
+ALTER TABLE material_chunks ADD COLUMN section TEXT;
+ALTER TABLE material_chunks ADD COLUMN chapter TEXT;
+ALTER TABLE material_chunks ADD COLUMN quality TEXT NOT NULL DEFAULT 'high';
+ALTER TABLE material_chunks ADD COLUMN stems TEXT NOT NULL DEFAULT '';
+ALTER TABLE material_chunks ADD COLUMN term_count INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE material_chunks ADD COLUMN spans TEXT NOT NULL DEFAULT '[]';
+
+-- The search index now covers stemmed Georgian and English terms.
+DROP TRIGGER material_chunks_ai;
+DROP TRIGGER material_chunks_ad;
+DROP TABLE material_chunks_fts;
+CREATE VIRTUAL TABLE material_chunks_fts USING fts5(
+  stems,
+  content='material_chunks',
+  content_rowid='id',
+  tokenize='unicode61 remove_diacritics 2'
+);
+CREATE TRIGGER material_chunks_ai AFTER INSERT ON material_chunks BEGIN
+  INSERT INTO material_chunks_fts(rowid, stems) VALUES (new.id, new.stems);
+END;
+CREATE TRIGGER material_chunks_ad AFTER DELETE ON material_chunks BEGIN
+  INSERT INTO material_chunks_fts(material_chunks_fts, rowid, stems) VALUES ('delete', old.id, old.stems);
+END;
+CREATE TRIGGER material_chunks_au AFTER UPDATE OF stems ON material_chunks BEGIN
+  INSERT INTO material_chunks_fts(material_chunks_fts, rowid, stems) VALUES ('delete', old.id, old.stems);
+  INSERT INTO material_chunks_fts(rowid, stems) VALUES (new.id, new.stems);
+END;
+INSERT INTO material_chunks_fts(material_chunks_fts) VALUES ('rebuild');
+CREATE VIRTUAL TABLE material_stems_vocab USING fts5vocab(material_chunks_fts, 'row');
+
+-- Definitions, formulas, examples, claims… each a sentence of the material
+-- with the pages it is on.
+CREATE TABLE material_knowledge (
+  id           TEXT PRIMARY KEY,
+  material_id  TEXT NOT NULL REFERENCES materials(id) ON DELETE CASCADE,
+  chunk_id     INTEGER NOT NULL REFERENCES material_chunks(id) ON DELETE CASCADE,
+  type         TEXT NOT NULL,
+  term         TEXT,
+  content      TEXT NOT NULL,
+  confidence   TEXT NOT NULL,
+  section      TEXT,
+  page_start   INTEGER,
+  page_end     INTEGER,
+  stems        TEXT NOT NULL DEFAULT '',
+  relates_to   TEXT REFERENCES material_knowledge(id) ON DELETE SET NULL,
+  relation     TEXT
+);
+CREATE INDEX material_knowledge_chunk ON material_knowledge(chunk_id);
+CREATE INDEX material_knowledge_material ON material_knowledge(material_id);
+
+-- Questions a person saved from the Learning Assistant, with their own note.
+CREATE TABLE assistant_saved (
+  id           TEXT PRIMARY KEY,
+  user_id      TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  mode         TEXT NOT NULL,
+  question     TEXT NOT NULL,
+  material_id  TEXT REFERENCES materials(id) ON DELETE SET NULL,
+  subject      TEXT,
+  note         TEXT NOT NULL DEFAULT '',
+  created_at   INTEGER NOT NULL
+);
+CREATE INDEX assistant_saved_user ON assistant_saved(user_id, created_at DESC);
+`,
+  },
 ];
