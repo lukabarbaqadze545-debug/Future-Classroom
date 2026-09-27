@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, BookOpen, Flame, Radio } from "lucide-react";
+import { ArrowRight, BookOpen, Flame, Lightbulb, Radio } from "lucide-react";
 import { getCurrentUser } from "@/lib/auth/session";
 import { getDictionary, pageTitle } from "@/lib/i18n/server";
 import { fmt, fmtCount, relativeTime } from "@/lib/i18n/config";
@@ -178,6 +178,17 @@ export default async function StudentHome() {
             ) : (
               <p className="mt-1 text-sm text-ink-muted">{dict.labs.classes.noStudentClasses}</p>
             )}
+          </Card>
+          <Card className="p-5" data-testid="home-assistant">
+            <h2 className="flex items-center gap-2 text-lg font-semibold">
+              <Lightbulb aria-hidden className="size-5 text-brand" />
+              {dict.assistant.title}
+            </h2>
+            <p className="mt-1 mb-4 text-sm text-ink-muted">{dict.assistant.homeCard}</p>
+            <ButtonLink href="/learning-assistant" variant="secondary">
+              {dict.assistant.modes.explain.label}
+              <ArrowRight aria-hidden className="size-4" />
+            </ButtonLink>
           </Card>
           <Card className="border-brand/25 p-5">
             <h2 className="flex items-center gap-2 text-lg font-semibold">

@@ -17,7 +17,8 @@ import { LabHeader } from "@/components/labs/lab-shell";
 import { AssignmentBanner } from "@/components/labs/shared/assignment-banner";
 import { TabPanels } from "@/components/labs/shared/tab-panels";
 import { Catalogue, type CatalogueItem } from "@/components/labs/library/catalogue";
-import { LibraryAsk } from "@/components/student/library-ask";
+import { LearningAssistant } from "@/components/assistant/learning-assistant";
+import { getAIProvider } from "@/lib/ai";
 
 export async function generateMetadata() {
   const { dict } = await getDictionary();
@@ -150,7 +151,11 @@ export default async function LibraryPage({ searchParams }: { searchParams: Prom
         panels={[
           { id: "catalogue", label: b.tabs.catalogue, content: <Catalogue items={items} initialSubject={subject && isSubject(subject) ? subject : ""} /> },
           { id: "reading", label: b.tabs.reading, content: readingPanel },
-          { id: "ask", label: b.tabs.ask, content: <LibraryAsk initialSubject={subject && isSubject(subject) ? subject : ""} /> },
+          {
+            id: "ask",
+            label: b.tabs.ask,
+            content: <LearningAssistant embedded material={null} aiAvailable={getAIProvider() !== null} initialSubject={subject && isSubject(subject) ? subject : ""} />,
+          },
           ...(staff ? [{ id: "manage" as const, label: b.tabs.manage, content: managePanel }] : []),
         ]}
       />

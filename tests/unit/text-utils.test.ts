@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { normalizeJoinCode } from "@/lib/domain/ids";
-import { buildFtsQuery, tokenizeQuery } from "@/lib/files/search-query";
-import { chunkPages, stripMarkdown } from "@/lib/files/chunk";
+import { contentTerms, ftsQuery, kaStem, uniqueTerms } from "@/lib/knowledge/language";
+import { ingestDocument, stripInlineMarkdown } from "@/lib/knowledge/ingest";
 import { sanitizeFileName, validateUpload } from "@/lib/files/validate";
 import { ApiError } from "@/lib/http/errors";
 
@@ -19,33 +19,37 @@ describe("normalizeJoinCode", () => {
 });
 
 describe("FTS query building", () => {
-  it("drops stop words and FTS operators", () => {
-    expect(tokenizeQuery("What does our physics material say about Newton's second law?")).toEqual(["physics", "newton", "second", "law"]);
-    const q = buildFtsQuery('force" OR * NEAR( -- drop')!;
-    expect(q).not.toMatch(/NEAR\(|--/);
-    expect(q.split(" OR ").every((part) => /^"[^"]+"\*?$/.test(part))).toBe(true);
+  it("drops stop words and can never carry FTS operators", () => {
+    expect(contentTerms("What does our physics material say about Newton's second law?")).toEqual(["physic", "newton", "second", "law"]);
+    const q = ftsQuery(uniqueTerms('force" OR * NEAR( -- drop'))!;
+    expect(q).not.toMatch(/NEAR\(|--|\*/);
+    expect(q.split(" OR ").every((part) => /^"[\p{L}\p{N}]+"$/u.test(part))).toBe(true);
   });
-  it("prefix-matches long Georgian words to handle case endings", () => {
-    expect(buildFtsQuery("ნიუტონის კანონი")).toBe('"ნიუტო"* OR "კანო"*');
+  it("matches Georgian words by stem, whatever their case ending", () => {
+    expect(ftsQuery(uniqueTerms("ნიუტონის კანონი"))).toBe(`"${kaStem("ნიუტონი")}" OR "${kaStem("კანონის")}"`);
   });
   it("returns null when nothing searchable remains", () => {
-    expect(buildFtsQuery("what is the?")).toBeNull();
+    expect(ftsQuery(uniqueTerms("what is the?"))).toBeNull();
   });
 });
 
-describe("chunking", () => {
-  it("starts a new chunk at each heading and strips Markdown", () => {
-    const chunks = chunkPages([{ page: null, text: "# Title\n\nIntro text.\n\n## Second law\nF = m · a is **important**.\n\n## Third law\nPairs of forces." }]);
-    expect(chunks.map((c) => c.content)).toEqual(["Title\n\nIntro text.", "Second law\nF = m · a is important.", "Third law\nPairs of forces."]);
+describe("passages", () => {
+  it("starts a new passage at each heading, keeps the heading as its section and strips Markdown", () => {
+    const { chunks } = ingestDocument([{ page: null, text: "# Title\n\nIntro text.\n\n## Second law\nF = m · a is **important**.\n\n## Third law\nPairs of forces." }], "markdown");
+    expect(chunks.map((c) => [c.section, c.text])).toEqual([
+      ["Title", "Intro text."],
+      ["Second law", "F = m · a is important."],
+      ["Third law", "Pairs of forces."],
+    ]);
   });
-  it("splits long paragraphs by sentence", () => {
-    const text = Array.from({ length: 40 }, (_, i) => `Sentence number ${i} is here.`).join(" ");
-    const chunks = chunkPages([{ page: 3, text }], 200);
-    expect(chunks.length).toBeGreaterThan(3);
-    expect(chunks.every((c) => c.content.length <= 230 && c.page === 3)).toBe(true);
+  it("keeps long texts in paragraph-sized passages on their page", () => {
+    const text = Array.from({ length: 30 }, (_, i) => `Paragraph ${i} explains one more idea about forces and motion in some detail here.`).join("\n\n");
+    const { chunks } = ingestDocument([{ page: 3, text }], "plain");
+    expect(chunks.length).toBeGreaterThan(1);
+    expect(chunks.every((c) => c.text.length <= 1500 && c.pageStart === 3 && c.pageEnd === 3)).toBe(true);
   });
-  it("converts list markers", () => {
-    expect(stripMarkdown("- one\n* two")).toBe("• one\n• two");
+  it("removes inline Markdown", () => {
+    expect(stripInlineMarkdown("**bold**, `code` and [a link](https://example.org)")).toBe("bold, code and a link");
   });
 });
 

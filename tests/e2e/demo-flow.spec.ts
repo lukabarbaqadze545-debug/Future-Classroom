@@ -130,12 +130,12 @@ test("student self-study: practice with hints, quiz and library", async ({ page 
   await page.getByRole("button", { name: "Submit quiz" }).last().click();
   await expect(page.getByTestId("quiz-result")).toBeVisible();
 
-  // Library answers come with sources (passages only, since AI is off).
+  // The Learning Assistant answers from the materials, with sources (no AI summary: AI is off).
   await page.goto("/student/library");
-  await page.getByTestId("library-question").fill("What does our physics material say about Newton's second law?");
-  await page.getByTestId("library-ask").click();
-  await expect(page.getByTestId("library-result")).toContainText("F = m · a");
-  await expect(page.getByText("AI is not connected, so no summary was written.")).toBeVisible();
+  await page.getByTestId("assistant-text").fill("What does our physics material say about Newton's second law?");
+  await page.getByTestId("assistant-submit").click();
+  await expect(page.getByTestId("assistant-passages")).toContainText("F = m · a");
+  await expect(page.getByTestId("assistant-ai-note")).toHaveText("No AI explanation was written. Everything here comes straight from the material.");
 });
 
 test("interface switches to Georgian", async ({ page }) => {

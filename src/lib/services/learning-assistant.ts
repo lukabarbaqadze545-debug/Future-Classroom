@@ -7,7 +7,7 @@ import { ApiError } from "@/lib/http/errors";
 import type { CurrentUser } from "@/lib/auth/session";
 import { getAIProvider, withAIStatus } from "@/lib/ai";
 import { EDUCATIONAL_GUARDRAILS, detectLanguage, languageInstruction } from "@/lib/ai/prompts";
-import { clip, hasNegation, splitSentences, stem, tokens, uniqueTerms } from "@/lib/knowledge/language";
+import { clip, hasNegation, splitSentences, stem, textLanguage, tokens, uniqueTerms } from "@/lib/knowledge/language";
 import { checkUnderstanding, validateClaims, type CheckedClaim, type UnderstandingStatus } from "@/lib/knowledge/grounding";
 import { assumptionsFor, soundsLikeOpinion, statementTypes, type AssumptionId, type StatementType } from "@/lib/knowledge/reasoning";
 import { suggestQuestions, type QuestionKind } from "@/lib/knowledge/questions";
@@ -87,6 +87,11 @@ export interface AssistantResult {
   searched: { materials: number; lessons: number };
   terms: QueryTerm[];
   found: boolean;
+  /**
+   * "full": the passages cover the question; "partial": they share only some
+   * of its words and may not answer it; "none": nothing was found.
+   */
+  match: "full" | "partial" | "none";
   passages: NumberedPassage[];
   key: KeyItem[];
   ai: ExplainAI | null;
@@ -132,6 +137,8 @@ interface Gathered {
   searched: AssistantResult["searched"];
   stems: Set<string>;
   all: Passage[];
+  /** The language of the question ("ka", "en", or unclear). */
+  language: string;
 }
 
 function gather(user: CurrentUser, query: string, scope: { materialId?: string; subject?: Subject }, limit: number): Gathered {
@@ -154,13 +161,18 @@ function gather(user: CurrentUser, query: string, scope: { materialId?: string; 
     if (!byPassageId.has(item.passageId) && extra.has(item.passageId) && passages.length < limit + 2) add(extra.get(item.passageId)!);
   }
   const knowledge = result.knowledge.filter((k) => byPassageId.has(k.passageId));
-  return { passages, byPassageId, knowledge, terms: result.terms, searched: result.searched, stems, all: result.passages };
+  return { passages, byPassageId, knowledge, terms: result.terms, searched: result.searched, stems, all: result.passages, language: textLanguage(query) };
 }
 
 function keyItems(g: Gathered, types: KnowledgeType[], max: number): KeyItem[] {
-  return g.knowledge
-    .filter((k) => types.includes(k.type))
-    .sort((a, b) => KEY_ORDER.indexOf(a.type) - KEY_ORDER.indexOf(b.type))
+  // Items in the question's language come first; the other language only fills a gap.
+  const languageOf = new Map(g.all.map((p) => [p.id, p.language]));
+  const sameLanguage = (k: KnowledgeHit) => !["ka", "en"].includes(g.language) || [g.language, "mixed", null].includes(languageOf.get(k.passageId) ?? null);
+  const matching = g.knowledge.filter((k) => types.includes(k.type));
+  const same = matching.filter(sameLanguage);
+  const pool = same.length >= 2 ? same : [...same, ...matching.filter((k) => !sameLanguage(k))];
+  return pool
+    .sort((a, b) => Number(sameLanguage(b)) - Number(sameLanguage(a)) || KEY_ORDER.indexOf(a.type) - KEY_ORDER.indexOf(b.type))
     .slice(0, max)
     .map((k) => ({ type: k.type, term: k.term, content: k.content, n: g.byPassageId.get(k.passageId)!, pageStart: k.pageStart, pageEnd: k.pageEnd, relatedTo: k.relatedTo }));
 }
@@ -238,6 +250,8 @@ export async function runAssistant(user: CurrentUser, raw: AssistantRequest): Pr
   const query = input.mode === "check" && input.topic ? input.topic : input.text;
   const g = gather(user, input.mode === "check" && input.topic ? `${input.topic} ${input.text}` : query, scope, input.mode === "locate" ? 6 : 5);
   const found = g.passages.length > 0;
+  const bestCoverage = Math.max(0, ...g.all.slice(0, 3).map((p) => p.coverage));
+  const match: AssistantResult["match"] = !found ? "none" : g.terms.length >= 2 && bestCoverage < 0.5 ? "partial" : "full";
 
   const result: AssistantResult = {
     mode: input.mode,
@@ -246,6 +260,7 @@ export async function runAssistant(user: CurrentUser, raw: AssistantRequest): Pr
     searched: g.searched,
     terms: g.terms,
     found,
+    match,
     passages: g.passages,
     key: [],
     ai: null,
@@ -258,7 +273,8 @@ export async function runAssistant(user: CurrentUser, raw: AssistantRequest): Pr
   switch (input.mode) {
     case "explain": {
       result.key = keyItems(g, ["definition", "formula", "example", "argument", "claim", "distinction"], 4);
-      if (!found) {
+      // Nothing, or only a loose match, to explain from: the AI is not asked.
+      if (match !== "full") {
         result.ai = { status: "not_needed", claims: [], covered: false, checkQuestion: "" };
         break;
       }

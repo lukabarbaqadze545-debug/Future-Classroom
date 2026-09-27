@@ -4,7 +4,7 @@ export const libraryEn = {
   lead: "The school's physical and digital collection. Every book on the shelf has a QR code that opens its page here.",
   legalNote:
     "Digital versions here are school-created, public domain, openly licensed or linked from the publisher's own free copy. Copyrighted books are available as printed copies only.",
-  tabs: { catalogue: "Catalogue", reading: "My reading", ask: "Ask the library", manage: "Manage" },
+  tabs: { catalogue: "Catalogue", reading: "My reading", ask: "Learning Assistant", manage: "Manage" },
   search: "Search title, author or description",
   filters: {
     category: "Category",

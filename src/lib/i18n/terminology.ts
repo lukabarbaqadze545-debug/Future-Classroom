@@ -57,6 +57,12 @@ export const TERMS: Record<string, Term> = {
   features: { en: "Features", ka: "შესაძლებლობები", avoid: ["ფუნქციონალ"] },
   user: { en: "User", ka: "მომხმარებელი", avoid: ["იუზერ"] },
   bookmark: { en: "Bookmark", ka: "სანიშნე" },
+  learningAssistant: {
+    en: "Learning Assistant",
+    ka: "სასწავლო ასისტენტი",
+    note: "The platform's tool for working with school materials. It has no personal or product name and is not a chatbot.",
+  },
+  passage: { en: "Passage (of a text)", ka: "მონაკვეთი", note: "A piece of a material or lesson shown with its source." },
   contentReview: { en: "Content review", ka: "შინაარსის შემოწმება", note: "Teachers checking a lesson before classroom use." },
   classroomReady: { en: "Classroom ready", ka: "საკლასოდ მზა" },
 

@@ -7,6 +7,8 @@ import { checkUnderstanding, validateClaims } from "@/lib/knowledge/grounding";
 import { assumptionsFor, statementTypes } from "@/lib/knowledge/reasoning";
 import { formulaIn, suggestQuestions } from "@/lib/knowledge/questions";
 import { SEED_MATERIALS } from "@/lib/db/seed-materials";
+import fs from "node:fs";
+import path from "node:path";
 
 /*
  * A synthetic textbook with what real PDFs contain and naive pipelines get
@@ -248,11 +250,21 @@ describe("reasoning cues and questions", () => {
     expect(assumptionsFor("Smoking causes cancer.")).toContain("cause_not_coincidence");
     expect(assumptionsFor("სკოლებში ტელეფონი უნდა აიკრძალოს.")).toContain("shared_standard");
     expect(assumptionsFor("ყველა ლითონი ატარებს დენს.")).toContain("no_exception");
+    expect(statementTypes("მგლები ნაკლებია, რადგან ენერგია იკარგება.")).toContain("causal");
     expect(statementTypes("Water boils at 100 °C at sea level.")).toEqual(["factual"]);
   });
 
   it("builds questions from the material's own definitions, formulas and sections", () => {
-    expect(formulaIn("We write this as F = m · a, where F is the force.")).toBe("F = m · a");
+    expect(
+      [
+        "A quadratic equation has the form ax² + bx + c = 0 where a is not zero.",
+        "We write this as F = m · a, where F is the force.",
+        "x = (−b ± √(b² − 4ac)) / (2a).",
+        "To calculate acceleration, divide the net force by the mass: a = F / m.",
+        "სხეულის აჩქარება უკუპროპორციულია სხეულის მასისა: F = m · a.",
+        "Describing a wave: v = f · λ",
+      ].map(formulaIn),
+    ).toEqual(["ax² + bx + c = 0", "F = m · a", "x = (−b ± √(b² − 4ac)) / (2a)", "a = F / m", "F = m · a", "v = f · λ"]);
     const questions = suggestQuestions(
       [
         { type: "definition", term: "inertia", content: "The tendency to keep moving is called inertia.", section: "Forces", passage: 0 },
@@ -262,5 +274,24 @@ describe("reasoning cues and questions", () => {
     );
     expect(questions.map((q) => q.kind)).toEqual(["meaning", "formula_parts", "own_example", "main_idea"]);
     expect(questions[1].subject).toBe("F = m · a");
+  });
+});
+
+describe("no personal branding from the prototype", () => {
+  it("never names the prototype in code, interface strings or content", () => {
+    const files: string[] = [];
+    const walk = (dir: string) => {
+      for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+        const full = path.join(dir, entry.name);
+        if (entry.isDirectory()) walk(full);
+        else if (/\.(ts|tsx|css|json)$/.test(entry.name)) files.push(full);
+      }
+    };
+    walk(path.resolve("src"));
+    const offending = files.filter((file) => {
+      const text = fs.readFileSync(file, "utf-8");
+      return /\bLabo\b|Luka['’]s\s+Lab|ლაბო(?!რატორ)|ლუკას\s+ლაბ/i.test(text);
+    });
+    expect(offending).toEqual([]);
   });
 });

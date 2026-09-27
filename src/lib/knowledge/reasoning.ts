@@ -22,7 +22,7 @@ const CUES: Record<Exclude<StatementType, "factual">, RegExp[]> = {
   ],
   causal: [
     /\b(?:because|causes?|caused|leads?\s+to|results?\s+in|due\s+to|makes?\b[^.]{0,20}\b(?:happen|grow|rise|fall))\b/i,
-    /(?<![\p{L}])(?:იწვევს|გამოიწვია|გამო|იმიტომ\s+რომ|შედეგად|განაპირობებს|დამოკიდებულია|მიზეზი)(?![\p{L}])/u,
+    /(?<![\p{L}])(?:იწვევს|გამოიწვია|გამო|იმიტომ\s+რომ|რადგან|ვინაიდან|შედეგად|განაპირობებს|დამოკიდებულია|მიზეზი)(?![\p{L}])/u,
   ],
   universal: [/\b(?:all|every|always|never|nobody|no\s+one|nothing|everyone|any)\b/i, /(?<![\p{L}])(?:ყველა|ყოველი|ყოველთვის|არასდროს|არასოდეს|არავინ|არაფერი|ნებისმიერ\p{L}*|მუდამ)(?![\p{L}])/u],
   comparative: [/\b(?:more|less|fewer|better|worse|than|most|least)\b/i, /(?<![\p{L}])(?:უფრო|ვიდრე|ნაკლებ\p{L}*|ყველაზე|მეტად)(?![\p{L}])/u],

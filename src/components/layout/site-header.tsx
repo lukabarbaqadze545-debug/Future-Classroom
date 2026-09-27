@@ -23,6 +23,7 @@ export async function SiteHeader() {
         { href: "/teacher/quizzes", label: dict.nav.quizzes },
         { href: "/labs", label: dict.nav.labs },
         { href: "/library", label: dict.nav.library },
+        { href: "/learning-assistant", label: dict.nav.assistant },
         { href: "/teacher/materials", label: dict.nav.materials },
         { href: "/teacher/insights", label: dict.nav.insights },
       ]
@@ -33,6 +34,7 @@ export async function SiteHeader() {
           { href: "/labs", label: dict.nav.labs },
           { href: "/student/assignments", label: dict.nav.assignments },
           { href: "/library", label: dict.nav.library },
+          { href: "/learning-assistant", label: dict.nav.assistant },
           { href: "/career", label: dict.nav.portfolio },
           { href: "/student/progress", label: dict.nav.progress },
           { href: "/join", label: dict.nav.join },

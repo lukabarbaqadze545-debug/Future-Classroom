@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ClipboardList, ExternalLink, FileText, Pencil, QrCode } from "lucide-react";
+import { ClipboardList, ExternalLink, FileText, Lightbulb, Pencil, QrCode } from "lucide-react";
 import { getCurrentUser, isStaff } from "@/lib/auth/session";
 import { getDictionary } from "@/lib/i18n/server";
 import { fmt, formatDate } from "@/lib/i18n/config";
@@ -127,11 +127,17 @@ export default async function ResourcePage({ params, searchParams }: Props) {
             {material ? (
               <div className="mt-2 space-y-2">
                 <Badge tone="success">{b.licenses.school}</Badge>
-                <div>
+                <div className="flex flex-wrap gap-2">
                   <ButtonLink href={`/api/materials/${material.id}/file`} variant="secondary">
                     <FileText aria-hidden className="size-4" />
                     {b.openSchoolCopy}
                   </ButtonLink>
+                  {material.textStatus === "indexed" ? (
+                    <ButtonLink href={`/learning-assistant?material=${material.id}`} variant="ghost" data-testid="ask-about-material">
+                      <Lightbulb aria-hidden className="size-4" />
+                      {dict.assistant.askAboutMaterial}
+                    </ButtonLink>
+                  ) : null}
                 </div>
               </div>
             ) : resource.digitalUrl ? (

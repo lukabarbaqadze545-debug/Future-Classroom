@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { freshDb, makeUser } from "../helpers";
 import { createMaterial, listMaterials, searchPassages, getMaterial } from "@/lib/services/materials";
-import { askLibrary } from "@/lib/ai/library-service";
+import { runAssistant } from "@/lib/services/learning-assistant";
 import { createQuiz, getQuizResults, studentAttemptView, submitQuizAttempt, getPublishedQuiz, setQuizStatus } from "@/lib/services/quizzes";
 import { quiz } from "@/lib/ai/templates/builders";
 import { SEED_MATERIALS } from "@/lib/db/seed-materials";
@@ -49,12 +49,12 @@ describe("materials and library", () => {
     const teacher = makeUser("teacher", "davit");
     const student = makeUser("student", "mariam");
     await createMaterial({ owner: teacher, meta: meta(), fileName: "notes.md", bytes: new TextEncoder().encode(newtonText) });
-    const result = await askLibrary(student, "Newton's second law");
-    expect(result.mode).toBe("passages_only");
-    expect(result.answer).toBeNull();
-    expect(result.passages[0]).toMatchObject({ index: 1, materialTitle: "Newton notes" });
-    const none = await askLibrary(student, "volcanic eruptions in Iceland");
+    const result = await runAssistant(student, { mode: "explain", text: "Newton's second law" });
+    expect(result.ai).toMatchObject({ status: "off", claims: [] });
+    expect(result.passages[0]).toMatchObject({ n: 1, sourceTitle: "Newton notes" });
+    const none = await runAssistant(student, { mode: "explain", text: "volcanic eruptions in Iceland" });
     expect(none.passages).toHaveLength(0);
+    expect(none.found).toBe(false);
   });
 
   it("finds Georgian text despite case endings", async () => {
@@ -145,12 +145,12 @@ describe("demo seed", () => {
     expect(progress.quizzesTaken).toBe(3);
   });
 
-  it("answers every suggested library question from the demo materials, in both languages", () => {
+  it("answers every suggested Learning Assistant question from the demo materials, in both languages", () => {
     const db = freshDb();
     seedDemoSchool(db, "ka");
     const mariam = getUserByUsername("mariam")!;
     for (const dict of Object.values(dictionaries)) {
-      for (const question of dict.student.library.exampleQuestions) {
+      for (const question of dict.assistant.exampleQuestions) {
         expect(searchPassages(mariam, question).length, question).toBeGreaterThan(0);
       }
     }

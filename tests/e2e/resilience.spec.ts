@@ -8,7 +8,7 @@ test("labs work with AI disabled and never say a feature is unavailable", async 
   const { context, page, errors } = await userPage(browser, "mariam");
   await page.goto("/student");
   await expect(page.getByText("AI offline").first()).toBeVisible();
-  for (const path of ["/labs", "/labs/programming/l2-count-vowels", "/labs/critical-thinking/ct-claims-1", "/labs/stem/simulations/projectile", "/labs/research", "/library", "/career"]) {
+  for (const path of ["/labs", "/labs/programming/l2-count-vowels", "/labs/critical-thinking/ct-claims-1", "/labs/stem/simulations/projectile", "/labs/research", "/library", "/learning-assistant", "/career"]) {
     await page.goto(path);
     await expect(page.locator("main")).toBeVisible();
     const text = await page.locator("body").innerText();
@@ -128,13 +128,14 @@ const STUDENT_PAGES = [
   "/labs/research/research-mariam-sleep",
   "/library",
   "/library/lib-think-python",
+  "/learning-assistant?mode=explain&q=inertia",
   "/career",
   "/career/portfolio",
   "/student/assignments",
   "/student/progress",
 ];
 
-const TEACHER_PAGES = ["/teacher", "/teacher/sessions/new", "/teacher/lessons/review", "/account", "/teacher/assignments", "/teacher/assignments/new", "/teacher/students", "/teacher/sessions/labs", "/library/labels", "/labs/programming/new"];
+const TEACHER_PAGES = ["/teacher", "/teacher/sessions/new", "/teacher/lessons/review", "/account", "/teacher/assignments", "/teacher/assignments/new", "/teacher/students", "/teacher/sessions/labs", "/library/labels", "/labs/programming/new", "/teacher/materials", "/learning-assistant?mode=evidence&q=Removing%20a%20predator%20changes%20the%20food%20web"];
 
 for (const [label, width, height, touch, locale] of [
   ["phone", 390, 844, true, "en"],

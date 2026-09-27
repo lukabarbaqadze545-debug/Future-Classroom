@@ -4,6 +4,7 @@
  * Placeholders use {name} and are filled with `fmt()`.
  */
 import { labsEn } from "./labs-en";
+import { assistantEn } from "./assistant-en";
 
 export const en = {
   meta: {
@@ -120,6 +121,7 @@ export const en = {
     insights: "Class overview",
     learn: "Learn",
     library: "Library",
+    assistant: "Learning Assistant",
     progress: "My progress",
     join: "Join a class",
     labs: "Labs",
@@ -760,7 +762,14 @@ export const en = {
       previewTitle: "Preview",
       previewEmpty: "No text to preview.",
       yours: "Yours",
-      ragNote: "How the library works: materials are split into passages and searched by keyword. Answers quote and cite these passages; if AI is connected it also writes a short summary grounded only in them.",
+      ragNote: "How searching works: each material is split into passages along its own headings, and for PDFs each passage keeps the pages it is on. Definitions, formulas and examples are recognised in the text. The Learning Assistant answers from these passages and always shows the source; an AI explanation, when AI is connected, is checked sentence by sentence.",
+      quality: { good: "Text read well", fair: "Text read in part", poor: "Text read poorly", failed: "Text could not be read" },
+      warnings: {
+        empty_pages: "Pages without text: {pages}",
+        low_quality_pages: "Pages read poorly: {pages}",
+        needs_ocr: "Probably a scanned document: it needs text recognition (OCR) before it can be searched.",
+        running_text_removed: "Repeated page headers removed: {sample}",
+      },
     },
     insights: {
       title: "Class overview",
@@ -890,31 +899,6 @@ export const en = {
       empty: "Start a topic or join a class, and your progress will appear here.",
       sources: { practice: "Practice", session: "Class session", quiz: "Quiz", lesson_view: "Lesson" },
       whatWeStore: "We store which questions you answered and whether they were right — nothing else.",
-    },
-    library: {
-      title: "School library",
-      lead: "Ask a question about approved school materials. Answers come with the passages they are based on.",
-      placeholder: "e.g. What does our physics material say about Newton's second law?",
-      ask: "Ask",
-      asking: "Searching the materials…",
-      subject: "Subject",
-      answer: "Answer",
-      aiAnswerNote: "Summary written by AI only from the passages below. Check the sources.",
-      passagesOnly: "Most relevant passages from school materials",
-      passagesOnlyNote: "AI is not connected, so no summary was written. These are the passages that best match your question.",
-      aiErrorNote: "The AI summary failed, so here are the matching passages.",
-      notCovered: "The school materials don't seem to answer this. Try other words, or ask your teacher.",
-      noResults: "No passages matched your question. Try different keywords.",
-      source: "Source",
-      page: "p. {n}",
-      browse: "Available materials",
-      noMaterials: "No materials have been shared with students yet.",
-      examples: "Try asking",
-      exampleQuestions: [
-        "What does our physics material say about Newton's second law?",
-        "What is the discriminant used for?",
-        "Why are there fewer wolves than deer in a forest?",
-      ],
     },
   },
   present: {
@@ -1056,6 +1040,7 @@ export const en = {
     contact: "Questions about data? Contact your school administration.",
   },
   labs: labsEn,
+  assistant: assistantEn,
 };
 
 type Widen<T> = T extends string

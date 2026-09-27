@@ -27,11 +27,32 @@ export interface QuestionSource {
   passage: number | null;
 }
 
-const FORMULA_TEXT = /[A-Za-zΔΣπλ][A-Za-z₀-₉²³]*\s*=\s*[^,;:.。]*[^\s,;:.]/u;
+const MATH_CHARS = /^[A-Za-z0-9²³₀-₉()+\-−·×*/^=±√<>.,ΔΣπλ]+$/u;
+const SHORT_WORDS = new Set(["so", "is", "as", "if", "and", "the", "we", "to", "of", "in", "it", "by", "or", "an", "at", "be", "are", "for", "has", "was"]);
 
+/** Could this whitespace-separated piece belong to a formula (x², 4ac, (2a), −, =)? */
+function mathToken(token: string): boolean {
+  if (!MATH_CHARS.test(token) || SHORT_WORDS.has(token.toLowerCase())) return false;
+  return !/[A-Za-z]{4,}/.test(token);
+}
+
+/** The formula in a sentence: the run of formula-like pieces around its "=" sign. */
 export function formulaIn(sentence: string): string | null {
-  const match = FORMULA_TEXT.exec(sentence);
-  return match ? match[0].trim() : null;
+  const parts = sentence.split(/\s+/).filter(Boolean);
+  const eq = parts.findIndex((p) => p.includes("="));
+  if (eq < 0) return null;
+  const clean = (p: string) => p.replace(/[.,;:]+$/, "");
+  let from = eq;
+  while (from > 0 && mathToken(clean(parts[from - 1])) && !/[.,;:]$/.test(parts[from - 1])) from--;
+  let to = eq;
+  if (!/[,;:]$/.test(parts[eq]) || parts[eq].endsWith("=")) {
+    while (to + 1 < parts.length && mathToken(clean(parts[to + 1]))) {
+      to++;
+      if (/[.,;:]$/.test(parts[to])) break;
+    }
+  }
+  const formula = parts.slice(from, to + 1).join(" ").replace(/[.,;:]+$/, "");
+  return /[A-Za-zΔπλ]/.test(formula) && formula.includes("=") && formula.length >= 3 ? formula : null;
 }
 
 export function suggestQuestions(items: readonly QuestionSource[], sections: readonly { title: string; passage: number }[], limit = 6): SuggestedQuestion[] {

@@ -121,10 +121,12 @@ export function uniqueTerms(text: string): string[] {
 /** First surface form of each stem in a text — for showing words back to people. */
 export function surfaceForms(text: string): Map<string, string> {
   const map = new Map<string, string>();
-  for (const token of tokens(text)) {
+  // Keep the writer's capitalisation ("Iceland"), match on the lower-case form.
+  for (const original of text.normalize("NFC").match(/[\p{L}\p{N}]+/gu) ?? []) {
+    const token = original.toLowerCase();
     if (!isContentToken(token)) continue;
     const s = stem(token);
-    if (!map.has(s)) map.set(s, token);
+    if (!map.has(s)) map.set(s, original);
   }
   return map;
 }

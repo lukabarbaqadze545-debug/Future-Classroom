@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState, type FormEvent } from "react";
-import { Download, Eye, FileText, Link2, Pencil, Search, Trash2, Upload } from "lucide-react";
+import { Download, Eye, FileText, Lightbulb, Link2, Pencil, Search, Trash2, Upload } from "lucide-react";
 import { useI18n } from "@/lib/i18n/client";
 import { fmt, fmtCount, relativeTime } from "@/lib/i18n/config";
 import { api, errorMessage } from "@/lib/client/api";
@@ -222,6 +222,9 @@ export function MaterialsLibrary({ initial, currentUserId, lessons, isAdmin }: {
                   <Badge tone={material.textStatus === "indexed" ? "success" : "warn"} dot>
                     {material.textStatus === "indexed" ? m.indexed : material.textStatus === "no_text" ? m.noText : m.failed}
                   </Badge>
+                  {material.extractionQuality && material.extractionQuality !== "good" && material.textStatus === "indexed" ? (
+                    <Badge tone="warn">{m.quality[material.extractionQuality]}</Badge>
+                  ) : null}
                   {material.tags.map((tag) => (
                     <Badge key={tag}>#{tag}</Badge>
                   ))}
@@ -240,6 +243,12 @@ export function MaterialsLibrary({ initial, currentUserId, lessons, isAdmin }: {
                     <Download aria-hidden className="size-4" />
                     {dict.common.download}
                   </ButtonLink>
+                  {material.textStatus === "indexed" ? (
+                    <ButtonLink href={`/learning-assistant?material=${material.id}`} variant="ghost" size="sm" data-testid="material-ask">
+                      <Lightbulb aria-hidden className="size-4" />
+                      {dict.assistant.askAboutMaterial}
+                    </ButtonLink>
+                  ) : null}
                   {own ? (
                     <>
                       <Button variant="ghost" size="sm" onClick={() => setEditing(material)} aria-label={`${dict.common.edit}: ${material.title}`}>
@@ -300,11 +309,18 @@ export function MaterialsLibrary({ initial, currentUserId, lessons, isAdmin }: {
       <Dialog open={preview !== null} onClose={() => setPreview(null)} title={preview?.material.title ?? m.previewTitle} closeLabel={dict.common.close} className="w-[min(760px,calc(100vw-32px))]">
         {preview ? (
           <div className="space-y-4">
+            {preview.material.warnings.length ? (
+              <ul className="space-y-1 rounded-xl border border-warn/30 bg-warn-soft/40 px-4 py-3 text-sm" data-testid="material-warnings">
+                {preview.material.warnings.map((w) => (
+                  <li key={w.code}>{fmt(m.warnings[w.code], { pages: (w.pages ?? []).slice(0, 12).join(", ") + ((w.pages ?? []).length > 12 ? "…" : ""), sample: (w.sample ?? []).join(" · ") })}</li>
+                ))}
+              </ul>
+            ) : null}
             {preview.chunks.length ? (
               <div className="max-h-[50vh] space-y-3 overflow-y-auto rounded-xl border border-line bg-muted/40 p-4">
                 {preview.chunks.map((chunk, i) => (
                   <p key={i} className="fc-prose text-sm">
-                    {chunk.page ? <span className="mr-1 font-semibold text-ink-subtle">[{fmt(dict.student.library.page, { n: chunk.page })}]</span> : null}
+                    {chunk.page ? <span className="mr-1 font-semibold text-ink-subtle">[{fmt(dict.assistant.page, { n: chunk.page })}]</span> : null}
                     {chunk.content}
                   </p>
                 ))}

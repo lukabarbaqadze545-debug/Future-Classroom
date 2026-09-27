@@ -43,6 +43,8 @@ export interface Passage {
   score: number;
   /** Query stems this passage contains. */
   matched: string[];
+  /** Share of the question's words (or their equivalents) this passage contains. */
+  coverage: number;
 }
 
 export interface KnowledgeHit {
@@ -94,7 +96,7 @@ const QUALITY: Record<Confidence, number> = { high: 1, medium: 0.85, low: 0.55 }
 /* ------------------------------ lesson index ------------------------------ */
 
 interface IndexedUnit {
-  passage: Omit<Passage, "score" | "matched" | "href">;
+  passage: Omit<Passage, "score" | "matched" | "href" | "coverage">;
   terms: string[];
   tf: Map<string, number>;
   bigrams: Set<string>;
@@ -371,7 +373,9 @@ export function searchKnowledge(user: CurrentUser, query: string, scope: SearchS
   // everything in a small library and admit noise in a large one.
   const top = scored[0]?.score ?? 0;
   const kept = scored.filter((s) => s.score >= top * 0.3);
-  const passages: Passage[] = kept.slice(0, limit).map(({ unit, score, matched }) => ({ ...unit.passage, href: hrefs.get(unit.passage.id)!, score: Math.round(score * 100) / 100, matched }));
+  const passages: Passage[] = kept
+    .slice(0, limit)
+    .map(({ unit, score, matched, coverage }) => ({ ...unit.passage, href: hrefs.get(unit.passage.id)!, score: Math.round(score * 100) / 100, matched, coverage: Math.round(coverage * 100) / 100 }));
 
   // --- knowledge items in the candidate passages ------------------------------------
   const knowledge = scoreKnowledge(kept.slice(0, 30).map((k) => k.unit), expanded, queryTerms, idf, lessons, hrefs);
