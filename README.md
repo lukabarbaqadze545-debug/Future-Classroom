@@ -7,8 +7,8 @@ A modern digital learning platform built for Georgian schools — Georgian first
 **Teacher → Lesson → Classroom session → Student activities → Hints → Feedback → Progress**
 
 - **Teachers** draft a lesson (with AI, or from built-in lessons when AI is off), edit everything, and run it live: students join with a code like `FC-4821`, the teacher launches activities one by one and sees answers arrive in real time.
-- **Students** answer on their workstation and get **hint-first help**: a conceptual nudge first, more specific hints next, and the full solution only as the last step (and only if the teacher allows it). Outside class they practise, take quizzes, review mistakes and ask the school library questions.
-- **School materials** (PDF, DOCX, TXT, Markdown) are indexed so students can ask questions and get answers with cited passages.
+- **Students** answer on their workstation and get **hint-first help**: a conceptual nudge first, more specific hints next, and the full solution only as the last step (and only if the teacher allows it). Outside class they practise, take quizzes, review mistakes and work with the school's materials in the Learning Assistant.
+- **School materials** (PDF, DOCX, TXT, Markdown) are indexed by their own chapters, sections and pages, and the **Learning Assistant** (`/learning-assistant`) helps students work with them and with the lessons: explain a topic, find where the answer is, weigh the evidence for a statement, check their own understanding, find good questions and start a research project — always showing the source.
 - **Six laboratories** that work without AI: Programming (Python and C++), STEM, Research, Critical Thinking, the School Library and Career & University — tied together by teacher assignments, a student portfolio and one learning profile per student.
 - **18 subjects** with a catalogue (`/subjects`): 46 built-in lessons with practice, hint ladders and quizzes, each linked to the lab activities, simulations, books and career pages that fit it.
 - **Georgian and English** throughout: the interface, the built-in lessons, the lab content and the demo school. Georgian is the default.
@@ -44,7 +44,7 @@ cp .env.example .env.local
 # set ANTHROPIC_API_KEY=... (and optionally AI_MODEL, default claude-opus-5)
 ```
 
-Without a key everything still works in **offline mode**, and the UI says so everywhere it matters (header badge, lesson notices, hint labels, library notes). The app never presents template content as AI output. The six laboratories use no AI at all: checking, feedback and hints are deterministic or teacher-written.
+Without a key everything still works in **offline mode**, and the UI says so everywhere it matters (header badge, lesson notices, hint labels, Learning Assistant notes). The app never presents template content as AI output. The six laboratories use no AI at all: checking, feedback and hints are deterministic or teacher-written.
 
 ## The 5-minute demo
 
@@ -85,6 +85,21 @@ All six labs are reachable from **Labs** in the navigation (`/labs`), plus **Lib
 
 **Teachers** assign any lab item to a class or to students (`/teacher/assignments`), see who has started, handed in or finished, review work with feedback, and open each student's learning profile (`/teacher/students`). Lab items can also be run as a live classroom session (`/teacher/sessions/labs`).
 
+## The Learning Assistant
+
+Future Classroom is the learning infrastructure; the **Learning Assistant** (`/learning-assistant`, in the main navigation, on the student home page, in the library and next to every searchable material) is one optional tool inside it. It is not a chatbot: it offers six learning tasks, phrased the way students ask —
+
+| Task | What it gives |
+| --- | --- |
+| „ამიხსენი ეს თემა“ — explain this topic | Definitions, formulas and examples from the material, then the best passages; with AI, a short explanation whose every sentence is marked *in the material*, *conclusion from the material*, *uncertain* or *not found in the material* |
+| „ამ მასალაში სად არის ამის პასუხი?“ — where is the answer? | The passages, with material, section and page, and the matching words highlighted |
+| „რა მტკიცებულება აქვს ამ მოსაზრებას?“ — what is the evidence? | What kind of statement it is (general, causal, value judgement…), what it quietly assumes, the sentences of the material that match it, and claims, objections and replies found there |
+| „შემამოწმე, სწორად გავიგე თუ არა“ — check my understanding | The student's own words compared sentence by sentence: matches, partly, check the numbers, may say the opposite, not found (which is not "wrong") |
+| „რა კითხვები უნდა დავსვა ამ თემაზე?“ — what should I ask? | Questions built from the material's own definitions, formulas, claims and sections |
+| „დამეხმარე კვლევის დაწყებაში“ — help me start research | Research questions to choose from, the sources found, what they do not cover, and a Research Lab project created with real quotations and their pages |
+
+It searches only what the person may see (their materials by visibility, and published lessons — never activities, answers or solutions); a material can be chosen as the only source. Page numbers are shown only when the source has them. Without an AI key everything works; with one, only *explain* asks the model, only with the retrieved passages, and never for a question the material does not cover. Teachers can hand a research question or a set of questions to students as an assignment. Details and the design history: [docs/LEARNING-ASSISTANT.md](docs/LEARNING-ASSISTANT.md).
+
 ## Running it in a classroom
 
 The app is designed to run as **one Node.js process on a school computer or small server** on the classroom network; workstations and the touchscreen open it in a browser.
@@ -98,7 +113,7 @@ npm run doctor              # checks settings, database, backups, disk
 
 A production build (`npm start`) has demo sign-in and demo accounts **off** unless `DEMO_MODE` or `SEED_DEMO` is set to `true`. Anyone can create a student account with just a name and a password (`/register`; turn off with `SELF_REGISTRATION=false`); teachers can also create accounts on their class page and print sign-in slips.
 
-**Guides:** [docs/OPERATIONS.md](docs/OPERATIONS.md) (install, service, backups, accounts, updates, checklists) · [docs/PILOT.md](docs/PILOT.md) (a 45-minute pilot lesson, minute by minute) · [docs/SECURITY-REVIEW.md](docs/SECURITY-REVIEW.md) · [docs/DATA-ARCHITECTURE.md](docs/DATA-ARCHITECTURE.md) (SQLite assessment, PostgreSQL plan) · [docs/CONTENT-ROADMAP.md](docs/CONTENT-ROADMAP.md) · [docs/LIBRARY-AND-UNIVERSITY-DATA.md](docs/LIBRARY-AND-UNIVERSITY-DATA.md) · [docs/AUDIT.md](docs/AUDIT.md) (pilot-readiness audit).
+**Guides:** [docs/LEARNING-ASSISTANT.md](docs/LEARNING-ASSISTANT.md) · [docs/OPERATIONS.md](docs/OPERATIONS.md) (install, service, backups, accounts, updates, checklists) · [docs/PILOT.md](docs/PILOT.md) (a 45-minute pilot lesson, minute by minute) · [docs/SECURITY-REVIEW.md](docs/SECURITY-REVIEW.md) · [docs/DATA-ARCHITECTURE.md](docs/DATA-ARCHITECTURE.md) (SQLite assessment, PostgreSQL plan) · [docs/CONTENT-ROADMAP.md](docs/CONTENT-ROADMAP.md) · [docs/LIBRARY-AND-UNIVERSITY-DATA.md](docs/LIBRARY-AND-UNIVERSITY-DATA.md) · [docs/AUDIT.md](docs/AUDIT.md) (pilot-readiness audit).
 
 - Data lives in `data/` (SQLite database + uploaded files). `npm run backup` makes a checked copy while lessons run; `npm run restore` brings one back.
 - Real-time updates use Server-Sent Events with automatic polling fallback, so sessions keep working behind proxies or on unstable Wi-Fi; student drafts are kept in the browser.
@@ -113,7 +128,7 @@ A production build (`npm start`) has demo sign-in and demo accounts **off** unle
 | --- | --- |
 | Web app | Next.js 16 (App Router, React 19, TypeScript, Turbopack), Tailwind CSS v4 |
 | Data | SQLite via `better-sqlite3` (WAL), schema migrations in `src/lib/db/schema.ts` |
-| Search | SQLite FTS5 (BM25 + phrase/coverage re-ranking), Georgian-aware prefix matching |
+| Search | SQLite FTS5 over stemmed terms (Georgian suffix stemming, bilingual synonyms, typo tolerance), re-ranked by BM25, question coverage, section names and extraction quality |
 | Real-time | Server-Sent Events + in-process event bus; clients re-fetch their own view |
 | AI | Provider-neutral `AIProvider` interface; Anthropic implementation via the official SDK (structured outputs) |
 | Auth | Username/password (scrypt), server-side sessions in SQLite, httpOnly cookies; roles from the database only |
@@ -133,8 +148,11 @@ src/
   components/           UI (ui/ primitives, lesson editor, session console, student views, …)
   lib/
     ai/                 AIProvider, Anthropic provider, lesson/quiz generators, hint service,
-                        tutor, library Q&A, built-in lesson templates (EN + KA)
-    services/           lessons, quizzes, sessions, materials, progress, users,
+                        tutor, built-in lesson templates (EN + KA)
+    knowledge/          Georgian/English word matching, synonyms, document ingestion (cleaning,
+                        structure, page-aware passages), knowledge extraction, claim checking
+    services/           lessons, quizzes, sessions, materials, knowledge search, Learning Assistant,
+                        progress, users,
                         assignments, classes, portfolio, feedback, attachments, learning profile
     labs/               one folder per lab (content catalogues, graders, services),
                         session bridge and assignment registry
@@ -142,7 +160,7 @@ src/
     db/                 connection, schema, demo seed
     content/            built-in lessons (EN + KA), subject catalogue and its resolver
     i18n/               en.ts (source of truth), ka.ts (type-checked against en), terminology
-    files/              upload validation, text extraction (PDF/DOCX), chunking, search query
+    files/              upload validation, text extraction (PDF lines, DOCX headings)
     http/, auth/, realtime/
 tests/unit, tests/e2e
 ```
@@ -152,7 +170,7 @@ tests/unit, tests/e2e
 - **Teacher control.** AI output is always a draft. Regenerating a section/activity replaces it in the editor only (with undo) until the teacher saves. Publishing an AI lesson requires confirming it was reviewed.
 - **Hint-first.** `lib/ai/hint-service.ts` serves teacher-written hints first, then AI hints (cached per activity and level, so a whole class asking costs one model call), then clearly-labelled generic strategies. Level 5 (full solution) exists only if the teacher allows it.
 - **No answer leaks.** Students' session and practice payloads never include answer keys, hints they have not unlocked or solutions; answers are checked on the server.
-- **Honest AI.** Every AI-dependent feature has an offline path and says which path was used. The library answers only from retrieved passages and returns the passages themselves when AI is off. AI never fills the lesson *sources* field.
+- **Honest AI.** Every AI-dependent feature has an offline path and says which path was used. The Learning Assistant shows the material's own text with its source; an AI explanation is checked sentence by sentence against the passages it was given, and anything they do not carry is marked as such. AI never fills the lesson *sources* field.
 - **Snapshots.** A classroom session copies its activities at start, so editing a lesson later never changes past results.
 - **Privacy.** Students need only a first name; tutor conversations are not stored; the only behavioural data kept is which questions were answered and whether correctly (see `/privacy`).
 
@@ -169,6 +187,7 @@ tests/unit, tests/e2e
 | `npm run user:password` | New temporary password for an account (`-- --username x`), or `-- --list` |
 | `npm run backup` / `restore` | Checked backup of database and uploads (safe while running) / restore one (server stopped) |
 | `npm run doctor` | Health check: settings, database integrity, demo passwords, backup age, disk space |
+| `npm run materials:reindex` | Re-read uploaded files and rebuild their passages and knowledge (`-- --all` for every material); older materials are otherwise upgraded automatically at start-up |
 | `npm run drill` | Real browsers against a throwaway server: duplicate tabs, slow network, reloads, server restart mid-lesson |
 | `node scripts/classroom-sim.mjs --base <url> --students 16` | Simulates a teacher, a projector and N students running a whole lesson over HTTP/SSE; prints latencies |
 
@@ -178,7 +197,8 @@ See `.env.example`: `ANTHROPIC_API_KEY`, `AI_MODEL`, `DATABASE_PATH`, `UPLOAD_DI
 
 ## Known limitations
 
-- Library search is keyword-based (FTS5); semantic search is prepared (`material_chunks.embedding`) but not implemented. Scanned PDFs without a text layer are stored but not searchable.
+- Search is lexical (stemmed words, synonyms, typo tolerance), not semantic: a question in completely different words from the material can miss. The synonym table covers common school terms only. Scanned PDFs without a text layer are stored and reported as needing OCR, but are not searchable (no OCR is included).
+- Heading, definition and claim detection is heuristic. It is conservative and never invents text or pages, but it can miss structure in unusually formatted documents.
 - Classes are simple rosters (add/remove students, create accounts, reset passwords, class progress); there is no full school-administration console, no timetable and no gradebook export.
 - Programming tests check output only (no memory or strict performance limits beyond a per-test time limit in the browser). Without Judge0, C++ results are self-reported and labelled as such.
 - STEM simulations are simplified models for teaching (no air resistance, ideal components); physical experiments and robotics projects need real materials and kits the school provides.

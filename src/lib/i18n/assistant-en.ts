@@ -151,6 +151,10 @@ export const assistantEn = {
   starting: "Creating the project…",
   projectNote: "The project opens in the Research Lab with the question, the sources and the first quotations.",
 
+  assignResearch: "Give it to students as a research task",
+  assignQuestions: "Give these questions to students",
+  assignResearchText: "Research question: {question}\n\nStart in the Learning Assistant with „Help me start my research“ and find sources and evidence in the school\u2019s materials.",
+  assignQuestionsText: "Answer these questions using the school\u2019s materials (the Learning Assistant shows where each answer is):\n\n{questions}",
   // Next steps and saving
   nextTitle: "Next step",
   next: {

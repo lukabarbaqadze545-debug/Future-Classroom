@@ -21,6 +21,8 @@ export function AssignmentForm({
   initialKind,
   initialRef,
   initialClassId = null,
+  initialTitle: presetTitle,
+  initialInstructions = "",
 }: {
   items: Record<AssignmentKind, AssignableItem[]>;
   classes: { id: string; name: string; memberIds: string[] }[];
@@ -28,16 +30,19 @@ export function AssignmentForm({
   initialKind: AssignmentKind;
   initialRef: string | null;
   initialClassId?: string | null;
+  /** Pre-filled from another page, e.g. a question from the Learning Assistant. */
+  initialTitle?: string;
+  initialInstructions?: string;
 }) {
   const { dict } = useI18n();
   const a = dict.labs.assignments;
   const router = useRouter();
   const [kind, setKind] = useState<AssignmentKind>(initialKind);
   const [refId, setRefId] = useState<string>(initialRef ?? "");
-  const initialTitle = items[initialKind].find((i) => i.id === initialRef)?.title ?? "";
+  const initialTitle = presetTitle ?? items[initialKind].find((i) => i.id === initialRef)?.title ?? "";
   const [title, setTitle] = useState(initialTitle);
-  const [titleTouched, setTitleTouched] = useState(false);
-  const [instructions, setInstructions] = useState("");
+  const [titleTouched, setTitleTouched] = useState(Boolean(presetTitle));
+  const [instructions, setInstructions] = useState(initialInstructions);
   const [due, setDue] = useState("");
   const [classId, setClassId] = useState(initialClassId ?? classes[0]?.id ?? "");
   const [picked, setPicked] = useState<Set<string>>(new Set());

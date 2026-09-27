@@ -47,6 +47,7 @@ export default async function LearningAssistantPage({ searchParams }: Props) {
         initialSubject={params.subject && isSubject(params.subject) ? params.subject : ""}
         aiAvailable={getAIProvider() !== null}
         initialSaved={listSaved(user)}
+        staff={isStaff(user)}
       />
     </PageContainer>
   );

@@ -119,6 +119,7 @@ deleted. Answers given after the backup was made are lost.
 | The server crashed | The service manager restarts it. If it keeps crashing, run `npm run doctor` and look at the service log. |
 | The database is damaged (`doctor` reports an integrity problem) | Stop the server, restore the newest backup (section 3). |
 | The disk is full | `npm run doctor` shows free space. Move old backups off the computer. |
+| A PDF finds nothing in the Learning Assistant | Open the material's preview on the Materials page: a scanned PDF is reported as needing text recognition (OCR). Run it through OCR (many scanners and PDF tools can) and upload it again. |
 
 ## 6. Updates
 
@@ -138,6 +139,12 @@ dependencies only together with a full test run (`npm run check`,
 
 New built-in lessons arrive with updates and are installed at start-up. Lessons
 teachers wrote or copied are never changed by an update.
+
+When an update improves how materials are indexed, materials are upgraded at
+the first start (nothing is deleted). PDF and Word files are then rebuilt from
+their existing passages; to read them again from the files with full chapter
+and page structure, run `npm run materials:reindex` once (safe while the
+server runs; `-- --all` re-reads every material).
 
 ## 7. Checklists
 

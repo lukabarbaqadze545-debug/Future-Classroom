@@ -11,10 +11,10 @@ export async function generateMetadata() {
   return pageTitle((p) => p.newAssignment);
 }
 
-export default async function NewAssignmentPage({ searchParams }: { searchParams: Promise<{ kind?: string; ref?: string; class?: string }> }) {
+export default async function NewAssignmentPage({ searchParams }: { searchParams: Promise<{ kind?: string; ref?: string; class?: string; title?: string; instructions?: string }> }) {
   const user = (await getCurrentUser())!;
   const { dict, locale } = await getDictionary();
-  const { kind, ref, class: classParam } = await searchParams;
+  const { kind, ref, class: classParam, title, instructions } = await searchParams;
   const initialKind: AssignmentKind = kind && (ASSIGNMENT_KINDS as readonly string[]).includes(kind) ? (kind as AssignmentKind) : "programming";
   const classes = listClassesForTeacher(user.id).map((c) => ({ id: c.id, name: c.name, memberIds: c.members.map((m) => m.id) }));
   return (
@@ -27,6 +27,8 @@ export default async function NewAssignmentPage({ searchParams }: { searchParams
         initialKind={initialKind}
         initialRef={ref ?? null}
         initialClassId={classes.some((c) => c.id === classParam) ? classParam! : null}
+        initialTitle={title?.slice(0, 150)}
+        initialInstructions={instructions?.slice(0, 4000)}
       />
     </PageContainer>
   );

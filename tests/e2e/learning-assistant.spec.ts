@@ -122,6 +122,18 @@ test("a material's scope is respected, and nothing hidden reaches a student", as
   await student.context.close();
 });
 
+test("a teacher turns a research start into an assignment for students", async ({ browser }) => {
+  const { context, page, errors } = await userPage(browser, "nino");
+  await page.goto("/learning-assistant?mode=research&q=food%20chains%20in%20Georgian%20forests");
+  await expect(page.getByTestId("assistant-research")).toBeVisible();
+  await page.getByTestId("assign-research").click();
+  await expect(page).toHaveURL(/\/teacher\/assignments\/new\?kind=research/);
+  await expect(page.getByTestId("assignment-title")).toHaveValue(/food chains in Georgian forests/);
+  await expect(page.getByLabel("Instructions for students")).toHaveValue(/^Research question: .*food chains in Georgian forests/);
+  expect(errors).toEqual([]);
+  await context.close();
+});
+
 test("says honestly when the material does not cover a question, or covers only part of it", async ({ browser }) => {
   const { context, page } = await userPage(browser, "mariam");
   await page.goto("/learning-assistant?mode=explain&q=zebrafish%20fin%20regeneration");

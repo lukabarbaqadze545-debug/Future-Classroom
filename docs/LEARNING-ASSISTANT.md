@@ -1,7 +1,8 @@
-# Learning Assistant — integration plan
+# Learning Assistant
 
-Status: plan, written before implementation (2026-09-27). The implementation
-notes at the end are updated as the work lands.
+Status: implemented (2026-09-27). Sections 1–7 are the integration plan written
+after inspecting both codebases and before any code was changed; section 8
+describes what was built, and where it differs from the plan.
 
 The Learning Assistant brings the strongest learning capabilities of a
 separate prototype (a local-first "books" assistant, internally called
@@ -130,3 +131,97 @@ the stored file, PDF/DOCX from their existing passages (page numbers kept);
 - With AI, only "Explain" asks the model, only with the retrieved passages,
   and the output is validated sentence by sentence.
 - An AI failure falls back to the search result and says so.
+
+## 8. As built
+
+### Where the code is
+
+| Part | Files |
+| --- | --- |
+| Word matching, synonyms | `src/lib/knowledge/language.ts`, `synonyms.ts` |
+| Ingestion (clean, structure, passages) | `src/lib/knowledge/ingest.ts`; PDF lines and DOCX headings in `src/lib/files/extract.ts` |
+| Knowledge extraction | `src/lib/knowledge/knowledge.ts` |
+| Claim checking, understanding check | `src/lib/knowledge/grounding.ts` |
+| Statement types and assumptions | `src/lib/knowledge/reasoning.ts` |
+| Question suggestions | `src/lib/knowledge/questions.ts` |
+| Writing the index, start-up upgrade | `src/lib/db/material-index.ts`, migration 5 in `src/lib/db/schema.ts` |
+| Search (materials + lessons) | `src/lib/services/knowledge-search.ts` (also behind `searchPassages`) |
+| Tasks, AI, research hand-off, saved questions | `src/lib/services/learning-assistant.ts` |
+| API | `src/app/api/learning-assistant/` (task, research, saved) |
+| Page and component | `src/app/learning-assistant/`, `src/components/assistant/learning-assistant.tsx` |
+| Strings | `src/lib/i18n/assistant-en.ts`, `assistant-ka.ts`; terms in `terminology.ts` |
+| Re-reading files | `scripts/reindex-materials.ts` (`npm run materials:reindex`) |
+
+### Honesty rules, and where they are enforced
+
+- **Only the material's text is shown as the material's.** Passages, key
+  items and quotations are substrings of the stored text; the research
+  hand-off looks the passages up again on the server rather than accepting
+  quotations from the browser (`startResearch`).
+- **No invented pages.** Pages come from the PDF's own page sequence; text
+  and Word files keep `null` and are cited by section. A quotation note in a
+  research project gets a page only when the passage has one.
+- **Three levels of "found".** *Found*, *only part of the question found*
+  (the best passages share less than half of its words) and *not found*,
+  with the words the material does not contain listed. The AI is asked only
+  on a full match.
+- **Every AI sentence is labelled.** The model reports, per sentence,
+  whether the passages state it, whether it is a conclusion from them, or
+  whether it is uncertain, and which passages it rests on. `validateClaims`
+  re-checks this with the same stemmer: a stated fact must share at least
+  40 % of its content words (and two or more) with its passages, or with
+  another passage (the citation is then corrected); every figure must occur
+  in the passages; anything else is shown as *not found in the material*.
+- **"Not found" is not "wrong".** The understanding check and the evidence
+  task never judge a statement true or false; they say whether the material
+  carries it, and suggest another source or the teacher.
+- **Permissions.** Every query goes through the same visibility rule as the
+  materials list (`material-access.ts`); a material named as scope must be
+  visible to the person (otherwise 404); lessons are searched only when
+  published, and only their section texts.
+
+### Differences from the plan
+
+- Relations between knowledge items are stored on the item (`relates_to`,
+  `relation`) instead of in a separate table: each item has at most one.
+- Lessons are indexed in memory (rebuilt when published lessons change)
+  rather than in SQLite; there are about a hundred, and this keeps lesson
+  edits and the index from drifting apart.
+- A "partial match" state was added after the end-to-end tests showed that
+  a question sharing one word with a lesson ("volcanic") was reported as
+  found.
+- Teachers can hand a research question or a list of suggested questions to
+  students as an assignment (the assignment form takes a preset title and
+  instructions).
+
+### Tests
+
+- `tests/unit/knowledge.test.ts` — stemming, synonyms, cleaning, structure,
+  page attribution, knowledge extraction (English and Georgian), claim
+  validation (paraphrase, citation repair, invented figure, inference,
+  hedging), understanding check, statement types, formulas, questions, and a
+  check that the prototype's name appears nowhere in `src/`.
+- `tests/unit/learning-assistant.test.ts` — every task through the service,
+  visibility and scope, typo tolerance, AI with a fake provider (labelling,
+  failure fallback, no call when nothing is found), lessons without answers or
+  solutions, research hand-off, saved questions, upgrade of old indexes.
+- `tests/e2e/learning-assistant.spec.ts` — the page in Georgian and English,
+  saving with a note, understanding check, evidence, questions, research
+  project, teacher assignment hand-off, scope and permissions, honest
+  not-found and partial states, touch on phone and tablet without sideways
+  scrolling. The e2e server has no AI key, so these are also the AI-disabled
+  acceptance tests.
+
+### Limitations and next steps
+
+- Search is lexical. A semantic re-ranker could be added inside
+  `searchKnowledge` without changing its callers; it would need a local
+  model to keep the platform free of paid services.
+- No OCR: scanned PDFs are reported, not read.
+- Knowledge extraction relies on explicit markers ("is called", „ეწოდება“,
+  "for example", „მაგალითად“, "one might object"…). Textbooks that define
+  terms without them yield passages but fewer key items.
+- The synonym table is small and should grow with the school's subjects;
+  teachers cannot yet add their own terms.
+- The Georgian wording of the new screens has not yet been read by a native
+  editor (see docs/AUDIT.md, section 8).

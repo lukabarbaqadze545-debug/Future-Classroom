@@ -2,14 +2,14 @@
 
 import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
-import { BookMarked, Bookmark, BookmarkCheck, CircleHelp, FileSearch, FlaskConical, GraduationCap, Lightbulb, ListChecks, Scale, Search, Sparkles, Trash2 } from "lucide-react";
+import { BookMarked, Bookmark, BookmarkCheck, CircleHelp, ClipboardList, FileSearch, FlaskConical, GraduationCap, Lightbulb, ListChecks, Scale, Search, Sparkles, Trash2 } from "lucide-react";
 import { useI18n } from "@/lib/i18n/client";
 import { fmt, fmtCount } from "@/lib/i18n/config";
 import { api, errorMessage } from "@/lib/client/api";
 import { SUBJECTS, type Subject } from "@/lib/domain/catalog";
 import type { AssistantMode, AssistantResult, NumberedPassage, ResearchQuestionKind, SavedQuestion } from "@/lib/services/learning-assistant";
 import { Badge, type Tone } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Button, ButtonLink } from "@/components/ui/button";
 import { Checkbox, Input, Select, Textarea } from "@/components/ui/form";
 import { Notice } from "@/components/ui/notice";
 import { Spinner } from "@/components/ui/misc";
@@ -43,6 +43,8 @@ export interface LearningAssistantProps {
   initialSaved?: SavedQuestion[];
   /** Embedded in another page (the library): no saved list, no address-bar updates. */
   embedded?: boolean;
+  /** Teachers can hand a question or a research start to students as an assignment. */
+  staff?: boolean;
 }
 
 function escapeRegex(value: string) {
@@ -68,7 +70,7 @@ function Highlighted({ text, words }: { text: string; words: string[] }) {
   );
 }
 
-export function LearningAssistant({ initialMode = "explain", initialText = "", material: initialMaterial, initialSubject = "", aiAvailable, initialSaved = [], embedded = false }: LearningAssistantProps) {
+export function LearningAssistant({ initialMode = "explain", initialText = "", material: initialMaterial, initialSubject = "", aiAvailable, initialSaved = [], embedded = false, staff = false }: LearningAssistantProps) {
   const { dict } = useI18n();
   const a = dict.assistant;
   const router = useRouter();
@@ -204,6 +206,9 @@ export function LearningAssistant({ initialMode = "explain", initialText = "", m
       setStarting(false);
     }
   };
+
+  const assignHref = (kind: "research" | "custom", title: string, instructions: string) =>
+    `/teacher/assignments/new?${new URLSearchParams({ kind, title: title.slice(0, 150), instructions: instructions.slice(0, 3000) }).toString()}`;
 
   const cite = (n: number) => (
     <a key={n} href={`#passage-${n}`} className="mx-0.5 inline-flex min-w-6 items-center justify-center rounded-md bg-brand-soft px-1.5 py-0.5 align-middle text-xs font-semibold text-brand-ink no-underline hover:bg-brand hover:text-white" aria-label={fmt(a.cite, { n })}>
@@ -351,6 +356,26 @@ export function LearningAssistant({ initialMode = "explain", initialText = "", m
                     </li>
                   ))}
                 </ol>
+                {staff ? (
+                  <ButtonLink
+                    href={assignHref(
+                      "custom",
+                      result.query,
+                      fmt(a.assignQuestionsText, {
+                        questions: result.questions
+                          .map((q, i) => `${i + 1}. ${fmt(a.questionKinds[q.kind], { subject: q.subject })}`)
+                          .join("\n"),
+                      }),
+                    )}
+                    variant="secondary"
+                    size="sm"
+                    className="mt-3"
+                    data-testid="assign-questions"
+                  >
+                    <ClipboardList aria-hidden className="size-4" />
+                    {a.assignQuestions}
+                  </ButtonLink>
+                ) : null}
               </section>
             ) : null}
             {result.mode === "research" && result.research ? (
@@ -412,6 +437,12 @@ export function LearningAssistant({ initialMode = "explain", initialText = "", m
                     <FlaskConical aria-hidden className="size-4" />
                     {starting ? a.starting : a.startProject}
                   </Button>
+                  {staff ? (
+                    <ButtonLink href={assignHref("research", researchQuestion.trim() || result.query, fmt(a.assignResearchText, { question: researchQuestion.trim() || result.query }))} variant="secondary" data-testid="assign-research">
+                      <ClipboardList aria-hidden className="size-4" />
+                      {a.assignResearch}
+                    </ButtonLink>
+                  ) : null}
                   <p className="text-xs text-ink-subtle">{a.projectNote}</p>
                 </div>
               </section>

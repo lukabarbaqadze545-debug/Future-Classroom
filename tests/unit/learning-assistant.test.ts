@@ -6,7 +6,8 @@ import { syncBuiltInContent } from "@/lib/db/builtin";
 import { upgradeMaterialIndexes } from "@/lib/db/material-index";
 import { createMaterial } from "@/lib/services/materials";
 import { resetLessonIndexForTests, searchKnowledge } from "@/lib/services/knowledge-search";
-import { deleteSaved, listSaved, runAssistant, saveQuestion, startResearch, updateSavedNote } from "@/lib/services/learning-assistant";
+import { deleteSaved, explainSchema, listSaved, runAssistant, saveQuestion, startResearch, updateSavedNote } from "@/lib/services/learning-assistant";
+import { betaZodOutputFormat } from "@anthropic-ai/sdk/helpers/beta/zod";
 import { getResearchBundle } from "@/lib/labs/research/service";
 import { BUILT_IN_LESSONS } from "@/lib/content/lessons";
 import { SEED_MATERIALS } from "@/lib/db/seed-materials";
@@ -130,6 +131,12 @@ describe("Learning Assistant", () => {
     expect(result.ai?.claims.map((c) => c.status)).toEqual(["grounded", "unsupported", "inferred"]);
     expect(result.ai?.claims[0].sources).toEqual([1]);
     expect(result.ai?.checkQuestion).toMatch(/bus/);
+  });
+
+  it("asks the AI for output the provider's structured format accepts", () => {
+    const format = betaZodOutputFormat(explainSchema) as unknown as { type: string; schema: { properties: Record<string, unknown> } };
+    expect(format.type).toBe("json_schema");
+    expect(Object.keys(format.schema.properties)).toEqual(["sentences", "covered", "checkQuestion"]);
   });
 
   it("falls back to the passages when the AI fails", async () => {

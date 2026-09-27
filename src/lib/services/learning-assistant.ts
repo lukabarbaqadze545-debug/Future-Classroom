@@ -179,7 +179,7 @@ function keyItems(g: Gathered, types: KnowledgeType[], max: number): KeyItem[] {
 
 /* ---------------------------------- AI ---------------------------------- */
 
-const explainSchema = z.object({
+export const explainSchema = z.object({
   sentences: z
     .array(
       z.object({
