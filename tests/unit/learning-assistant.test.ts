@@ -251,7 +251,7 @@ describe("Learning Assistant", () => {
   it("installs the built-in library books once, searchable by students, and never brings back a removed one", async () => {
     const db = freshDb();
     const started = Date.now();
-    expect(syncBuiltInBooks(db)).toBe(2);
+    expect(syncBuiltInBooks(db)).toBe(3);
     expect(Date.now() - started).toBeLessThan(15_000);
     expect(syncBuiltInBooks(db)).toBe(0);
     expect(getResource("lib-business-courses")?.title).toBe("Business courses");
@@ -263,6 +263,9 @@ describe("Learning Assistant", () => {
     expect(result.passages[0].section).toBeTruthy();
     const business = await runAssistant(student, { mode: "explain", text: "ფულადი ნაკადი და მარკეტინგი" });
     expect(business.passages.some((p) => p.sourceId === "book-business-courses")).toBe(true);
+    expect(getResource("lib-english-spanish-dictionary-1")).toMatchObject({ materialId: "book-english-spanish-dictionary-1", language: "en", kind: "reference" });
+    const dictionary = await runAssistant(student, { mode: "locate", text: "How do you say afternoon in Spanish?" });
+    expect(dictionary.passages.some((p) => p.sourceId === "book-english-spanish-dictionary-1")).toBe(true);
     db.prepare("DELETE FROM library_resources WHERE id = 'lib-business-courses'").run();
     expect(syncBuiltInBooks(db)).toBe(0);
   });

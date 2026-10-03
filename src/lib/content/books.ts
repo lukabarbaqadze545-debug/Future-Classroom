@@ -62,4 +62,25 @@ export const BUILT_IN_BOOKS: BuiltInBook[] = [
       },
     },
   },
+  {
+    id: "lib-english-spanish-dictionary-1",
+    key: "english-spanish-dictionary-1",
+    file: "english-spanish-learning-dictionary-1.docx",
+    subject: "english",
+    tags: ["English", "Spanish", "vocabulary", "CEFR"],
+    resource: {
+      title: "English–Spanish Learning Dictionary, Vol. 1 (words 1–2,000)",
+      kind: "reference",
+      categories: ["languages", "reference"],
+      subjects: ["english"],
+      gradeFrom: 5,
+      gradeTo: 12,
+      language: "en",
+      license: "permission",
+      description: {
+        en: "A learner's dictionary of the 2,000 most useful English words (CEFR A1–C1) with Spanish translations: pronunciation, part of speech, a plain-English definition, an example sentence with its Spanish translation, collocations and usage notes, plus a study tracker and review checklist. In English and Spanish.",
+        ka: "ინგლისური ენის 2 000 ყველაზე სასარგებლო სიტყვის (CEFR A1–C1) სასწავლო ლექსიკონი ესპანური თარგმანით: გამოთქმა, მეტყველების ნაწილი, მარტივი განმარტება, მაგალითი ესპანური თარგმანით, კოლოკაციები და გამოყენების შენიშვნები; თან ახლავს სწავლის ტრეკერი და გამეორების ჩეკლისტი. ინგლისურად და ესპანურად.",
+      },
+    },
+  },
 ];
