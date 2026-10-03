@@ -34,6 +34,7 @@ async function main() {
         for (const e of report.errors) console.error(`    ${e.replace(/\n/g, "\n    ")}`);
       }
       for (const w of report.warnings) warned.push(`${p.id} ${w}`);
+      for (const note of report.notes) console.log(`ℹ ${p.id} ${note}`);
     }
     console.log(`თავი ${chapter.number}: ${chapter.problems.length} problems`);
   }

@@ -23,6 +23,8 @@ export interface Report {
   title: string;
   errors: string[];
   warnings: string[];
+  /** What the faulty program of a "debug" problem prints on its first example, for the author to compare with the text. */
+  notes: string[];
 }
 
 interface Compiled {
@@ -55,7 +57,7 @@ function short(text: string): string {
 }
 
 export function verifyProblem(p: Problem): Report {
-  const report: Report = { id: p.id, title: p.title, errors: [], warnings: [] };
+  const report: Report = { id: p.id, title: p.title, errors: [], warnings: [], notes: [] };
   const fail = (m: string) => report.errors.push(m);
 
   const check = (label: string, code: string, input: string, expected: string) => {
@@ -81,6 +83,7 @@ export function verifyProblem(p: Problem): Report {
     if (c.bin) {
       const ex = p.examples[0];
       const r = run(c.bin, ex.input);
+      report.notes.push(`faulty program on example 1: exit ${r.status}, prints ${short(r.out)} ${r.err ? `(${r.err.split("\n")[0]})` : ""}`);
       if (r.status === 0 && outputsMatch(r.out, ex.output)) fail("debug: the faulty program already prints the right output on example 1, so the bug would not show");
     }
   }
