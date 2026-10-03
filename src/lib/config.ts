@@ -29,7 +29,24 @@ export function selfRegistrationEnabled(): boolean {
   return flag("SELF_REGISTRATION", true);
 }
 
-/** Seed the demo school into an empty database (SEED_DEMO). */
+/**
+ * Open access (OPEN_ACCESS, off by default): no sign-in and no registration.
+ * Everyone who opens the site chooses "demo teacher" or "demo student" and is
+ * signed in as that demo account. For showing the platform (for example to a
+ * school's director) on a demo database; never for real students: anyone with
+ * the link can then do everything the demo teacher can. `npm run doctor`
+ * reports it as a problem while it is on.
+ */
+export function openAccessEnabled(): boolean {
+  return flag("OPEN_ACCESS", false);
+}
+
+/** The one-click demo sign-in route works with DEMO_MODE and with open access. */
+export function demoSignInEnabled(): boolean {
+  return demoModeEnabled() || openAccessEnabled();
+}
+
+/** Seed the demo school into an empty database (SEED_DEMO); open access needs it. */
 export function seedDemoEnabled(): boolean {
-  return flag("SEED_DEMO", developmentDefault());
+  return flag("SEED_DEMO", developmentDefault() || openAccessEnabled());
 }

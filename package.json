@@ -12,6 +12,7 @@
     "test:watch": "vitest",
     "test:e2e": "playwright test",
     "test:e2e:supabase": "playwright test -c playwright.supabase.config.ts",
+    "test:e2e:open": "playwright test -c playwright.open.config.ts",
     "db:reset": "tsx scripts/reset-db.ts",
     "user:create": "tsx scripts/create-user.ts",
     "user:password": "tsx scripts/user-password.ts",

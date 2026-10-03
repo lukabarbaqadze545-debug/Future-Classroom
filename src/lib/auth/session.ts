@@ -5,6 +5,7 @@ import { getDb, now } from "@/lib/db";
 import { hashToken, newToken } from "@/lib/domain/ids";
 import type { Role } from "@/lib/domain/catalog";
 import { ApiError } from "@/lib/http/errors";
+import { openAccessEnabled } from "@/lib/config";
 
 export const AUTH_COOKIE = "fc_auth";
 const SESSION_TTL_MS = 1000 * 60 * 60 * 12; // one school day
@@ -75,7 +76,8 @@ export function isStaff(user: CurrentUser | null): boolean {
 /** For pages: redirects to sign-in when the role does not match. */
 export async function requirePageUser(roles: Role[], nextPath: string): Promise<CurrentUser> {
   const user = await getCurrentUser();
-  if (!user) redirect(`/login?next=${encodeURIComponent(nextPath)}`);
+  // With open access there is no sign-in page: the home page offers the two demo views.
+  if (!user) redirect(openAccessEnabled() ? "/" : `/login?next=${encodeURIComponent(nextPath)}`);
   if (!roles.includes(user.role)) redirect(user.role === "student" ? "/student" : "/teacher");
   return user;
 }

@@ -21,6 +21,7 @@ import { LAB_IDS, LAB_ROUTES } from "@/lib/labs/registry";
 import { LabIcon } from "@/components/labs/lab-shell";
 import { STATUS_TONE } from "@/components/assignments/review-board";
 import { formatDateTime } from "@/lib/i18n/config";
+import { openAccessEnabled } from "@/lib/config";
 
 export async function generateMetadata() {
   return pageTitle((p) => p.home);
@@ -49,7 +50,7 @@ export default async function StudentHome() {
 
   return (
     <PageContainer>
-      <PageHeader title={fmt(d.greeting, { name: user.displayName.split(" ")[0] })} description={d.lead} />
+      <PageHeader title={openAccessEnabled() ? dict.open.helloStudent : fmt(d.greeting, { name: user.displayName.split(" ")[0] })} description={d.lead} />
       {activeSessions.length ? (
         <Card className="mb-6 border-success/40 bg-success-soft/30" data-testid="live-sessions">
           <CardHeader title={<span className="flex items-center gap-2"><span className="fc-pulse size-2.5 rounded-full bg-success" />{d.activeTitle}</span>} />

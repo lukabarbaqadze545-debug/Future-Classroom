@@ -87,7 +87,7 @@ export function diagnoseSupabaseEnv(env: Record<string, string | undefined>): Su
   return { config: { url, anonKey: rawKey }, problems };
 }
 
-/** The settings from the environment, or null when Supabase sign-in is off or misconfigured. */
+/** The settings from the environment, or null when Supabase sign-in is off, misconfigured or switched off by open access (no sign-in at all). */
 export function supabaseConfig(): SupabaseConfig | null {
-  return diagnoseSupabaseEnv(process.env).config;
+  return process.env.OPEN_ACCESS === "true" ? null : diagnoseSupabaseEnv(process.env).config;
 }

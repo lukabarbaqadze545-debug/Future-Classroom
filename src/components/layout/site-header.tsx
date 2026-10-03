@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getCurrentUser } from "@/lib/auth/session";
 import { getDictionary } from "@/lib/i18n/server";
 import { getAIStatus } from "@/lib/ai";
+import { openAccessEnabled } from "@/lib/config";
 import { ButtonLink } from "@/components/ui/button";
 import { Logo } from "./logo";
 import { NavLinks } from "./nav-links";
@@ -12,6 +13,8 @@ import { SignOutButton } from "./sign-out-button";
 export async function SiteHeader() {
   const [{ dict }, user] = await Promise.all([getDictionary(), getCurrentUser()]);
   const staff = user?.role === "teacher" || user?.role === "admin";
+  // Open access: nobody signs in or registers; the same button that signs out switches between the two demo views.
+  const openAccess = openAccessEnabled();
   const items = staff
     ? [
         { href: "/teacher", label: dict.nav.dashboard, exact: true },
@@ -57,9 +60,9 @@ export async function SiteHeader() {
                 <div className="text-sm font-medium text-ink">{user.displayName}</div>
                 <div className="text-xs text-ink-subtle">{dict.roles[user.role]}</div>
               </Link>
-              <SignOutButton label={dict.nav.signOut} />
+              <SignOutButton label={openAccess ? dict.open.switchRole : dict.nav.signOut} />
             </div>
-          ) : (
+          ) : openAccess ? null : (
             <ButtonLink href="/login" variant="secondary" size="sm">
               {dict.nav.signIn}
             </ButtonLink>

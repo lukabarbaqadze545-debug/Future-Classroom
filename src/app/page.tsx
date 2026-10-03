@@ -2,7 +2,7 @@ import { ArrowRight, BookOpenCheck, Compass, Library, Lightbulb, MonitorSmartpho
 import { LAB_IDS, LAB_ROUTES } from "@/lib/labs/registry";
 import { LabIcon } from "@/components/labs/lab-shell";
 import { getDictionary } from "@/lib/i18n/server";
-import { demoModeEnabled } from "@/lib/config";
+import { demoModeEnabled, openAccessEnabled } from "@/lib/config";
 import { SiteHeader, PageContainer } from "@/components/layout/site-header";
 import { ButtonLink } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -14,6 +14,7 @@ const PRINCIPLE_ICONS = [ShieldCheck, Lightbulb, Users, Library, Compass];
 export default async function HomePage() {
   const { dict } = await getDictionary();
   const l = dict.landing;
+  const openAccess = openAccessEnabled();
   return (
     <>
       <SiteHeader />
@@ -27,18 +28,26 @@ export default async function HomePage() {
             </p>
             <h1 className="text-4xl leading-[1.1] font-semibold tracking-tight text-ink sm:text-5xl">{l.title}</h1>
             <p className="mt-5 max-w-2xl text-lg text-ink-muted">{l.lead}</p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <ButtonLink href="/teacher" size="lg">
-                {l.ctaTeacher}
-                <ArrowRight aria-hidden className="size-4" />
-              </ButtonLink>
-              <ButtonLink href="/join" size="lg" variant="secondary">
-                {l.ctaJoin}
-              </ButtonLink>
-              <ButtonLink href="/student" size="lg" variant="ghost">
-                {l.ctaStudent}
-              </ButtonLink>
-            </div>
+            {openAccess ? (
+              <div className="mt-8 max-w-xl rounded-3xl border border-brand/20 bg-brand-soft/50 p-6" data-testid="open-access-choice">
+                <h2 className="text-xl font-semibold">{dict.open.chooseTitle}</h2>
+                <p className="mt-1 text-sm text-ink-muted">{dict.open.chooseText}</p>
+                <DemoLoginButtons className="mt-4" />
+              </div>
+            ) : (
+              <div className="mt-8 flex flex-wrap gap-3">
+                <ButtonLink href="/teacher" size="lg">
+                  {l.ctaTeacher}
+                  <ArrowRight aria-hidden className="size-4" />
+                </ButtonLink>
+                <ButtonLink href="/join" size="lg" variant="secondary">
+                  {l.ctaJoin}
+                </ButtonLink>
+                <ButtonLink href="/student" size="lg" variant="ghost">
+                  {l.ctaStudent}
+                </ButtonLink>
+              </div>
+            )}
           </div>
 
           {/* Flow */}
@@ -92,7 +101,7 @@ export default async function HomePage() {
               ))}
             </div>
           </div>
-          {demoModeEnabled() ? (
+          {demoModeEnabled() && !openAccess ? (
             <div className="rounded-3xl border border-brand/20 bg-brand-soft/50 p-6 sm:p-8">
               <h2 className="text-xl font-semibold">{l.demoTitle}</h2>
               <p className="mt-1 text-sm text-ink-muted">{l.demoText}</p>

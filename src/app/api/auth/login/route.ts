@@ -4,8 +4,10 @@ import { isRateLimited, LOGIN_FAILURES, rateLimit } from "@/lib/http/rate-limit"
 import { ApiError } from "@/lib/http/errors";
 import { authenticate, normalizeSignInName } from "@/lib/services/users";
 import { createAuthSession } from "@/lib/auth/session";
+import { openAccessEnabled } from "@/lib/config";
 
 export const POST = handler(async (req) => {
+  if (openAccessEnabled()) throw new ApiError(404, "not_found");
   const body = await readJson(req, z.object({ username: z.string().trim().min(1).max(60), password: z.string().min(1).max(200) }));
   rateLimit(`login:${clientKey(req)}`, 60, 60_000);
   const failures = LOGIN_FAILURES.key(normalizeSignInName(body.username).toLowerCase());

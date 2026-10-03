@@ -5,7 +5,7 @@ import { AuthShell } from "@/components/layout/auth-shell";
 import { RegisterForm } from "@/components/auth/register-form";
 import { Notice } from "@/components/ui/notice";
 import { SupabaseRegisterForm } from "@/components/auth/supabase-register-form";
-import { selfRegistrationEnabled } from "@/lib/config";
+import { openAccessEnabled, selfRegistrationEnabled } from "@/lib/config";
 import { supabaseConfig } from "@/lib/supabase/config";
 
 export async function generateMetadata() {
@@ -15,6 +15,7 @@ export async function generateMetadata() {
 export default async function RegisterPage() {
   const [{ dict }, user] = await Promise.all([getDictionary(), getCurrentUser()]);
   if (user) redirect(user.role === "student" ? "/student" : "/teacher");
+  if (openAccessEnabled()) redirect("/");
   const supabase = supabaseConfig();
   const open = selfRegistrationEnabled();
   return (

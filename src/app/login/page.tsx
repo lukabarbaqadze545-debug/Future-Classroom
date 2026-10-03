@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { getDictionary, pageTitle } from "@/lib/i18n/server";
 import { getCurrentUser } from "@/lib/auth/session";
-import { demoModeEnabled, selfRegistrationEnabled } from "@/lib/config";
+import { demoModeEnabled, openAccessEnabled, selfRegistrationEnabled } from "@/lib/config";
 import { fmt } from "@/lib/i18n/config";
 import { DEMO_PASSWORD } from "@/lib/db/seed";
 import { AuthShell } from "@/components/layout/auth-shell";
@@ -16,6 +16,7 @@ export async function generateMetadata() {
 export default async function LoginPage({ searchParams }: { searchParams: Promise<{ next?: string }> }) {
   const [{ dict }, user, params] = await Promise.all([getDictionary(), getCurrentUser(), searchParams]);
   if (user) redirect(user.role === "student" ? "/student" : "/teacher");
+  if (openAccessEnabled()) redirect("/");
   const supabase = supabaseConfig();
   return (
     <AuthShell

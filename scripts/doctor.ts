@@ -27,6 +27,7 @@ const flag = (name: string) => process.env[name];
 for (const [name, what] of [
   ["DEMO_MODE", "one-click demo sign-in"],
   ["SEED_DEMO", "demo accounts with the public password demo1234"],
+  ["OPEN_ACCESS", "no sign-in: anyone with the link is signed in as the demo teacher or student"],
 ] as const) {
   if (flag(name) === "true") report("FAIL", `${name}=true: ${what} is on. Turn it off for real school use.`);
   else report("OK", `${name} is off in production (${flag(name) === undefined ? "default" : `set to ${flag(name)}`}).`);

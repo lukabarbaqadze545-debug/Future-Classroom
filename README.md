@@ -183,6 +183,7 @@ tests/unit, tests/e2e, tests/e2e-supabase
 | `npm run check` | All three of the above |
 | `npm run test:e2e` | Builds, starts a fresh demo server with AI disabled and runs the Playwright suites (set `PLAYWRIGHT_CHROMIUM_PATH` to use a system Chromium, `E2E_SKIP_BUILD=1` to reuse the last build) |
 | `npm run test:e2e:supabase` | The email sign-up and sign-in flow in a browser against a stand-in for Supabase (`tests/e2e-supabase/`); same options as `test:e2e` |
+| `npm run test:e2e:open` | The site with `OPEN_ACCESS=true`: two choices (demo teacher, demo student), no sign-in or registration |
 | `npm run db:reset` | Recreate the database with demo data (`-- --empty` for none) |
 | `npm run user:create` | Create a teacher/student/admin account |
 | `npm run user:password` | New temporary password for an account (`-- --username x`), or `-- --list` |
@@ -196,7 +197,7 @@ tests/unit, tests/e2e, tests/e2e-supabase
 
 ## Configuration
 
-See `.env.example`: `ANTHROPIC_API_KEY`, `AI_MODEL`, `DATABASE_PATH`, `UPLOAD_DIR`, `SEED_DEMO`, `DEMO_MODE`, `SELF_REGISTRATION`, `BACKUP_DIR`, `DEFAULT_LANGUAGE` (`ka` or `en`: the school's default interface language and the language of the demo data), `COOKIE_SECURE`, `PUBLIC_BASE_URL`, `JUDGE0_URL`, `JUDGE0_TOKEN`, `JUDGE0_PYTHON_ID`, `JUDGE0_CPP_ID`, `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` (optional email sign-up and sign-in through Supabase; see docs/SUPABASE-AUTH.md).
+See `.env.example`: `ANTHROPIC_API_KEY`, `AI_MODEL`, `DATABASE_PATH`, `UPLOAD_DIR`, `SEED_DEMO`, `DEMO_MODE`, `SELF_REGISTRATION`, `BACKUP_DIR`, `DEFAULT_LANGUAGE` (`ka` or `en`: the school's default interface language and the language of the demo data), `COOKIE_SECURE`, `PUBLIC_BASE_URL`, `JUDGE0_URL`, `JUDGE0_TOKEN`, `JUDGE0_PYTHON_ID`, `JUDGE0_CPP_ID`, `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` (optional email sign-up and sign-in through Supabase; see docs/SUPABASE-AUTH.md), `OPEN_ACCESS` (no sign-in at all: visitors choose the demo teacher or demo student view; for demonstrations on a demo database only).
 
 ## Known limitations
 

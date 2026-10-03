@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { openAccessEnabled } from "@/lib/config";
 import { BookPlus, FileUp, Radio } from "lucide-react";
 import { getCurrentUser } from "@/lib/auth/session";
 import { getDictionary, pageTitle } from "@/lib/i18n/server";
@@ -37,7 +38,7 @@ export default async function TeacherDashboard() {
 
   return (
     <PageContainer>
-      <PageHeader title={fmt(d.greeting, { name: firstName })} description={d.lead} />
+      <PageHeader title={openAccessEnabled() ? dict.open.helloTeacher : fmt(d.greeting, { name: firstName })} description={d.lead} />
 
       {live.length ? (
         <Card className="mb-6 border-success/40 bg-success-soft/30" data-testid="teacher-live-sessions">

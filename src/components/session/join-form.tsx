@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Field, Input } from "@/components/ui/form";
 import { Notice } from "@/components/ui/notice";
 
-export function JoinForm({ initialCode = "", signedInName, compact = false }: { initialCode?: string; signedInName?: string | null; compact?: boolean }) {
+export function JoinForm({ initialCode = "", signedInName, compact = false, offerSignIn = true }: { initialCode?: string; signedInName?: string | null; compact?: boolean; offerSignIn?: boolean }) {
   const { dict } = useI18n();
   const router = useRouter();
   const [code, setCode] = useState(initialCode);
@@ -61,7 +61,7 @@ export function JoinForm({ initialCode = "", signedInName, compact = false }: { 
       <Button type="submit" size="lg" className="w-full" disabled={busy || !code.trim() || (!signedInName && !name.trim())} data-testid="join-submit">
         {busy ? dict.join.joining : dict.join.join}
       </Button>
-      {!signedInName && !compact ? (
+      {!signedInName && !compact && offerSignIn ? (
         <p className="text-center text-sm text-ink-muted">
           <Link href="/login?next=/join" className="font-medium text-brand hover:underline">
             {dict.join.signInForProgress}

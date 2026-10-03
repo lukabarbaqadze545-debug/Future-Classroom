@@ -441,6 +441,14 @@ export const en = {
       unknown: "Something went wrong with the sign-in service. Try again.",
     },
   },
+  // Open access (OPEN_ACCESS): no sign-in; the visitor picks the teacher or the student view.
+  open: {
+    chooseTitle: "Take a look around",
+    chooseText: "No sign-in needed. Choose a view; you can switch at any time with the button at the top.",
+    helloTeacher: "Hello, teacher!",
+    helloStudent: "Hello, student!",
+    switchRole: "Switch role",
+  },
   join: {
     title: "Join a class",
     lead: "Enter the code shown on the classroom screen.",
