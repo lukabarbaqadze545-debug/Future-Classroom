@@ -99,12 +99,21 @@ export function verifyProblem(p: Problem): Report {
     fs.writeFileSync(genFile, p.stress.gen);
     for (let seed = 1; seed <= STRESS_RUNS; seed++) {
       const g = spawnSync("python3", [genFile, String(seed)], { encoding: "utf8", timeout: 10_000 });
-      if (g.status !== 0) return void fail(`stress: the generator failed on seed ${seed}: ${(g.stderr ?? "").slice(0, 300)}`);
+      if (g.status !== 0) {
+        fail(`stress: the generator failed on seed ${seed}: ${(g.stderr ?? "").slice(0, 300)}`);
+        return report;
+      }
       const input = g.stdout.replace(/\s+$/, "");
       const a = run(sol.bin, input);
       const b = run(brute.bin, input);
-      if (a.status !== 0 || b.status !== 0) return void fail(`stress: seed ${seed} crashed (solution ${a.status} ${a.err}; brute ${b.status} ${b.err}) on input ${short(input)}`);
-      if (!outputsMatch(a.out, b.out)) return void fail(`stress: seed ${seed} differs on input ${short(input)}: solution ${short(a.out)}, brute ${short(b.out)}`);
+      if (a.status !== 0 || b.status !== 0) {
+        fail(`stress: seed ${seed} crashed (solution ${a.status} ${a.err}; brute ${b.status} ${b.err}) on input ${short(input)}`);
+        return report;
+      }
+      if (!outputsMatch(a.out, b.out)) {
+        fail(`stress: seed ${seed} differs on input ${short(input)}: solution ${short(a.out)}, brute ${short(b.out)}`);
+        return report;
+      }
     }
   }
   return report;

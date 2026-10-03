@@ -77,9 +77,12 @@ function para(inner: string, o: ParaOptions = {}): string {
   if (o.leftBar) p.push(`<w:pBdr><w:left w:val="single" w:sz="18" w:space="6" w:color="2F5496"/></w:pBdr>`);
   if (o.fill) p.push(`<w:shd w:val="clear" w:color="auto" w:fill="${o.fill}"/>`);
   if (o.after !== undefined || o.before !== undefined || o.line !== undefined) {
-    p.push(`<w:spacing${o.before !== undefined ? ` w:before="${o.before}"` : ""}${o.after !== undefined ? ` w:after="${o.after}"` : ""}${o.line !== undefined ? ` w:line="${o.line}" w:lineRule="auto"` : ""}/>`);
+    p.push(
+      `<w:spacing${o.before !== undefined ? ` w:before="${o.before}"` : ""}${o.after !== undefined ? ` w:after="${o.after}"` : ""}${o.line !== undefined ? ` w:line="${o.line}" w:lineRule="auto"` : ""}/>`,
+    );
   }
-  if (o.left !== undefined || o.hanging !== undefined) p.push(`<w:ind${o.left !== undefined ? ` w:left="${o.left}"` : ""}${o.hanging !== undefined ? ` w:hanging="${o.hanging}"` : ""}/>`);
+  if (o.left !== undefined || o.hanging !== undefined)
+    p.push(`<w:ind${o.left !== undefined ? ` w:left="${o.left}"` : ""}${o.hanging !== undefined ? ` w:hanging="${o.hanging}"` : ""}/>`);
   if (o.jc) p.push(`<w:jc w:val="${o.jc}"/>`);
   return `<w:p>${p.length ? `<w:pPr>${p.join("")}</w:pPr>` : ""}${inner}</w:p>`;
 }
@@ -133,7 +136,8 @@ function blocksXml(blocks: Block[], codeLabel?: (lang: string) => string | null)
     .join("");
 }
 
-const BORDER = (c: string) => `<w:top w:val="single" w:sz="4" w:space="0" w:color="${c}"/><w:left w:val="single" w:sz="4" w:space="0" w:color="${c}"/><w:bottom w:val="single" w:sz="4" w:space="0" w:color="${c}"/><w:right w:val="single" w:sz="4" w:space="0" w:color="${c}"/><w:insideH w:val="single" w:sz="4" w:space="0" w:color="${c}"/><w:insideV w:val="single" w:sz="4" w:space="0" w:color="${c}"/>`;
+const BORDER = (c: string) =>
+  `<w:top w:val="single" w:sz="4" w:space="0" w:color="${c}"/><w:left w:val="single" w:sz="4" w:space="0" w:color="${c}"/><w:bottom w:val="single" w:sz="4" w:space="0" w:color="${c}"/><w:right w:val="single" w:sz="4" w:space="0" w:color="${c}"/><w:insideH w:val="single" w:sz="4" w:space="0" w:color="${c}"/><w:insideV w:val="single" w:sz="4" w:space="0" w:color="${c}"/>`;
 
 function cell(width: number, content: string, fill?: string): string {
   return `<w:tc><w:tcPr><w:tcW w:w="${width}" w:type="dxa"/>${fill ? `<w:shd w:val="clear" w:color="auto" w:fill="${fill}"/>` : ""}</w:tcPr>${content}</w:tc>`;
@@ -168,7 +172,10 @@ function exampleTable(p: Problem): string {
   return p.examples
     .map((ex, i) => {
       const title = p.examples.length > 1 ? `მაგალითი ${i + 1}` : "მაგალითი";
-      const rows = [{ header: true, cells: [cellText("შეყვანა", { bold: true, size: 20 }), cellText("გამოტანა", { bold: true, size: 20 })] }, { cells: [cellCode(ex.input), cellCode(ex.output)] }];
+      const rows = [
+        { header: true, cells: [cellText("შეყვანა", { bold: true, size: 20 }), cellText("გამოტანა", { bold: true, size: 20 })] },
+        { cells: [cellCode(ex.input), cellCode(ex.output)] },
+      ];
       const note = ex.note.length ? blocksXml(ex.note.map((b, j) => (j === 0 && b.kind === "p" ? { ...b, text: `**განმარტება.** ${b.text}` } : b))) : "";
       return label(title) + table([TEXT_WIDTH / 2, TEXT_WIDTH / 2], rows) + para("", { after: 60 }) + note;
     })
@@ -230,7 +237,9 @@ function matterXml(m: Matter, pageBreak = true): string {
 function chapterTable(chapters: Chapter[]): string {
   const widths = [700, 4338, 1200, 1700, 1700];
   const head = ["თავი", "თემა", "ამოცანები", "ნომრები", "კვირა"].map((t) => cellText(t, { bold: true, size: 20 }));
-  const rows = chapters.map((c) => [String(c.number), c.title, String(c.problems.length), `${c.number}.1–${c.number}.${c.problems.length}`, c.weeks || "—"].map((t) => cellText(t, { size: 20 })));
+  const rows = chapters.map((c) =>
+    [String(c.number), c.title, String(c.problems.length), `${c.number}.1–${c.number}.${c.problems.length}`, c.weeks || "—"].map((t) => cellText(t, { size: 20 })),
+  );
   return table(widths, [{ header: true, cells: head }, ...rows.map((cells) => ({ cells }))]);
 }
 
@@ -270,14 +279,20 @@ export function bookXml(book: Book, info: BookInfo): string {
   const chapters = book.chapters.map(chapterXml).join("");
   const hints =
     heading(1, "მინიშნებები", true) +
-    body("მინიშნება წაიკითხეთ მხოლოდ მაშინ, როცა ამოცანაზე უკვე იმუშავეთ. ჯერ პირველი; თუ ის საკმარისია, დანარჩენი არ გჭირდებათ. ნომრები ამოცანების ნომრებს ემთხვევა.", { after: 160, line: 288 }) +
-    hintsXml(book.chapters);
-  const solutions =
-    heading(1, "ამოხსნები", true) +
-    body("ეს ამოხსნები ერთ-ერთი შესაძლო გზაა და არა ერთადერთი. თქვენი პროგრამა შეიძლება სხვანაირი იყოს და მაინც სწორად მუშაობდეს; ის შეადარეთ მაგალითებსა და საკუთარ ტესტებს. ყველა ამოხსნა გადამოწმებულია: კომპილაცია, მაგალითები და, სადაც საჭირო იყო, შედარება სრულ გადარჩევასთან.", {
+    body("მინიშნება წაიკითხეთ მხოლოდ მაშინ, როცა ამოცანაზე უკვე იმუშავეთ. ჯერ პირველი; თუ ის საკმარისია, დანარჩენი არ გჭირდებათ. ნომრები ამოცანების ნომრებს ემთხვევა.", {
       after: 160,
       line: 288,
     }) +
+    hintsXml(book.chapters);
+  const solutions =
+    heading(1, "ამოხსნები", true) +
+    body(
+      "ეს ამოხსნები ერთ-ერთი შესაძლო გზაა და არა ერთადერთი. თქვენი პროგრამა შეიძლება სხვანაირი იყოს და მაინც სწორად მუშაობდეს; ის შეადარეთ მაგალითებსა და საკუთარ ტესტებს. ყველა ამოხსნა გადამოწმებულია: კომპილაცია, მაგალითები და, სადაც საჭირო იყო, შედარება სრულ გადარჩევასთან.",
+      {
+        after: 160,
+        line: 288,
+      },
+    ) +
     solutionsXml(book.chapters);
   const back = book.back.map((m) => matterXml(m, true)).join("");
   const indexes = heading(1, "ამოცანების საძიებელი", true) + heading(2, "თემების მიხედვით") + tagIndex(book.chapters) + heading(2, "სირთულის მიხედვით") + levelIndex(book.chapters);

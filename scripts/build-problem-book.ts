@@ -6,6 +6,8 @@
  *
  *   npx tsx scripts/build-problem-book.ts verify [file-name-part]   check only
  *   npx tsx scripts/build-problem-book.ts build                     check, then write the book
+ *   npx tsx scripts/build-problem-book.ts build --skip-verify       write the book without running the solutions
+ *                                                                   (only after a change to the text, never to a program)
  */
 import fs from "node:fs";
 import path from "node:path";
@@ -18,7 +20,9 @@ const SOURCES = path.join(process.cwd(), "content", "books-src", "cpp-problems")
 const OUT = path.join(process.cwd(), "content", "books", "cpp-problems-1.docx");
 
 async function main() {
-  const [command = "verify", filter] = process.argv.slice(2);
+  const args = process.argv.slice(2);
+  const skipVerify = args.includes("--skip-verify");
+  const [command = "verify", filter] = args.filter((a) => !a.startsWith("--"));
   const book = readBook(SOURCES, command === "build" ? undefined : filter);
 
   let problems = 0;
@@ -27,6 +31,7 @@ async function main() {
   for (const chapter of book.chapters) {
     for (const p of chapter.problems) {
       problems++;
+      if (skipVerify) continue;
       const report = verifyProblem(p);
       if (report.errors.length > 0) {
         failed++;
@@ -39,7 +44,7 @@ async function main() {
     console.log(`თავი ${chapter.number}: ${chapter.problems.length} problems`);
   }
   for (const w of warned) console.warn(`⚠ ${w}`);
-  console.log(`${problems} problems checked, ${failed} failed, ${warned.length} with compiler warnings`);
+  console.log(skipVerify ? `${problems} problems read, solutions not run` : `${problems} problems checked, ${failed} failed, ${warned.length} with compiler warnings`);
   if (failed > 0) process.exit(1);
   if (command !== "build") return;
 
@@ -52,7 +57,13 @@ async function main() {
   fs.writeFileSync(OUT, bytes);
   const { pages } = await extractText("docx", bytes, OUT);
   const text = OUT.replace(/\.docx$/i, ".md");
-  fs.writeFileSync(text, `${pages.map((p) => p.text).join("\n\n").trim()}\n`);
+  fs.writeFileSync(
+    text,
+    `${pages
+      .map((p) => p.text)
+      .join("\n\n")
+      .trim()}\n`,
+  );
   console.log(`${OUT}: ${fs.statSync(OUT).size} bytes; ${text}: ${fs.statSync(text).size} bytes`);
 }
 

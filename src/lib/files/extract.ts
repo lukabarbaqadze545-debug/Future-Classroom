@@ -45,27 +45,27 @@ export function itemsToLines(items: readonly PositionedText[]): string {
     .join("\n");
 }
 
-/** Word headings become Markdown headings, so the document keeps its structure. */
-function htmlToMarkdown(html: string): string {
-  const decode = (s: string) =>
-    s
-      .replace(/<[^>]+>/g, "")
-      .replace(/&nbsp;/g, " ")
-      .replace(/&lt;/g, "<")
-      .replace(/&gt;/g, ">")
-      .replace(/&quot;/g, '"')
-      .replace(/&#39;/g, "'")
-      .replace(/&amp;/g, "&")
-      .trim();
-  return html
-    .replace(/<h([1-6])[^>]*>([\s\S]*?)<\/h\1>/gi, (_m, level: string, body: string) => `\n\n${"#".repeat(Number(level))} ${decode(body)}\n\n`)
-    .replace(/<li[^>]*>([\s\S]*?)<\/li>/gi, (_m, body: string) => `\n- ${decode(body)}\n`)
-    .replace(/<p[^>]*>([\s\S]*?)<\/p>/gi, (_m, body: string) => `\n\n${decode(body)}\n\n`)
-    .replace(/<br\s*\/?>/gi, "\n")
-    .replace(/<[^>]+>/g, "")
-    .replace(/&amp;/g, "&")
+/**
+ * Word headings become Markdown headings, so the document keeps its structure.
+ * Tags are stripped before entities are decoded: a decoded `<` or `>` in the
+ * text (code, comparisons) must not be taken for a tag.
+ */
+export function htmlToMarkdown(html: string): string {
+  const strip = (s: string) => s.replace(/<[^>]+>/g, "").replace(/&nbsp;/g, " ").trim();
+  return decodeEntities(
+    html
+      .replace(/<h([1-6])[^>]*>([\s\S]*?)<\/h\1>/gi, (_m, level: string, body: string) => `\n\n${"#".repeat(Number(level))} ${strip(body)}\n\n`)
+      .replace(/<li[^>]*>([\s\S]*?)<\/li>/gi, (_m, body: string) => `\n- ${strip(body)}\n`)
+      .replace(/<p[^>]*>([\s\S]*?)<\/p>/gi, (_m, body: string) => `\n\n${strip(body)}\n\n`)
+      .replace(/<br\s*\/?>/gi, "\n")
+      .replace(/<[^>]+>/g, ""),
+  )
     .replace(/\n{3,}/g, "\n\n")
     .trim();
+}
+
+function decodeEntities(text: string): string {
+  return text.replace(/&nbsp;/g, " ").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&amp;/g, "&");
 }
 
 /**

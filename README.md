@@ -80,7 +80,7 @@ All six labs are reachable from **Labs** in the navigation (`/labs`), plus **Lib
 | **STEM** (`/labs/stem`) | 8 classroom experiments (materials, safety, procedure, data table, conclusion), 7 simulations (projectile, motion, circuits, probability, linear model, growth, grid robot), electronics and robotics guides, engineering design projects. | Challenge questions are graded on the server with tolerances; experiment records reveal the expected results only after submission. Every item is labelled *Simulation*, *Classroom experiment* or *Physical project*. |
 | **Research** (`/labs/research`) | Question → hypothesis → sources → notes → evidence → data → analysis → findings → conclusion → presentation. Source quality checklist, quotations with attribution, evidence table, datasets with statistics and charts, generated bibliography, presentation mode. | Teacher feedback; quotations must be linked to a source (enforced on the server). |
 | **Critical Thinking** (`/labs/critical-thinking`) | Claim analysis, argument builder, fallacy identification (10 fallacies, taught for recognition, not manipulation), media literacy, debate mode with timer, intellectual humility. | Deterministic rubric feedback; progress per fallacy. |
-| **School Library** (`/library`) | Catalogue with filters, digital (openly licensed or school-owned) and physical copies, **reading a book on the site** — a Word file opens as Word shows it (fonts, colours, tables, page breaks; drawn in the browser, no internet needed), or as text with a contents, pages and search inside the book — next to downloading the school's copy, bookmarks, reading progress, questions answered from school materials. | Librarians print QR labels (`/library/labels`); scanning one opens the book page for that copy. Loans are recorded by staff. |
+| **School Library** (`/library`) | Catalogue with filters, digital (openly licensed or school-owned) and physical copies, **reading a book on the site** — a Word file opens as Word shows it (fonts, colours, tables, page breaks; drawn in the browser, no internet needed), or as text with a contents, pages and search inside the book — next to downloading the school's copy, bookmarks, reading progress, questions answered from school materials. | Librarians print QR labels (`/library/labels`); scanning one opens the book page for that copy. Loans are recorded by staff. Four books ship with the platform, among them *189 Problems in C++* (hints and solutions in separate parts, so a student has to go looking for them). |
 | **Career & University** (`/career`) | Career explorer, fields of study, a university guide (25 universities in Georgia and abroad for computer science, medicine and the arts: admission, costs, grants and scholarships, deadlines), university research cards, skills self-assessment, goals, portfolio. | The guide and the cards show when they were last checked, cite their sources and warn after a year — admission facts are never presented as permanent. |
 
 **Teachers** assign any lab item to a class or to students (`/teacher/assignments`), see who has started, handed in or finished, review work with feedback, and open each student's learning profile (`/teacher/students`). Lab items can also be run as a live classroom session (`/teacher/sessions/labs`).
@@ -158,7 +158,7 @@ src/
                         session bridge and assignment registry
     domain/             zod schemas, grading, ids/join codes, safe math-expression parser
     db/                 connection, schema, demo seed
-    content/            built-in lessons (EN + KA), subject catalogue and its resolver
+    content/            built-in lessons (EN + KA), subject catalogue and its resolver (library books: content/books/, their sources: content/books-src/)
     i18n/               en.ts (source of truth), ka.ts (type-checked against en), terminology
     files/              upload validation, text extraction (PDF lines, DOCX headings)
     http/, auth/, realtime/
@@ -189,6 +189,7 @@ tests/unit, tests/e2e
 | `npm run doctor` | Health check: settings, database integrity, demo passwords, backup age, disk space |
 | `npm run materials:reindex` | Re-read uploaded files and rebuild their passages and knowledge (`-- --all` for every material); older materials are otherwise upgraded automatically at start-up |
 | `npm run drill` | Real browsers against a throwaway server: duplicate tabs, slow network, reloads, server restart mid-lesson |
+| `npx tsx scripts/build-problem-book.ts verify` / `build` | The C++ problem book (`content/books-src/cpp-problems/`, 189 problems): compiles every solution (warnings and sanitizers on), runs it on the examples, the extra tests and against a brute-force solution on random inputs, then `build` writes `content/books/cpp-problems-1.docx` and its text. Needs `g++` and `python3`; never runs in the app |
 | `node scripts/classroom-sim.mjs --base <url> --students 16` | Simulates a teacher, a projector and N students running a whole lesson over HTTP/SSE; prints latencies |
 
 ## Configuration

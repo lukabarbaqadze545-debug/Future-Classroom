@@ -251,16 +251,21 @@ describe("Learning Assistant", () => {
   it("installs the built-in library books once, searchable by students, and never brings back a removed one", async () => {
     const db = freshDb();
     const started = Date.now();
-    expect(syncBuiltInBooks(db)).toBe(3);
+    expect(syncBuiltInBooks(db)).toBe(4);
     expect(Date.now() - started).toBeLessThan(15_000);
     expect(syncBuiltInBooks(db)).toBe(0);
     expect(getResource("lib-business-courses")?.title).toBe("Business courses");
     const cpp = getResource("lib-cpp-code-to-olympiad-1")!;
     expect(cpp).toMatchObject({ title: "C++: From Code to Olympiad, Vol. 1", materialId: "book-cpp-code-to-olympiad-1", language: "ka" });
     const student = makeUser("student", "giorgi");
+    // Both C++ books answer a question about arrays; the textbook is among the sources.
     const result = await runAssistant(student, { mode: "locate", text: "რა არის მასივი C++-ში?" });
-    expect(result.passages[0]).toMatchObject({ sourceId: "book-cpp-code-to-olympiad-1", pageStart: null });
+    expect(["book-cpp-code-to-olympiad-1", "book-cpp-problems-1"]).toContain(result.passages[0].sourceId);
+    expect(result.passages[0]).toMatchObject({ pageStart: null });
     expect(result.passages[0].section).toBeTruthy();
+    expect(getResource("lib-cpp-problems-1")).toMatchObject({ title: "189 Problems in C++, Vol. 1", materialId: "book-cpp-problems-1", language: "ka", license: "school" });
+    const gcd = await runAssistant(student, { mode: "locate", text: "როგორ ვიპოვო უდიდესი საერთო გამყოფი?" });
+    expect(gcd.passages.some((p) => p.sourceId === "book-cpp-problems-1" && /^4\.7\./.test(p.section ?? ""))).toBe(true);
     const business = await runAssistant(student, { mode: "explain", text: "ფულადი ნაკადი და მარკეტინგი" });
     expect(business.passages.some((p) => p.sourceId === "book-business-courses")).toBe(true);
     expect(getResource("lib-english-spanish-dictionary-1")).toMatchObject({ materialId: "book-english-spanish-dictionary-1", language: "en", kind: "reference" });

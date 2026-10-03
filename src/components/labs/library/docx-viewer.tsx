@@ -57,6 +57,8 @@ function collectHeadings(root: HTMLElement): Heading[] {
     if (!match || !text) return;
     const id = `docx-h-${found.length}`;
     p.id = id;
+    // A jump from the contents must not hide the heading under the site header.
+    p.style.scrollMarginTop = "7.5rem";
     found.push({ id, text: text.slice(0, 120), level: match[1] ? Number(match[1]) : 1 });
   });
   return found;

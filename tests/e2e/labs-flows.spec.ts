@@ -262,3 +262,20 @@ test("library: read a built-in book on the site, search inside it, and still dow
   await expect(student.page.getByTestId("reader-text")).toContainText(/[Ⴀ-ჿ]/);
   await student.context.close();
 });
+
+test("library: the C++ problem book opens as Word, with its code intact, and its text is searchable by problem", async ({ browser }) => {
+  const student = await userPage(browser, "giorgi");
+  await student.page.goto("/library/lib-cpp-problems-1/read");
+  const viewer = student.page.getByTestId("docx-viewer");
+  await expect(viewer).toHaveAttribute("data-state", "ready", { timeout: 60_000 });
+  await expect(viewer.locator("section.docx").first()).toContainText("ამოცანა C++-ში");
+  await expect(student.page.getByTestId("docx-contents")).toContainText("თავი 4. ციფრები და რიცხვთა თეორიის საფუძვლები");
+  await expect(viewer.getByText("#include <iostream>").first()).toBeVisible();
+
+  // The text view keeps the same code and finds a problem by its title.
+  await student.page.goto("/library/lib-cpp-problems-1/read?view=text");
+  await student.page.getByTestId("reader-search").fill("უდიდესი საერთო გამყოფი");
+  await student.page.getByTestId("reader-search").press("Enter");
+  await expect(student.page.getByTestId("reader-results")).toContainText("4.7. უდიდესი საერთო გამყოფი");
+  await student.context.close();
+});

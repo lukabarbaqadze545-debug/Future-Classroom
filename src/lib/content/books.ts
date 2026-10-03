@@ -63,6 +63,28 @@ export const BUILT_IN_BOOKS: BuiltInBook[] = [
     },
   },
   {
+    id: "lib-cpp-problems-1",
+    key: "cpp-problems-1",
+    file: "cpp-problems-1.docx",
+    subject: "computer_science",
+    tags: ["C++", "ამოცანები", "ალგორითმები", "ოლიმპიადა"],
+    resource: {
+      title: "189 Problems in C++, Vol. 1",
+      kind: "book",
+      categories: ["computing"],
+      subjects: ["computer_science"],
+      gradeFrom: 8,
+      gradeTo: 12,
+      language: "ka",
+      year: "2026",
+      license: "school",
+      description: {
+        en: "A collection of 189 C++ problems in 15 chapters, from the first program to olympiad-style topics: input and output, conditions, loops, numbers, functions, arrays, strings, matrices, tracing and debugging, complexity and brute force, sorting and searching, STL, recursion, greedy algorithms and dynamic programming, graphs. Each problem has examples, three hints of growing detail and a solution that was compiled and tested. In Georgian.",
+        ka: "189 ამოცანა C++-ში 15 თავად დაყოფილი, პირველი პროგრამიდან ოლიმპიურ თემებამდე: შეყვანა-გამოტანა, პირობები, ციკლები, რიცხვები, ფუნქციები, მასივები, სტრიქონები, მატრიცები, ვარაუდი და შეცდომის პოვნა, სირთულე და გადარჩევა, დახარისხება და ძებნა, STL, რეკურსია, სიხარბე და დინამიური პროგრამირება, გრაფები. ყოველ ამოცანას აქვს მაგალითები, სამი მზარდი მინიშნება და ამოხსნა, რომელიც კომპილირებულია და გამოცდილია.",
+      },
+    },
+  },
+  {
     id: "lib-english-spanish-dictionary-1",
     key: "english-spanish-dictionary-1",
     file: "english-spanish-learning-dictionary-1.docx",
