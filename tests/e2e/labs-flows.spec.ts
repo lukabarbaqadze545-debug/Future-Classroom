@@ -231,6 +231,16 @@ test("library: read a built-in book on the site, search inside it, and still dow
   await expect(student.page.getByTestId("download-school-copy")).toHaveAttribute("href", /\/api\/materials\/book-english-spanish-dictionary-1\/file/);
   await student.page.getByTestId("read-online").click();
   await expect(student.page).toHaveURL(/\/library\/lib-english-spanish-dictionary-1\/read/);
+  // A Word file opens as Word shows it: own fonts and colours, with a contents built from its headings.
+  const viewer = student.page.getByTestId("docx-viewer");
+  await expect(viewer).toHaveAttribute("data-state", "ready", { timeout: 60_000 });
+  await expect(viewer.locator("section.docx").first()).toContainText("LEARNING DICTIONARY");
+  await expect(student.page.getByTestId("docx-contents")).toContainText("A1 Vocabulary");
+  await expect(viewer.locator("span").filter({ hasText: /^AFTERNOON$/ }).first()).toHaveCSS("color", "rgb(27, 77, 92)");
+
+  // The text view has a contents, pages and search.
+  await student.page.getByTestId("view-text").click();
+  await expect(student.page).toHaveURL(/view=text/);
   await expect(student.page.getByTestId("reader-text")).toContainText("LEARNING DICTIONARY");
 
   // Contents: jump to the A1 vocabulary and see dictionary entries as cards.
@@ -248,7 +258,7 @@ test("library: read a built-in book on the site, search inside it, and still dow
   await expect(student.page.locator("mark").first()).toContainText(/airport/i);
 
   // Georgian books open too, in Georgian.
-  await student.page.goto("/library/lib-cpp-code-to-olympiad-1/read");
+  await student.page.goto("/library/lib-cpp-code-to-olympiad-1/read?view=text");
   await expect(student.page.getByTestId("reader-text")).toContainText(/[Ⴀ-ჿ]/);
   await student.context.close();
 });

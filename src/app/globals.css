@@ -177,3 +177,16 @@ dialog::backdrop {
     border: 0;
   }
 }
+
+/* A Word file drawn by docx-preview: grey desk, white pages, scaled by --docx-zoom. */
+.docx-host .docx-wrapper {
+  background: var(--color-muted);
+  padding: 16px 8px;
+  zoom: var(--docx-zoom, 1);
+}
+.docx-host .docx-wrapper > section.docx {
+  background: white;
+  color: #111;
+  box-shadow: 0 1px 4px rgb(16 24 40 / 0.18);
+  margin-bottom: 12px;
+}

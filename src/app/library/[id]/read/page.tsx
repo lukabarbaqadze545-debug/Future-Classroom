@@ -13,10 +13,11 @@ import { ButtonLink, buttonClasses } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Notice } from "@/components/ui/notice";
 import { LabHeader } from "@/components/labs/lab-shell";
+import { DocxViewer } from "@/components/labs/library/docx-viewer";
 import { ReaderFrame } from "@/components/labs/library/reader-frame";
 import { ReaderText } from "@/components/labs/library/reader-text";
 
-type Props = { params: Promise<{ id: string }>; searchParams: Promise<{ s?: string; p?: string; q?: string; hl?: string }> };
+type Props = { params: Promise<{ id: string }>; searchParams: Promise<{ s?: string; p?: string; q?: string; hl?: string; view?: string }> };
 
 export async function generateMetadata({ params }: Props) {
   const r = getResource((await params).id);
@@ -24,7 +25,7 @@ export async function generateMetadata({ params }: Props) {
 }
 
 function whereHref(id: string, at: ReaderLocation, extra: { hl?: string } = {}) {
-  const query = new URLSearchParams({ s: String(at.s), p: String(at.p) });
+  const query = new URLSearchParams({ view: "text", s: String(at.s), p: String(at.p) });
   if (extra.hl) query.set("hl", extra.hl);
   return `/library/${id}/read?${query}${extra.hl ? "#hit" : ""}`;
 }
@@ -50,9 +51,32 @@ export default async function ReadPage({ params, searchParams }: Props) {
   const q = (sp.q ?? "").trim().slice(0, 80);
   const hl = (sp.hl ?? "").trim().slice(0, 80);
   const lang = resource.language === "ka" ? "ka" : resource.language === "en" ? "en" : undefined;
-  const outline = material.textStatus === "indexed" ? readerOutline(material.id, user) : [];
+  // A Word file opens as Word shows it; the text view (contents, pages, search) is one click away.
+  const isWord = /\.docx$/i.test(material.fileName);
+  const original = isWord && sp.view !== "text";
+  const outline = !original && material.textStatus === "indexed" ? readerOutline(material.id, user) : [];
   const page = outline.length ? readerPage(material.id, user, { s: Number(sp.s) || 0, p: Number(sp.p) || 0 }) : null;
   const hits = q ? searchInMaterial(material.id, user, q) : null;
+  const switcher = isWord ? (
+    <div role="group" aria-label={r.viewLabel} className="mb-5 inline-flex rounded-xl border border-line bg-surface p-1 text-sm font-medium">
+      <Link
+        href={`/library/${id}/read`}
+        aria-current={original ? "page" : undefined}
+        data-testid="view-original"
+        className={`rounded-lg px-3 py-1.5 ${original ? "bg-brand text-white" : "text-ink-muted hover:bg-muted"}`}
+      >
+        {r.viewOriginal}
+      </Link>
+      <Link
+        href={`/library/${id}/read?view=text`}
+        aria-current={original ? undefined : "page"}
+        data-testid="view-text"
+        className={`rounded-lg px-3 py-1.5 ${original ? "text-ink-muted hover:bg-muted" : "bg-brand text-white"}`}
+      >
+        {r.viewText}
+      </Link>
+    </div>
+  ) : null;
   const download = (
     <ButtonLink href={`/api/materials/${material.id}/file`} variant="secondary">
       <Download aria-hidden className="size-4" />
@@ -91,13 +115,20 @@ export default async function ReadPage({ params, searchParams }: Props) {
           </>
         }
       />
-      {!page ? (
+      {switcher}
+      {original ? (
+        <DocxViewer
+          src={`/api/materials/${material.id}/file`}
+          labels={{ contents: r.contents, loading: r.loading, failed: r.failed, zoom: r.zoom, zoomOut: r.zoomOut, zoomIn: r.zoomIn, note: r.originalNote }}
+        />
+      ) : !page ? (
         <Notice tone="warn" action={download}>
           {r.noText}
         </Notice>
       ) : (
         <div className="grid gap-6 lg:grid-cols-[minmax(0,18rem)_minmax(0,1fr)]">
           <form method="get" action={`/library/${id}/read`} role="search" className="flex min-w-0 gap-2 lg:col-start-1 lg:row-start-1">
+            <input type="hidden" name="view" value="text" />
             <input type="hidden" name="s" value={page.s} />
             <input type="hidden" name="p" value={page.p} />
             <input
