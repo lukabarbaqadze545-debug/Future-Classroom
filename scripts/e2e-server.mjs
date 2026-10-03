@@ -14,6 +14,8 @@ const env = {
   UPLOAD_DIR: path.join(dataDir, "uploads"),
   SEED_DEMO: "true",
   DEMO_MODE: "true",
+  // Open access is the default; the suites that test sign-in turn it off (a config may set OPEN_ACCESS itself).
+  OPEN_ACCESS: process.env.OPEN_ACCESS ?? "false",
   ANTHROPIC_API_KEY: "",
   NEXT_TELEMETRY_DISABLED: "1",
 };

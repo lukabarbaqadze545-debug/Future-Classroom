@@ -1,5 +1,5 @@
 import { ShieldCheck } from "lucide-react";
-import { getCurrentUser, isStaff } from "@/lib/auth/session";
+import { isStaff, requirePageUser, ALL_ROLES } from "@/lib/auth/session";
 import { getDictionary } from "@/lib/i18n/server";
 import { isSubject } from "@/lib/domain/catalog";
 import { getAIProvider } from "@/lib/ai";
@@ -17,7 +17,7 @@ export async function generateMetadata() {
 type Props = { searchParams: Promise<{ mode?: string; q?: string; material?: string; subject?: string }> };
 
 export default async function LearningAssistantPage({ searchParams }: Props) {
-  const user = (await getCurrentUser())!;
+  const user = await requirePageUser(ALL_ROLES, "/learning-assistant");
   const { dict } = await getDictionary();
   const a = dict.assistant;
   const params = await searchParams;

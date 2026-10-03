@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import type { DB } from "./index";
+import { dataDir } from "./paths";
 import { newId } from "@/lib/domain/ids";
 import { ingestDocument, type DocumentFormat, type IngestResult, type SourcePage } from "@/lib/knowledge/ingest";
 import { extractKnowledge } from "@/lib/knowledge/knowledge";
@@ -16,7 +17,7 @@ import { extractKnowledge } from "@/lib/knowledge/knowledge";
 export const INDEX_VERSION = 1;
 
 export function uploadDir(): string {
-  return process.env.UPLOAD_DIR || path.join(process.cwd(), "data", "uploads");
+  return process.env.UPLOAD_DIR || path.join(dataDir(), "uploads");
 }
 
 export function formatFor(fileName: string, mime: string): DocumentFormat {

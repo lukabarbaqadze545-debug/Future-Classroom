@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { getCurrentUser } from "@/lib/auth/session";
+import { requirePageUser } from "@/lib/auth/session";
 import { getDictionary, pageTitle } from "@/lib/i18n/server";
 import { getAttempt, getPublishedQuiz, studentAttemptView, toStudentQuestions } from "@/lib/services/quizzes";
 import { ApiError } from "@/lib/http/errors";
@@ -12,7 +12,7 @@ export async function generateMetadata() {
 }
 
 export default async function StudentQuizPage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ attempt?: string }> }) {
-  const user = (await getCurrentUser())!;
+  const user = await requirePageUser(["student"], "/student");
   const [{ id }, { attempt: attemptId }, { dict }] = await Promise.all([params, searchParams, getDictionary()]);
   let quiz;
   try {

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getCurrentUser } from "@/lib/auth/session";
+import { requirePageUser, STAFF_ROLES } from "@/lib/auth/session";
 import { getDictionary, pageTitle } from "@/lib/i18n/server";
 import { fmt, fmtCount, formatDate } from "@/lib/i18n/config";
 import { getTeacherInsights } from "@/lib/services/progress";
@@ -12,7 +12,7 @@ export async function generateMetadata() {
 }
 
 export default async function InsightsPage() {
-  const user = (await getCurrentUser())!;
+  const user = await requirePageUser(STAFF_ROLES, "/teacher");
   const { dict, locale } = await getDictionary();
   const i = dict.teacher.insights;
   const data = getTeacherInsights(user.id);

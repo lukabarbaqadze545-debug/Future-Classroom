@@ -111,7 +111,7 @@ npm run user:create -- --role teacher --username nbe --name "Nino Beridze"
 npm run doctor              # checks settings, database, backups, disk
 ```
 
-A production build (`npm start`) has demo sign-in and demo accounts **off** unless `DEMO_MODE` or `SEED_DEMO` is set to `true`. Anyone can create a student account with just a name and a password (`/register`; turn off with `SELF_REGISTRATION=false`); teachers can also create accounts on their class page and print sign-in slips.
+**Before real students use it, set `OPEN_ACCESS=false`** (see below). A production build (`npm start`) with `OPEN_ACCESS=false` has demo sign-in and demo accounts **off** unless `DEMO_MODE` or `SEED_DEMO` is set to `true`. Anyone can create a student account with just a name and a password (`/register`; turn off with `SELF_REGISTRATION=false`); teachers can also create accounts on their class page and print sign-in slips.
 
 **Guides:** [docs/LEARNING-ASSISTANT.md](docs/LEARNING-ASSISTANT.md) · [docs/OPERATIONS.md](docs/OPERATIONS.md) (install, service, backups, accounts, updates, checklists) · [docs/PILOT.md](docs/PILOT.md) (a 45-minute pilot lesson, minute by minute) · [docs/SECURITY-REVIEW.md](docs/SECURITY-REVIEW.md) · [docs/DATA-ARCHITECTURE.md](docs/DATA-ARCHITECTURE.md) (SQLite assessment, PostgreSQL plan) · [docs/CONTENT-ROADMAP.md](docs/CONTENT-ROADMAP.md) · [docs/LIBRARY-AND-UNIVERSITY-DATA.md](docs/LIBRARY-AND-UNIVERSITY-DATA.md) · [docs/AUDIT.md](docs/AUDIT.md) (pilot-readiness audit) · [docs/PROGRAMMING-AND-INDEPENDENT-LEARNING.md](docs/PROGRAMMING-AND-INDEPENDENT-LEARNING.md) (12-week C++ programme, independent-learning framework, student projects and assessment; in Georgian) · [docs/SUPABASE-AUTH.md](docs/SUPABASE-AUTH.md) (optional sign-up and sign-in with an email through Supabase: setup, flow, messages, privacy; in Georgian) · [docs/ART-AND-CREATIVE-THINKING.md](docs/ART-AND-CREATIVE-THINKING.md) (Art & Creative Thinking: foundations, art history and Georgian art, photography, digital art, creative thinking, art + technology, projects, portfolio, assessment, site structure and a 12-week programme; in Georgian).
 
@@ -121,6 +121,18 @@ A production build (`npm start`) has demo sign-in and demo accounts **off** unle
 - Run a single instance (the real-time channel and rate limiter are in-process).
 - Set `PUBLIC_BASE_URL` (e.g. `http://192.168.1.10:3000`) so the join address on the projector, account slips and library QR labels show the address workstations and phones actually use. Without it the server uses the request's address, replacing `localhost` with its own network address.
 - C++ checking on the server needs a Judge0 instance you run yourself (`JUDGE0_URL`, optionally `JUDGE0_TOKEN`). Student code is never executed by the Future Classroom server itself.
+
+## Open access and Vercel
+
+**Open access is on by default** (`OPEN_ACCESS`): there is no sign-in and no registration. The home page offers two choices, "demo teacher" and "demo student"; the page then greets "Hello, teacher!" or "Hello, student!", and a button in the header switches the view. A link to an inner page lets the visitor straight in as the view that part of the site is for (teacher pages: teacher; everything else: student). The choice is kept in a cookie (`fc_open`), nothing about it is stored on the server, so any server instance can serve the visitor. Everyone who opens the site works as the same demo account: they all see (and can change) the same data. That is right for showing the platform and wrong for a school with real students: set `OPEN_ACCESS=false` and the platform's own sign-in (and Supabase sign-in, when configured) is back; `npm run doctor` reports open access as a problem.
+
+**On Vercel** the app runs as it is, with these differences from a school server:
+
+- The deployment is read-only, so the database and uploaded files go to the instance's temporary folder (`/tmp/future-classroom`; `DATABASE_PATH` and `UPLOAD_DIR` still override). The demo school is created on the instance's first request (about 2 seconds), so **what visitors change is private to one running instance and is lost when Vercel replaces it**, and two visitors may be served by different instances. The seeded demo content is the same everywhere. Lasting, shared data needs a database outside the instance (see docs/DATA-ARCHITECTURE.md).
+- Live lessons use in-process messaging with polling as the fallback; on a platform that runs several instances, a teacher and the students of one lesson may land on different instances and not see each other. Run live lessons on a school server, or on a single always-on process.
+- A request body is limited to 4.5 MB: larger material uploads fail.
+- The Pyodide files (Python in the browser) are copied to `public/pyodide` by `npm run build` (the `prebuild` script) so Vercel serves them as static files; the built-in books are included in the deployment through `outputFileTracingIncludes` in `next.config.ts`.
+- No environment variables are needed. Set `ANTHROPIC_API_KEY` for the AI features and `DEFAULT_LANGUAGE=en` for an English demo.
 
 ## Architecture
 
@@ -181,9 +193,9 @@ tests/unit, tests/e2e, tests/e2e-supabase
 | `npm run dev` / `build` / `start` | Next.js |
 | `npm run typecheck` / `lint` / `test` | TypeScript, ESLint, Vitest |
 | `npm run check` | All three of the above |
-| `npm run test:e2e` | Builds, starts a fresh demo server with AI disabled and runs the Playwright suites (set `PLAYWRIGHT_CHROMIUM_PATH` to use a system Chromium, `E2E_SKIP_BUILD=1` to reuse the last build) |
+| `npm run test:e2e` | Builds, starts a fresh demo server with AI disabled and `OPEN_ACCESS=false` (so sign-in is tested) and runs the Playwright suites (set `PLAYWRIGHT_CHROMIUM_PATH` to use a system Chromium, `E2E_SKIP_BUILD=1` to reuse the last build) |
 | `npm run test:e2e:supabase` | The email sign-up and sign-in flow in a browser against a stand-in for Supabase (`tests/e2e-supabase/`); same options as `test:e2e` |
-| `npm run test:e2e:open` | The site with `OPEN_ACCESS=true`: two choices (demo teacher, demo student), no sign-in or registration |
+| `npm run test:e2e:open` | The site in open-access mode (the default): two choices (demo teacher, demo student), no sign-in or registration |
 | `npm run db:reset` | Recreate the database with demo data (`-- --empty` for none) |
 | `npm run user:create` | Create a teacher/student/admin account |
 | `npm run user:password` | New temporary password for an account (`-- --username x`), or `-- --list` |
@@ -197,7 +209,7 @@ tests/unit, tests/e2e, tests/e2e-supabase
 
 ## Configuration
 
-See `.env.example`: `ANTHROPIC_API_KEY`, `AI_MODEL`, `DATABASE_PATH`, `UPLOAD_DIR`, `SEED_DEMO`, `DEMO_MODE`, `SELF_REGISTRATION`, `BACKUP_DIR`, `DEFAULT_LANGUAGE` (`ka` or `en`: the school's default interface language and the language of the demo data), `COOKIE_SECURE`, `PUBLIC_BASE_URL`, `JUDGE0_URL`, `JUDGE0_TOKEN`, `JUDGE0_PYTHON_ID`, `JUDGE0_CPP_ID`, `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` (optional email sign-up and sign-in through Supabase; see docs/SUPABASE-AUTH.md), `OPEN_ACCESS` (no sign-in at all: visitors choose the demo teacher or demo student view; for demonstrations on a demo database only).
+See `.env.example`: `ANTHROPIC_API_KEY`, `AI_MODEL`, `DATABASE_PATH`, `UPLOAD_DIR`, `SEED_DEMO`, `DEMO_MODE`, `SELF_REGISTRATION`, `BACKUP_DIR`, `DEFAULT_LANGUAGE` (`ka` or `en`: the school's default interface language and the language of the demo data), `COOKIE_SECURE`, `PUBLIC_BASE_URL`, `JUDGE0_URL`, `JUDGE0_TOKEN`, `JUDGE0_PYTHON_ID`, `JUDGE0_CPP_ID`, `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` (optional email sign-up and sign-in through Supabase; see docs/SUPABASE-AUTH.md), `OPEN_ACCESS` (on by default: no sign-in at all, visitors choose the demo teacher or demo student view; `OPEN_ACCESS=false` brings sign-in back for real students).
 
 ## Known limitations
 

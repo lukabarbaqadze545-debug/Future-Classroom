@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { openAccessEnabled } from "@/lib/config";
 import { BookPlus, FileUp, Radio } from "lucide-react";
-import { getCurrentUser } from "@/lib/auth/session";
+import { requirePageUser, STAFF_ROLES } from "@/lib/auth/session";
 import { getDictionary, pageTitle } from "@/lib/i18n/server";
 import { fmt, fmtCount, relativeTime } from "@/lib/i18n/config";
 import { inLocale, listLessonsForTeacher } from "@/lib/services/lessons";
@@ -23,7 +23,7 @@ export async function generateMetadata() {
 }
 
 export default async function TeacherDashboard() {
-  const user = (await getCurrentUser())!;
+  const user = await requirePageUser(STAFF_ROLES, "/teacher");
   const { dict, locale } = await getDictionary();
   const d = dict.teacher.dashboard;
   const lessons = inLocale(listLessonsForTeacher(user.id), locale);

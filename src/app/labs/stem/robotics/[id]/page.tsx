@@ -9,7 +9,7 @@ import { Notice } from "@/components/ui/notice";
 import { LabHeader, ModeBadge } from "@/components/labs/lab-shell";
 import { CopyableCode } from "@/components/labs/stem/code-copy";
 import { StartProjectButton } from "@/components/labs/stem/project-workspace";
-import { getCurrentUser, isStaff } from "@/lib/auth/session";
+import { isStaff, requirePageUser, ALL_ROLES } from "@/lib/auth/session";
 
 type Props = { params: Promise<{ id: string }> };
 
@@ -23,7 +23,7 @@ export default async function RoboticsProjectPage({ params }: Props) {
   const { id } = await params;
   const project = findRoboticsProject(id);
   if (!project) notFound();
-  const user = (await getCurrentUser())!;
+  const user = await requirePageUser(ALL_ROLES, "/labs");
   const { dict, locale } = await getDictionary();
   const s = dict.labs.stem;
   const section = (title: string, items: typeof project.parts, ordered = false) => {

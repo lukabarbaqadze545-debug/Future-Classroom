@@ -15,6 +15,7 @@ import { databasePath } from "../src/lib/db";
 import { MIGRATIONS } from "../src/lib/db/schema";
 import { verifyPassword } from "../src/lib/auth/password";
 import { diagnoseSupabaseEnv } from "../src/lib/supabase/config";
+import { openAccessEnabled } from "../src/lib/config";
 import { CONFIG_PROBLEM_TEXT } from "../src/lib/supabase/check";
 
 type Level = "OK" | "WARN" | "FAIL";
@@ -27,11 +28,13 @@ const flag = (name: string) => process.env[name];
 for (const [name, what] of [
   ["DEMO_MODE", "one-click demo sign-in"],
   ["SEED_DEMO", "demo accounts with the public password demo1234"],
-  ["OPEN_ACCESS", "no sign-in: anyone with the link is signed in as the demo teacher or student"],
 ] as const) {
   if (flag(name) === "true") report("FAIL", `${name}=true: ${what} is on. Turn it off for real school use.`);
   else report("OK", `${name} is off in production (${flag(name) === undefined ? "default" : `set to ${flag(name)}`}).`);
 }
+// Open access is on unless OPEN_ACCESS=false (it is the default).
+if (openAccessEnabled()) report("FAIL", "Open access is on (the default): there is no sign-in, and anyone with the link works as the demo teacher or student. Set OPEN_ACCESS=false for real school use.");
+else report("OK", "Open access is off: people sign in with their own accounts.");
 report(
   "OK",
   flag("SELF_REGISTRATION") === "false"

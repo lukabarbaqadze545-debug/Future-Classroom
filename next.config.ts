@@ -14,8 +14,17 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   // Native / Node-only packages stay out of the server bundle.
   serverExternalPackages: ["better-sqlite3", "unpdf", "mammoth"],
+  // Files read at run time by paths the bundler cannot see; without them a serverless host leaves them out of the deployment.
+  outputFileTracingIncludes: {
+    "/*": ["./content/books/**/*"],
+    "/pyodide/*": ["./node_modules/pyodide/*.{mjs,wasm,zip,json}"],
+  },
   async headers() {
-    return [{ source: "/:path*", headers: securityHeaders }];
+    return [
+      { source: "/:path*", headers: securityHeaders },
+      // The Pyodide files only change with the package version.
+      { source: "/pyodide/:file", headers: [{ key: "Cache-Control", value: "public, max-age=604800, immutable" }] },
+    ];
   },
 };
 

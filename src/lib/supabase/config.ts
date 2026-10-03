@@ -7,6 +7,7 @@
  * This file has no server-only imports: the same checks run in the server,
  * in `npm run doctor` and in tests.
  */
+import { openAccessEnabled } from "@/lib/config";
 
 export interface SupabaseConfig {
   url: string;
@@ -89,5 +90,5 @@ export function diagnoseSupabaseEnv(env: Record<string, string | undefined>): Su
 
 /** The settings from the environment, or null when Supabase sign-in is off, misconfigured or switched off by open access (no sign-in at all). */
 export function supabaseConfig(): SupabaseConfig | null {
-  return process.env.OPEN_ACCESS === "true" ? null : diagnoseSupabaseEnv(process.env).config;
+  return openAccessEnabled() ? null : diagnoseSupabaseEnv(process.env).config;
 }

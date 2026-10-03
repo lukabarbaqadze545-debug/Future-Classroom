@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { getCurrentUser } from "@/lib/auth/session";
+import { requirePageUser, STAFF_ROLES } from "@/lib/auth/session";
 import { getDictionary, pageTitle } from "@/lib/i18n/server";
 import { getAIProvider } from "@/lib/ai";
 import { curatedTopicsFor } from "@/lib/ai/templates";
@@ -17,7 +17,7 @@ export async function generateMetadata() {
 const NOTICES: GenerationNotice[] = ["ai", "curated", "outline", "ai_failed"];
 
 export default async function LessonPage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ generated?: string }> }) {
-  const user = (await getCurrentUser())!;
+  const user = await requirePageUser(STAFF_ROLES, "/teacher");
   const [{ id }, { generated }, { locale }] = await Promise.all([params, searchParams, getDictionary()]);
   let lesson;
   try {

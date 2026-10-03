@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Flame } from "lucide-react";
-import { getCurrentUser } from "@/lib/auth/session";
+import { requirePageUser } from "@/lib/auth/session";
 import { getDictionary, pageTitle } from "@/lib/i18n/server";
 import { fmt, fmtCount, relativeTime } from "@/lib/i18n/config";
 import { getMistakesToReview, getStudentProgress } from "@/lib/services/progress";
@@ -18,7 +18,7 @@ export async function generateMetadata() {
 }
 
 export default async function ProgressPage() {
-  const user = (await getCurrentUser())!;
+  const user = await requirePageUser(["student"], "/student");
   const { dict, locale } = await getDictionary();
   const p = dict.student.progress;
   const progress = getStudentProgress(user.id);

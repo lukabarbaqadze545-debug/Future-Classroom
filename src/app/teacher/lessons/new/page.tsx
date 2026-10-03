@@ -1,4 +1,4 @@
-import { getCurrentUser } from "@/lib/auth/session";
+import { requirePageUser, STAFF_ROLES } from "@/lib/auth/session";
 import { getDictionary, pageTitle } from "@/lib/i18n/server";
 import { getAIProvider } from "@/lib/ai";
 import { curatedTopicsFor } from "@/lib/ai/templates";
@@ -13,7 +13,7 @@ export async function generateMetadata() {
 }
 
 export default async function NewLessonPage({ searchParams }: { searchParams: Promise<{ subject?: string }> }) {
-  const user = (await getCurrentUser())!;
+  const user = await requirePageUser(STAFF_ROLES, "/teacher");
   const { subject } = await searchParams;
   const { dict, locale } = await getDictionary();
   const materials = listMaterials(user)

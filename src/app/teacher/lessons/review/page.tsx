@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getCurrentUser } from "@/lib/auth/session";
+import { requirePageUser, STAFF_ROLES } from "@/lib/auth/session";
 import { getDictionary } from "@/lib/i18n/server";
 import { fmt, relativeTime } from "@/lib/i18n/config";
 import { isReviewStatus, REVIEW_STATUSES } from "@/lib/domain/review";
@@ -16,7 +16,7 @@ export async function generateMetadata() {
 
 /** Lessons by review state, so reviewers can find what to check next. */
 export default async function ReviewQueuePage({ searchParams }: { searchParams: Promise<{ status?: string }> }) {
-  const user = (await getCurrentUser())!;
+  const user = await requirePageUser(STAFF_ROLES, "/teacher");
   const [{ dict }, { status: param }] = await Promise.all([getDictionary(), searchParams]);
   const r = dict.review;
   const filter = isReviewStatus(param) ? param : null;

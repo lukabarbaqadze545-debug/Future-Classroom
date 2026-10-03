@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ArrowRight, BookOpen, Flame, Lightbulb, Radio } from "lucide-react";
-import { getCurrentUser } from "@/lib/auth/session";
+import { requirePageUser } from "@/lib/auth/session";
 import { getDictionary, pageTitle } from "@/lib/i18n/server";
 import { fmt, fmtCount, relativeTime } from "@/lib/i18n/config";
 import { getStudentProgress } from "@/lib/services/progress";
@@ -28,7 +28,7 @@ export async function generateMetadata() {
 }
 
 export default async function StudentHome() {
-  const user = (await getCurrentUser())!;
+  const user = await requirePageUser(["student"], "/student");
   const { dict, locale } = await getDictionary();
   const d = dict.student.dashboard;
   const progress = getStudentProgress(user.id);

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { BookOpen, ClipboardList, Download, ExternalLink, Lightbulb, Pencil, QrCode } from "lucide-react";
-import { getCurrentUser, isStaff } from "@/lib/auth/session";
+import { isStaff, requirePageUser, ALL_ROLES } from "@/lib/auth/session";
 import { getDictionary } from "@/lib/i18n/server";
 import { fmt, formatDate } from "@/lib/i18n/config";
 import { tr } from "@/lib/labs/localized";
@@ -47,7 +47,7 @@ export default async function ResourcePage({ params, searchParams }: Props) {
   const { id } = await params;
   const resource = getResource(id);
   if (!resource) notFound();
-  const user = (await getCurrentUser())!;
+  const user = await requirePageUser(ALL_ROLES, "/library");
   const { dict, locale } = await getDictionary();
   const b = dict.labs.library;
   const staff = isStaff(user);

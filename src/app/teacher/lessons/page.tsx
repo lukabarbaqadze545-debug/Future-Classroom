@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Eye, ListChecks, Plus } from "lucide-react";
-import { getCurrentUser } from "@/lib/auth/session";
+import { requirePageUser, STAFF_ROLES } from "@/lib/auth/session";
 import { getDictionary, pageTitle } from "@/lib/i18n/server";
 import { fmt, fmtCount, relativeTime } from "@/lib/i18n/config";
 import { inLocale, listLessonsForTeacher, listPublishedLessons } from "@/lib/services/lessons";
@@ -18,7 +18,7 @@ export async function generateMetadata() {
 }
 
 export default async function LessonsPage() {
-  const user = (await getCurrentUser())!;
+  const user = await requirePageUser(STAFF_ROLES, "/teacher");
   const { dict, locale } = await getDictionary();
   const l = dict.teacher.lessons;
   const lessons = inLocale(listLessonsForTeacher(user.id), locale);

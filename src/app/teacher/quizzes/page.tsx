@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getCurrentUser } from "@/lib/auth/session";
+import { requirePageUser, STAFF_ROLES } from "@/lib/auth/session";
 import { getDictionary, pageTitle } from "@/lib/i18n/server";
 import { fmt, fmtCount, relativeTime } from "@/lib/i18n/config";
 import { listQuizzesForTeacher } from "@/lib/services/quizzes";
@@ -14,7 +14,7 @@ export async function generateMetadata() {
 }
 
 export default async function QuizzesPage() {
-  const user = (await getCurrentUser())!;
+  const user = await requirePageUser(STAFF_ROLES, "/teacher");
   const { dict, locale } = await getDictionary();
   const q = dict.teacher.quizzes;
   // Built-in quizzes in the reader's language; a version with results always stays visible.

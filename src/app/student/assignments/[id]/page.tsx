@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowRight, MessageSquareText } from "lucide-react";
-import { getCurrentUser } from "@/lib/auth/session";
+import { requirePageUser } from "@/lib/auth/session";
 import { getDictionary, pageTitle } from "@/lib/i18n/server";
 import { fmt, formatDateTime } from "@/lib/i18n/config";
 import { ApiError } from "@/lib/http/errors";
@@ -28,7 +28,7 @@ const LAB_DRIVEN = ["experiment", "library"];
 
 export default async function StudentAssignmentPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const user = (await getCurrentUser())!;
+  const user = await requirePageUser(["student"], "/student");
   let data;
   try {
     markStarted(id, user.id);

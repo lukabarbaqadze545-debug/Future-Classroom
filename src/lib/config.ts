@@ -30,15 +30,15 @@ export function selfRegistrationEnabled(): boolean {
 }
 
 /**
- * Open access (OPEN_ACCESS, off by default): no sign-in and no registration.
- * Everyone who opens the site chooses "demo teacher" or "demo student" and is
- * signed in as that demo account. For showing the platform (for example to a
- * school's director) on a demo database; never for real students: anyone with
- * the link can then do everything the demo teacher can. `npm run doctor`
- * reports it as a problem while it is on.
+ * Open access (OPEN_ACCESS, on by default): no sign-in and no registration.
+ * Everyone who opens the site chooses "demo teacher" or "demo student" and
+ * works as that demo account, so anyone with the link can do everything the
+ * demo teacher can. Set OPEN_ACCESS=false for a school with real students:
+ * the platform's own sign-in (and Supabase, when configured) is then back.
+ * `npm run doctor` reports open access as a problem while it is on.
  */
 export function openAccessEnabled(): boolean {
-  return flag("OPEN_ACCESS", false);
+  return flag("OPEN_ACCESS", true);
 }
 
 /** The one-click demo sign-in route works with DEMO_MODE and with open access. */

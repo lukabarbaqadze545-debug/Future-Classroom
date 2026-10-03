@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getCurrentUser } from "@/lib/auth/session";
+import { requirePageUser, STAFF_ROLES } from "@/lib/auth/session";
 import { getDictionary, pageTitle } from "@/lib/i18n/server";
 import { getQuizForEditor, getQuizResults } from "@/lib/services/quizzes";
 import { ApiError } from "@/lib/http/errors";
@@ -14,7 +14,7 @@ export async function generateMetadata() {
 }
 
 export default async function QuizPage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ tab?: string; generated?: string }> }) {
-  const user = (await getCurrentUser())!;
+  const user = await requirePageUser(STAFF_ROLES, "/teacher");
   const [{ id }, sp, { dict, locale }] = await Promise.all([params, searchParams, getDictionary()]);
   let quiz;
   try {

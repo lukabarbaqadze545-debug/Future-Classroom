@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Plus } from "lucide-react";
-import { getCurrentUser } from "@/lib/auth/session";
+import { requirePageUser, STAFF_ROLES } from "@/lib/auth/session";
 import { getDictionary, pageTitle } from "@/lib/i18n/server";
 import { fmt, formatDateTime } from "@/lib/i18n/config";
 import { listAssignmentsForTeacher } from "@/lib/services/assignments";
@@ -18,7 +18,7 @@ export async function generateMetadata() {
 }
 
 export default async function TeacherAssignmentsPage({ searchParams }: { searchParams: Promise<{ archived?: string }> }) {
-  const user = (await getCurrentUser())!;
+  const user = await requirePageUser(STAFF_ROLES, "/teacher");
   const { dict, locale } = await getDictionary();
   const a = dict.labs.assignments;
   const showArchived = (await searchParams).archived === "1";

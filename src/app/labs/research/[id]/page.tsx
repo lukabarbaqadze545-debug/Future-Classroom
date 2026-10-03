@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { getCurrentUser, isStaff } from "@/lib/auth/session";
+import { isStaff, requirePageUser, ALL_ROLES } from "@/lib/auth/session";
 import { getDictionary, pageTitle } from "@/lib/i18n/server";
 import { ApiError } from "@/lib/http/errors";
 import { getResearchBundle } from "@/lib/labs/research/service";
@@ -21,7 +21,7 @@ export async function generateMetadata() {
 
 export default async function ResearchProjectPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const user = (await getCurrentUser())!;
+  const user = await requirePageUser(ALL_ROLES, "/labs");
   let bundle;
   try {
     bundle = getResearchBundle(id, user);

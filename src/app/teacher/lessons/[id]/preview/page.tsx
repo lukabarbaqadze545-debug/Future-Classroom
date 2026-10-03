@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Check, Pencil, Presentation } from "lucide-react";
-import { getCurrentUser } from "@/lib/auth/session";
+import { getCurrentUser, requirePageUser, STAFF_ROLES } from "@/lib/auth/session";
 import { getDictionary } from "@/lib/i18n/server";
 import { fmt } from "@/lib/i18n/config";
 import { ApiError } from "@/lib/http/errors";
@@ -43,7 +43,7 @@ export async function generateMetadata({ params }: Props) {
 /** Read-only teacher preview with the answer key, plus the content review panel. */
 export default async function LessonPreviewPage({ params }: Props) {
   const { id } = await params;
-  const user = (await getCurrentUser())!;
+  const user = await requirePageUser(STAFF_ROLES, "/teacher");
   const { dict } = await getDictionary();
   const r = dict.review;
   const lesson = load(id, user);

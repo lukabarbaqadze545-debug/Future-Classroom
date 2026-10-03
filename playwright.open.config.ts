@@ -3,7 +3,7 @@ import { defineConfig } from "@playwright/test";
 const PORT = Number(process.env.E2E_OPEN_PORT ?? 3214);
 
 /**
- * The site in open-access mode (OPEN_ACCESS=true): no sign-in or registration,
+ * The site in open-access mode (the default): no sign-in or registration,
  * the visitor picks the demo teacher or the demo student view.
  *
  *   npm run test:e2e:open

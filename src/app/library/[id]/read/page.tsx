@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ChevronLeft, ChevronRight, Download, Lightbulb, Search, X } from "lucide-react";
-import { getCurrentUser } from "@/lib/auth/session";
+import { requirePageUser, ALL_ROLES } from "@/lib/auth/session";
 import { getDictionary } from "@/lib/i18n/server";
 import { fmt, fmtCount } from "@/lib/i18n/config";
 import { getResource } from "@/lib/labs/library/service";
@@ -36,7 +36,7 @@ export default async function ReadPage({ params, searchParams }: Props) {
   const { id } = await params;
   const resource = getResource(id);
   if (!resource || !resource.materialId) notFound();
-  const user = (await getCurrentUser())!;
+  const user = await requirePageUser(ALL_ROLES, "/library");
   let material;
   try {
     material = getMaterial(resource.materialId, user);
