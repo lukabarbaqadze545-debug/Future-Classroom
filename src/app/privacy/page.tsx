@@ -2,6 +2,7 @@ import { ShieldCheck } from "lucide-react";
 import { getDictionary, pageTitle } from "@/lib/i18n/server";
 import { SiteHeader, PageContainer } from "@/components/layout/site-header";
 import { PageHeader } from "@/components/ui/misc";
+import { supabaseConfig } from "@/lib/supabase/config";
 
 export async function generateMetadata() {
   return pageTitle((p) => p.privacy);
@@ -30,6 +31,7 @@ export default async function PrivacyPage() {
               </section>
             ))}
           </div>
+          {supabaseConfig() ? <p className="mt-5 rounded-2xl border border-line bg-surface p-5 text-ink-muted">{dict.privacy.emailSignIn}</p> : null}
           <p className="mt-6 text-sm text-ink-subtle">{dict.privacy.contact}</p>
         </div>
       </PageContainer>

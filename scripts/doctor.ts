@@ -14,6 +14,8 @@ import Database from "better-sqlite3";
 import { databasePath } from "../src/lib/db";
 import { MIGRATIONS } from "../src/lib/db/schema";
 import { verifyPassword } from "../src/lib/auth/password";
+import { diagnoseSupabaseEnv } from "../src/lib/supabase/config";
+import { CONFIG_PROBLEM_TEXT } from "../src/lib/supabase/check";
 
 type Level = "OK" | "WARN" | "FAIL";
 const lines: { level: Level; text: string }[] = [];
@@ -36,6 +38,10 @@ report(
     : "Self-registration is on: anyone who can open the site can create a student account (name + password). Set SELF_REGISTRATION=false to allow only teacher-created accounts.",
 );
 report("OK", flag("ANTHROPIC_API_KEY") ? "AI is configured (optional)." : "AI is not configured: the platform runs fully without it (built-in lessons, teacher hints).");
+const supabase = diagnoseSupabaseEnv(process.env);
+if (supabase.config) report("OK", `Email sign-in through Supabase is on (${supabase.config.url}). Run npm run supabase:check to test the project's settings.`);
+else if (supabase.problems.length === 0) report("OK", "Email sign-in through Supabase is off: the site uses its own name-and-password accounts only.");
+for (const problem of supabase.problems) report(problem.severity === "error" ? "FAIL" : "WARN", CONFIG_PROBLEM_TEXT[problem.code]);
 if (flag("COOKIE_SECURE") !== "true") report("WARN", "COOKIE_SECURE is not true: fine on plain HTTP inside the school network; set it when serving over HTTPS.");
 
 // --- Database ------------------------------------------------------------------

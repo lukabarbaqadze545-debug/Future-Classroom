@@ -113,7 +113,7 @@ npm run doctor              # checks settings, database, backups, disk
 
 A production build (`npm start`) has demo sign-in and demo accounts **off** unless `DEMO_MODE` or `SEED_DEMO` is set to `true`. Anyone can create a student account with just a name and a password (`/register`; turn off with `SELF_REGISTRATION=false`); teachers can also create accounts on their class page and print sign-in slips.
 
-**Guides:** [docs/LEARNING-ASSISTANT.md](docs/LEARNING-ASSISTANT.md) · [docs/OPERATIONS.md](docs/OPERATIONS.md) (install, service, backups, accounts, updates, checklists) · [docs/PILOT.md](docs/PILOT.md) (a 45-minute pilot lesson, minute by minute) · [docs/SECURITY-REVIEW.md](docs/SECURITY-REVIEW.md) · [docs/DATA-ARCHITECTURE.md](docs/DATA-ARCHITECTURE.md) (SQLite assessment, PostgreSQL plan) · [docs/CONTENT-ROADMAP.md](docs/CONTENT-ROADMAP.md) · [docs/LIBRARY-AND-UNIVERSITY-DATA.md](docs/LIBRARY-AND-UNIVERSITY-DATA.md) · [docs/AUDIT.md](docs/AUDIT.md) (pilot-readiness audit) · [docs/PROGRAMMING-AND-INDEPENDENT-LEARNING.md](docs/PROGRAMMING-AND-INDEPENDENT-LEARNING.md) (12-week C++ programme, independent-learning framework, student projects and assessment; in Georgian) · [docs/ART-AND-CREATIVE-THINKING.md](docs/ART-AND-CREATIVE-THINKING.md) (Art & Creative Thinking: foundations, art history and Georgian art, photography, digital art, creative thinking, art + technology, projects, portfolio, assessment, site structure and a 12-week programme; in Georgian).
+**Guides:** [docs/LEARNING-ASSISTANT.md](docs/LEARNING-ASSISTANT.md) · [docs/OPERATIONS.md](docs/OPERATIONS.md) (install, service, backups, accounts, updates, checklists) · [docs/PILOT.md](docs/PILOT.md) (a 45-minute pilot lesson, minute by minute) · [docs/SECURITY-REVIEW.md](docs/SECURITY-REVIEW.md) · [docs/DATA-ARCHITECTURE.md](docs/DATA-ARCHITECTURE.md) (SQLite assessment, PostgreSQL plan) · [docs/CONTENT-ROADMAP.md](docs/CONTENT-ROADMAP.md) · [docs/LIBRARY-AND-UNIVERSITY-DATA.md](docs/LIBRARY-AND-UNIVERSITY-DATA.md) · [docs/AUDIT.md](docs/AUDIT.md) (pilot-readiness audit) · [docs/PROGRAMMING-AND-INDEPENDENT-LEARNING.md](docs/PROGRAMMING-AND-INDEPENDENT-LEARNING.md) (12-week C++ programme, independent-learning framework, student projects and assessment; in Georgian) · [docs/SUPABASE-AUTH.md](docs/SUPABASE-AUTH.md) (optional sign-up and sign-in with an email through Supabase: setup, flow, messages, privacy; in Georgian) · [docs/ART-AND-CREATIVE-THINKING.md](docs/ART-AND-CREATIVE-THINKING.md) (Art & Creative Thinking: foundations, art history and Georgian art, photography, digital art, creative thinking, art + technology, projects, portfolio, assessment, site structure and a 12-week programme; in Georgian).
 
 - Data lives in `data/` (SQLite database + uploaded files). `npm run backup` makes a checked copy while lessons run; `npm run restore` brings one back.
 - Real-time updates use Server-Sent Events with automatic polling fallback, so sessions keep working behind proxies or on unstable Wi-Fi; student drafts are kept in the browser.
@@ -162,7 +162,7 @@ src/
     i18n/               en.ts (source of truth), ka.ts (type-checked against en), terminology
     files/              upload validation, text extraction (PDF lines, DOCX headings)
     http/, auth/, realtime/
-tests/unit, tests/e2e
+tests/unit, tests/e2e, tests/e2e-supabase
 ```
 
 ### Key design decisions
@@ -182,10 +182,12 @@ tests/unit, tests/e2e
 | `npm run typecheck` / `lint` / `test` | TypeScript, ESLint, Vitest |
 | `npm run check` | All three of the above |
 | `npm run test:e2e` | Builds, starts a fresh demo server with AI disabled and runs the Playwright suites (set `PLAYWRIGHT_CHROMIUM_PATH` to use a system Chromium, `E2E_SKIP_BUILD=1` to reuse the last build) |
+| `npm run test:e2e:supabase` | The email sign-up and sign-in flow in a browser against a stand-in for Supabase (`tests/e2e-supabase/`); same options as `test:e2e` |
 | `npm run db:reset` | Recreate the database with demo data (`-- --empty` for none) |
 | `npm run user:create` | Create a teacher/student/admin account |
 | `npm run user:password` | New temporary password for an account (`-- --username x`), or `-- --list` |
 | `npm run backup` / `restore` | Checked backup of database and uploads (safe while running) / restore one (server stopped) |
+| `npm run supabase:check` | Checks `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY` and asks the project whether the key is accepted, sign-ups and email confirmation are on and which redirect URL to allow (only the public key is used) |
 | `npm run doctor` | Health check: settings, database integrity, demo passwords, backup age, disk space |
 | `npm run materials:reindex` | Re-read uploaded files and rebuild their passages and knowledge (`-- --all` for every material); older materials are otherwise upgraded automatically at start-up |
 | `npm run drill` | Real browsers against a throwaway server: duplicate tabs, slow network, reloads, server restart mid-lesson |
@@ -194,7 +196,7 @@ tests/unit, tests/e2e
 
 ## Configuration
 
-See `.env.example`: `ANTHROPIC_API_KEY`, `AI_MODEL`, `DATABASE_PATH`, `UPLOAD_DIR`, `SEED_DEMO`, `DEMO_MODE`, `SELF_REGISTRATION`, `BACKUP_DIR`, `DEFAULT_LANGUAGE` (`ka` or `en`: the school's default interface language and the language of the demo data), `COOKIE_SECURE`, `PUBLIC_BASE_URL`, `JUDGE0_URL`, `JUDGE0_TOKEN`, `JUDGE0_PYTHON_ID`, `JUDGE0_CPP_ID`.
+See `.env.example`: `ANTHROPIC_API_KEY`, `AI_MODEL`, `DATABASE_PATH`, `UPLOAD_DIR`, `SEED_DEMO`, `DEMO_MODE`, `SELF_REGISTRATION`, `BACKUP_DIR`, `DEFAULT_LANGUAGE` (`ka` or `en`: the school's default interface language and the language of the demo data), `COOKIE_SECURE`, `PUBLIC_BASE_URL`, `JUDGE0_URL`, `JUDGE0_TOKEN`, `JUDGE0_PYTHON_ID`, `JUDGE0_CPP_ID`, `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` (optional email sign-up and sign-in through Supabase; see docs/SUPABASE-AUTH.md).
 
 ## Known limitations
 

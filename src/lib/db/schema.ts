@@ -609,4 +609,19 @@ CREATE TABLE assistant_saved (
 CREATE INDEX assistant_saved_user ON assistant_saved(user_id, created_at DESC);
 `,
   },
+  {
+    id: 6,
+    name: "supabase_accounts",
+    sql: `
+-- Accounts created through Supabase sign-in (optional, see src/lib/supabase).
+-- The person is found by the Supabase user id and never by the email: the
+-- email is only kept so the person (and the school) can see which address the
+-- account was opened with. These accounts have no password here
+-- (password_hash '!').
+ALTER TABLE users ADD COLUMN supabase_id TEXT;
+ALTER TABLE users ADD COLUMN email TEXT;
+CREATE UNIQUE INDEX users_supabase_id ON users(supabase_id) WHERE supabase_id IS NOT NULL;
+CREATE INDEX users_email ON users(email) WHERE email IS NOT NULL;
+`,
+  },
 ];

@@ -6,6 +6,7 @@ import { fmt } from "@/lib/i18n/config";
 import { DEMO_PASSWORD } from "@/lib/db/seed";
 import { AuthShell } from "@/components/layout/auth-shell";
 import { LoginForm } from "@/components/auth/login-form";
+import { supabaseConfig } from "@/lib/supabase/config";
 import { DemoLoginButtons } from "@/components/auth/demo-login";
 
 export async function generateMetadata() {
@@ -15,10 +16,11 @@ export async function generateMetadata() {
 export default async function LoginPage({ searchParams }: { searchParams: Promise<{ next?: string }> }) {
   const [{ dict }, user, params] = await Promise.all([getDictionary(), getCurrentUser(), searchParams]);
   if (user) redirect(user.role === "student" ? "/student" : "/teacher");
+  const supabase = supabaseConfig();
   return (
     <AuthShell
       title={dict.auth.signInTitle}
-      lead={dict.auth.signInLead}
+      lead={supabase ? dict.auth.signInLeadEmail : dict.auth.signInLead}
       aside={
         demoModeEnabled() ? (
           <div className="rounded-3xl border border-brand/20 bg-brand-soft/50 p-6">
@@ -32,7 +34,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
         ) : null
       }
     >
-      <LoginForm next={params.next ?? null} allowRegister={selfRegistrationEnabled()} />
+      <LoginForm next={params.next ?? null} allowRegister={selfRegistrationEnabled()} supabase={supabase} />
     </AuthShell>
   );
 }
