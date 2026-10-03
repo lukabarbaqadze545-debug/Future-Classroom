@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ClipboardList, ExternalLink, FileText, Lightbulb, Pencil, QrCode } from "lucide-react";
+import { BookOpen, ClipboardList, Download, ExternalLink, Lightbulb, Pencil, QrCode } from "lucide-react";
 import { getCurrentUser, isStaff } from "@/lib/auth/session";
 import { getDictionary } from "@/lib/i18n/server";
 import { fmt, formatDate } from "@/lib/i18n/config";
@@ -128,8 +128,14 @@ export default async function ResourcePage({ params, searchParams }: Props) {
               <div className="mt-2 space-y-2">
                 <Badge tone="success">{b.licenses.school}</Badge>
                 <div className="flex flex-wrap gap-2">
-                  <ButtonLink href={`/api/materials/${material.id}/file`} variant="secondary">
-                    <FileText aria-hidden className="size-4" />
+                  {material.textStatus === "indexed" ? (
+                    <ButtonLink href={`/library/${id}/read`} data-testid="read-online">
+                      <BookOpen aria-hidden className="size-4" />
+                      {b.reader.readOnline}
+                    </ButtonLink>
+                  ) : null}
+                  <ButtonLink href={`/api/materials/${material.id}/file`} variant="secondary" data-testid="download-school-copy">
+                    <Download aria-hidden className="size-4" />
                     {b.openSchoolCopy}
                   </ButtonLink>
                   {material.textStatus === "indexed" ? (

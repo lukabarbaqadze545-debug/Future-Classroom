@@ -223,3 +223,32 @@ test("career: research a university and add a portfolio item", async ({ browser 
   expect(errors).toEqual([]);
   await context.close();
 });
+
+test("library: read a built-in book on the site, search inside it, and still download it", async ({ browser }) => {
+  const student = await userPage(browser, "giorgi");
+  await student.page.goto("/library/lib-english-spanish-dictionary-1");
+  await expect(student.page.getByTestId("read-online")).toBeVisible();
+  await expect(student.page.getByTestId("download-school-copy")).toHaveAttribute("href", /\/api\/materials\/book-english-spanish-dictionary-1\/file/);
+  await student.page.getByTestId("read-online").click();
+  await expect(student.page).toHaveURL(/\/library\/lib-english-spanish-dictionary-1\/read/);
+  await expect(student.page.getByTestId("reader-text")).toContainText("LEARNING DICTIONARY");
+
+  // Contents: jump to the A1 vocabulary and see dictionary entries as cards.
+  await student.page.getByRole("navigation", { name: /contents|სარჩევი/i }).getByRole("link", { name: "A1 Vocabulary" }).click();
+  await expect(student.page.getByTestId("dictionary-entry").first()).toContainText("AFTERNOON");
+  await student.page.getByTestId("reader-next").click();
+  await expect(student.page.getByTestId("dictionary-entry").first()).toBeVisible();
+
+  // Search: the headword comes first and opens its page with the word highlighted.
+  await student.page.getByTestId("reader-search").fill("airport");
+  await student.page.getByTestId("reader-search").press("Enter");
+  const first = student.page.getByTestId("reader-results").locator("ul a").first();
+  await expect(first).toContainText(/airport/i);
+  await first.click();
+  await expect(student.page.locator("mark").first()).toContainText(/airport/i);
+
+  // Georgian books open too, in Georgian.
+  await student.page.goto("/library/lib-cpp-code-to-olympiad-1/read");
+  await expect(student.page.getByTestId("reader-text")).toContainText(/[Ⴀ-ჿ]/);
+  await student.context.close();
+});
