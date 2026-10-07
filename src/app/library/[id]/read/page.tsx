@@ -63,7 +63,7 @@ export default async function ReadPage({ params, searchParams }: Props) {
         href={`/library/${id}/read`}
         aria-current={original ? "page" : undefined}
         data-testid="view-original"
-        className={`rounded-lg px-3 py-1.5 ${original ? "bg-brand text-white" : "text-ink-muted hover:bg-muted"}`}
+        className={`rounded-lg px-3 py-1.5 ${original ? "bg-brand-solid text-white" : "text-ink-muted hover:bg-muted"}`}
       >
         {r.viewOriginal}
       </Link>
@@ -71,7 +71,7 @@ export default async function ReadPage({ params, searchParams }: Props) {
         href={`/library/${id}/read?view=text`}
         aria-current={original ? undefined : "page"}
         data-testid="view-text"
-        className={`rounded-lg px-3 py-1.5 ${original ? "text-ink-muted hover:bg-muted" : "bg-brand text-white"}`}
+        className={`rounded-lg px-3 py-1.5 ${original ? "text-ink-muted hover:bg-muted" : "bg-brand-solid text-white"}`}
       >
         {r.viewText}
       </Link>

@@ -38,7 +38,7 @@ function NameForm({ initial, onDone }: { initial: string; onDone: () => void }) 
         placeholder={dict.today.namePlaceholder}
         aria-label={dict.today.namePlaceholder}
         data-testid="today-name-input"
-        className="h-11 min-w-0 flex-1 rounded-xl border border-white/15 bg-white/[0.07] px-3.5 text-white backdrop-blur placeholder:text-white/50 focus:border-aurora-cyan/60 focus:bg-white/10 focus:outline-none"
+        className="h-11 min-w-0 flex-1 rounded-xl border border-white/15 bg-white/[0.07] px-3.5 text-white backdrop-blur placeholder:text-white/50 focus:border-glow-c/60 focus:bg-white/10 focus:outline-none"
       />
       <button type="submit" className="h-11 rounded-xl bg-white px-5 font-semibold text-night transition-transform hover:bg-white/90 active:scale-[0.97]" data-testid="today-name-save">
         {dict.today.nameSave}
@@ -63,9 +63,9 @@ function LevelRing({ xp }: { xp: number }) {
         <svg viewBox="0 0 120 120" aria-hidden className="size-full -rotate-90">
           <defs>
             <linearGradient id={gradient} x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0" stopColor="#60a5fa" />
-              <stop offset="0.55" stopColor="#8b7bff" />
-              <stop offset="1" stopColor="#22d3ee" />
+              <stop offset="0" stopColor="#ff8a93" />
+              <stop offset="0.55" stopColor="#f0414d" />
+              <stop offset="1" stopColor="#b3162a" />
             </linearGradient>
           </defs>
           <circle cx="60" cy="60" r={radius} fill="none" stroke="rgb(255 255 255 / 0.09)" strokeWidth="7" />
@@ -80,7 +80,7 @@ function LevelRing({ xp }: { xp: number }) {
             strokeDasharray={length}
             strokeDashoffset={target}
             className="fc-draw fc-ring-progress"
-            style={{ "--len": length, filter: "drop-shadow(0 0 7px rgb(96 165 250 / 0.55))" } as React.CSSProperties}
+            style={{ "--len": length, filter: "drop-shadow(0 0 8px rgb(229 36 47 / 0.6))" } as React.CSSProperties}
           />
         </svg>
         <div className="absolute inset-0 flex flex-col items-center justify-center">
@@ -103,7 +103,7 @@ function ActivityMap({ state, today }: { state: { days: string[]; xpByDay: Recor
   const { dict } = useI18n();
   const t = dict.today;
   const weeks = activityMap(state, today, WEEKS);
-  const levels = ["bg-white/[0.09] ring-1 ring-inset ring-white/[0.05]", "bg-aurora-blue/35", "bg-aurora-blue/65", "bg-aurora-blue", "bg-aurora-cyan shadow-[0_0_10px_rgb(34_211_238/0.55)]"];
+  const levels = ["bg-white/[0.09] ring-1 ring-inset ring-white/[0.05]", "bg-glow-a/30", "bg-glow-a/60", "bg-glow-a", "bg-glow-c shadow-[0_0_10px_rgb(255_107_117/0.6)]"];
   return (
     <div className="fc-rise mt-8" style={{ "--i": 5 } as React.CSSProperties} data-testid="activity-map">
       <div className="mb-3 flex max-w-[680px] items-center justify-between">
@@ -216,8 +216,8 @@ export function TodayHero() {
           <p className="fc-rise mt-5 flex max-w-md items-center gap-2.5 text-sm text-white/75" style={rise(4)}>
             {waiting ? (
               <span aria-hidden className="relative flex size-2.5 shrink-0">
-                <span className="fc-ping absolute inline-flex size-full rounded-full bg-aurora-cyan/70" />
-                <span className="relative inline-flex size-2.5 rounded-full bg-aurora-cyan" />
+                <span className="fc-ping absolute inline-flex size-full rounded-full bg-glow-c/70" />
+                <span className="relative inline-flex size-2.5 rounded-full bg-glow-c" />
               </span>
             ) : null}
             {status}

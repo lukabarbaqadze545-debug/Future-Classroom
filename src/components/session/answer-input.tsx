@@ -70,7 +70,7 @@ export function AnswerInput({
               )}
               data-testid="answer-option"
             >
-              <span className={cn("flex size-9 shrink-0 items-center justify-center rounded-xl text-base font-semibold uppercase", selected ? "bg-brand text-white" : "bg-muted text-ink-muted", correct && "bg-success text-white")}>
+              <span className={cn("flex size-9 shrink-0 items-center justify-center rounded-xl text-base font-semibold uppercase", selected ? "bg-brand-solid text-white" : "bg-muted text-ink-muted", correct && "bg-success text-white")}>
                 {correct ? <Check aria-hidden className="size-5" /> : option.id}
               </span>
               <span className="font-medium">{option.text}</span>

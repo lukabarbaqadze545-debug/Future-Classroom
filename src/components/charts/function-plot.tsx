@@ -67,7 +67,7 @@ export function FunctionPlot({
   return (
     <figure className={cn("rounded-xl border border-line bg-surface p-3", className)}>
       <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label={label} className="h-auto w-full">
-        <g stroke="#e2e5ea" strokeWidth={1}>
+        <g stroke="var(--color-line)" strokeWidth={1}>
           {xTicks.map((x) => (
             <line key={`gx${x}`} x1={sx(x)} x2={sx(x)} y1={pad} y2={H - pad} />
           ))}
@@ -75,9 +75,9 @@ export function FunctionPlot({
             <line key={`gy${y}`} x1={pad} x2={W - pad} y1={sy(y)} y2={sy(y)} />
           ))}
         </g>
-        {yMin <= 0 && yMax >= 0 ? <line x1={pad} x2={W - pad} y1={sy(0)} y2={sy(0)} stroke="#475467" strokeWidth={1.5} /> : null}
-        {xMin <= 0 && xMax >= 0 ? <line x1={sx(0)} x2={sx(0)} y1={pad} y2={H - pad} stroke="#475467" strokeWidth={1.5} /> : null}
-        <g fill="#5d6679" fontSize={large ? 16 : 13} fontFamily="inherit">
+        {yMin <= 0 && yMax >= 0 ? <line x1={pad} x2={W - pad} y1={sy(0)} y2={sy(0)} stroke="var(--color-ink-muted)" strokeWidth={1.5} /> : null}
+        {xMin <= 0 && xMax >= 0 ? <line x1={sx(0)} x2={sx(0)} y1={pad} y2={H - pad} stroke="var(--color-ink-muted)" strokeWidth={1.5} /> : null}
+        <g fill="var(--color-ink-subtle)" fontSize={large ? 16 : 13} fontFamily="inherit">
           {xTicks.map((x) => (
             <text key={`tx${x}`} x={sx(x)} y={H - pad + 18} textAnchor="middle">
               {x}
@@ -89,7 +89,7 @@ export function FunctionPlot({
             </text>
           ))}
         </g>
-        <path d={path} fill="none" stroke="#1d4ed8" strokeWidth={large ? 4 : 3} strokeLinejoin="round" strokeLinecap="round" />
+        <path d={path} fill="none" stroke="var(--color-brand)" strokeWidth={large ? 4 : 3} strokeLinejoin="round" strokeLinecap="round" />
       </svg>
       <figcaption className={cn("mt-2 text-center text-ink-muted", large ? "text-lg" : "text-sm")}>{label}</figcaption>
     </figure>

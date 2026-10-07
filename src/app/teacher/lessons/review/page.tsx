@@ -33,7 +33,7 @@ export default async function ReviewQueuePage({ searchParams }: { searchParams: 
             key={s ?? "all"}
             href={s ? `/teacher/lessons/review?status=${s}` : "/teacher/lessons/review"}
             aria-current={filter === s ? "page" : undefined}
-            className={cn("inline-flex h-10 items-center gap-2 rounded-full border px-4 text-sm font-medium", filter === s ? "border-brand bg-brand text-white" : "border-line bg-surface hover:border-brand/40")}
+            className={cn("inline-flex h-10 items-center gap-2 rounded-full border px-4 text-sm font-medium", filter === s ? "border-brand bg-brand-solid text-white" : "border-line bg-surface hover:border-brand/40")}
             data-testid="review-filter"
           >
             {s ? r.status[s] : r.all}

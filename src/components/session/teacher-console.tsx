@@ -78,7 +78,7 @@ export function TeacherConsole({ initial, joinUrl }: { initial: TeacherSessionVi
           <p className="mt-1 text-sm text-ink-muted">{fmt(c.joinAt, { url: joinUrl })}</p>
         </div>
         <div className="flex flex-wrap items-center gap-3">
-          <div className="rounded-xl bg-ink px-4 py-2 text-center text-white">
+          <div className="rounded-xl bg-night px-4 py-2 text-center text-white ring-1 ring-brand/30">
             <div className="text-[11px] tracking-wider text-white/70 uppercase">{c.code}</div>
             <div className="font-mono text-2xl font-bold tracking-widest" data-testid="join-code-display">
               {session.joinCode}
@@ -121,7 +121,7 @@ export function TeacherConsole({ initial, joinUrl }: { initial: TeacherSessionVi
               return (
                 <li key={a.id} className={cn("px-4 py-3", isCurrent && "bg-brand-soft/60")}>
                   <div className="flex items-start gap-3">
-                    <span className={cn("mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-lg text-xs font-semibold", isCurrent ? "bg-brand text-white" : a.state === "pending" ? "bg-muted text-ink-muted" : "bg-success-soft text-success")}>
+                    <span className={cn("mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-lg text-xs font-semibold", isCurrent ? "bg-brand-solid text-white" : a.state === "pending" ? "bg-muted text-ink-muted" : "bg-success-soft text-success")}>
                       {a.state === "closed" && !isCurrent ? <Check aria-hidden className="size-4" /> : index + 1}
                     </span>
                     <div className="min-w-0 flex-1">
@@ -224,7 +224,7 @@ export function TeacherConsole({ initial, joinUrl }: { initial: TeacherSessionVi
               <Users aria-hidden className="size-10 text-brand" />
               <h2 className="mt-4 text-2xl font-semibold">{session.status === "lobby" ? c.lobbyTitle : c.noCurrent}</h2>
               {session.status === "lobby" ? <p className="mt-1 text-ink-muted">{c.lobbyText}</p> : null}
-              <div className="mt-6 rounded-2xl bg-ink px-8 py-4 text-white">
+              <div className="mt-6 rounded-2xl bg-night px-8 py-4 text-white ring-1 ring-brand/30">
                 <div className="text-sm text-white/70">{fmt(c.joinAt, { url: joinUrl })}</div>
                 <div className="font-mono text-5xl font-bold tracking-widest">{session.joinCode}</div>
               </div>

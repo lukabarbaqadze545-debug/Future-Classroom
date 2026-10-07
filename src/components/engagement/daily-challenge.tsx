@@ -151,7 +151,7 @@ export function DailyChallenge({ challenge }: { challenge: PublicChallenge }) {
 
   return (
     <Card className="overflow-hidden" data-testid="daily-challenge" data-status={status}>
-      <div aria-hidden className="h-0.5 bg-linear-to-r from-aurora-blue via-aurora-violet to-aurora-cyan" />
+      <div aria-hidden className="h-0.5 bg-linear-to-r from-glow-a via-glow-b to-glow-c" />
       <div className="flex flex-wrap items-center gap-x-4 gap-y-2 border-b border-line px-5 py-4 sm:px-6">
         <div className="min-w-0">
           <h2 className="text-[15px] font-semibold text-ink">{fmt(t.title, { n: challenge.number })}</h2>
@@ -211,7 +211,7 @@ export function DailyChallenge({ challenge }: { challenge: PublicChallenge }) {
                         wrong && "border-line bg-muted/50 text-ink-subtle line-through",
                       )}
                     >
-                      <span className={cn("flex size-7 shrink-0 items-center justify-center rounded-lg font-mono text-xs font-semibold transition-colors", selected ? "bg-brand text-white" : "bg-muted text-ink-muted group-hover:bg-brand-soft")}>
+                      <span className={cn("flex size-7 shrink-0 items-center justify-center rounded-lg font-mono text-xs font-semibold transition-colors", selected ? "bg-brand-solid text-white" : "bg-muted text-ink-muted group-hover:bg-brand-soft")}>
                         {wrong ? <X aria-hidden className="size-3.5" /> : String.fromCharCode(65 + i)}
                       </span>
                       <span className="min-w-0 [overflow-wrap:anywhere]">{option.text}</span>
@@ -282,7 +282,7 @@ export function DailyChallenge({ challenge }: { challenge: PublicChallenge }) {
             <div className={cn("fc-rise flex items-start gap-4 rounded-2xl border p-4", status === "solved" ? "border-success/25 bg-success-soft/70" : "border-line bg-muted/60")}>
               <span className="relative flex size-11 shrink-0 items-center justify-center">
                 {status === "solved" ? <span aria-hidden className="fc-ping absolute inset-0 rounded-full bg-success/30" style={{ animationIterationCount: 2 }} /> : null}
-                <span className={cn("relative flex size-11 items-center justify-center rounded-full text-white", status === "solved" ? "bg-success" : "bg-ink-subtle")}>
+                <span className={cn("relative flex size-11 items-center justify-center rounded-full", status === "solved" ? "bg-success text-[#04140c]" : "bg-ink-subtle text-canvas")}>
                   {status === "solved" ? (
                     <svg viewBox="0 0 24 24" aria-hidden className="fc-check size-6 fill-none stroke-current" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M5 12.5l4.5 4.5L19 7.5" />

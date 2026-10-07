@@ -53,7 +53,7 @@ export function QuestsCard() {
           const done = p.done >= p.target;
           return (
             <li key={id} className="flex items-center gap-3.5 px-5 py-3.5" data-testid={`quest-${id}`} data-done={done}>
-              <span className={cn("flex size-7 shrink-0 items-center justify-center rounded-full border transition-all duration-500", done ? "border-brand bg-brand text-white" : "border-line-strong text-transparent")}>
+              <span className={cn("flex size-7 shrink-0 items-center justify-center rounded-full border transition-all duration-500", done ? "border-brand bg-brand-solid text-white" : "border-line-strong text-transparent")}>
                 <Check aria-hidden className="size-4" strokeWidth={3} />
               </span>
               <span className="min-w-0 flex-1">
@@ -61,7 +61,7 @@ export function QuestsCard() {
                 {p.target > 1 ? (
                   <span className="mt-2 flex items-center gap-2.5">
                     <span className="h-1 w-28 overflow-hidden rounded-full bg-muted">
-                      <span key={`${i}-${p.done}`} className="fc-grow block h-full rounded-full bg-brand" style={{ width: `${(p.done / p.target) * 100}%` }} />
+                      <span key={`${i}-${p.done}`} className="fc-grow block h-full rounded-full bg-brand-solid" style={{ width: `${(p.done / p.target) * 100}%` }} />
                     </span>
                     <span className="text-xs text-ink-muted tabular-nums">
                       {p.done}/{p.target}

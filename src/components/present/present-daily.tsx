@@ -66,7 +66,7 @@ export function PresentDaily({ challenge, answer, explanation, hints }: { challe
                         revealed && !right && "opacity-40",
                       )}
                     >
-                      <span className={cn("flex size-12 shrink-0 items-center justify-center rounded-2xl text-xl font-bold", right ? "bg-success text-white" : dark ? "bg-white/10" : "bg-muted")}>{String.fromCharCode(65 + i)}</span>
+                      <span className={cn("flex size-12 shrink-0 items-center justify-center rounded-2xl text-xl font-bold", right ? "bg-success text-[#04140c]" : dark ? "bg-white/10" : "bg-muted")}>{String.fromCharCode(65 + i)}</span>
                       <span className="min-w-0 wrap-break-word">{option.text}</span>
                     </li>
                   );

@@ -211,7 +211,7 @@ export function LearningAssistant({ initialMode = "explain", initialText = "", m
     `/teacher/assignments/new?${new URLSearchParams({ kind, title: title.slice(0, 150), instructions: instructions.slice(0, 3000) }).toString()}`;
 
   const cite = (n: number) => (
-    <a key={n} href={`#passage-${n}`} className="mx-0.5 inline-flex min-w-6 items-center justify-center rounded-md bg-brand-soft px-1.5 py-0.5 align-middle text-xs font-semibold text-brand-ink no-underline hover:bg-brand hover:text-white" aria-label={fmt(a.cite, { n })}>
+    <a key={n} href={`#passage-${n}`} className="mx-0.5 inline-flex min-w-6 items-center justify-center rounded-md bg-brand-soft px-1.5 py-0.5 align-middle text-xs font-semibold text-brand-ink no-underline hover:bg-brand-solid hover:text-white" aria-label={fmt(a.cite, { n })}>
       {n}
     </a>
   );

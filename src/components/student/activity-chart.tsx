@@ -9,7 +9,7 @@ export function ActivityChart({ days, label, locale }: { days: { date: string; c
       <div className="flex h-28 items-end gap-1.5" role="img" aria-label={`${label}: ${days.map((d) => d.count).join(", ")}`}>
         {days.map((d) => (
           <div key={d.date} className="flex h-full flex-1 flex-col items-center justify-end gap-1">
-            <div className={cn("w-full rounded-t-md", d.count ? "bg-brand" : "bg-muted")} style={{ height: `${Math.max(6, (d.count / max) * 100)}%` }} title={`${d.date}: ${d.count}`} />
+            <div className={cn("w-full rounded-t-md", d.count ? "bg-brand-solid" : "bg-muted")} style={{ height: `${Math.max(6, (d.count / max) * 100)}%` }} title={`${d.date}: ${d.count}`} />
             <span className="text-[10px] text-ink-subtle">{weekday.format(new Date(`${d.date}T12:00:00`))}</span>
           </div>
         ))}

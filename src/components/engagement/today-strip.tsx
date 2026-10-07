@@ -23,7 +23,7 @@ export function TodayStrip({ challengeNumber }: { challengeNumber: number }) {
       className="fc-spotlight fc-spotlight-dark group fc-rise relative isolate mb-6 flex flex-wrap items-center gap-x-4 gap-y-2 overflow-hidden rounded-2xl bg-night p-4 pr-4 text-white shadow-[var(--shadow-card)] ring-1 ring-white/10 transition-shadow hover:shadow-[var(--shadow-raised)]"
     >
       <Aurora />
-      <span className="relative flex size-10 shrink-0 items-center justify-center rounded-xl bg-white/10 text-aurora-cyan">
+      <span className="relative flex size-10 shrink-0 items-center justify-center rounded-xl bg-white/10 text-glow-c">
         <Activity aria-hidden className="size-5" strokeWidth={2} />
       </span>
       <span className="relative min-w-0 flex-1">

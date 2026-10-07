@@ -10,7 +10,7 @@ export type PresentTheme = "light" | "dark";
 // Presentation theme persisted per device (projectors differ); falls back to memory.
 const THEME_KEY = "fc:present-theme";
 const themeListeners = new Set<() => void>();
-let memoryTheme: PresentTheme = "light";
+let memoryTheme: PresentTheme = "dark";
 function readTheme(): PresentTheme {
   try {
     const saved = window.localStorage.getItem(THEME_KEY);
@@ -37,7 +37,7 @@ function subscribeTheme(listener: () => void) {
 /** Full-screen, high-contrast frame for the classroom display. */
 export function PresentShell({ children, controls, top, overlay }: { children: (theme: PresentTheme) => ReactNode; controls: (theme: PresentTheme) => ReactNode; top?: ReactNode; overlay?: ReactNode }) {
   const { dict } = useI18n();
-  const theme = useSyncExternalStore(subscribeTheme, readTheme, () => "light" as PresentTheme);
+  const theme = useSyncExternalStore(subscribeTheme, readTheme, () => "dark" as PresentTheme);
   const [fullscreen, setFullscreen] = useState(false);
   useEffect(() => {
     const onChange = () => setFullscreen(Boolean(document.fullscreenElement));
@@ -52,7 +52,7 @@ export function PresentShell({ children, controls, top, overlay }: { children: (
   const dark = theme === "dark";
   const iconBtn = cn("inline-flex size-14 items-center justify-center rounded-2xl", dark ? "text-white/80 hover:bg-white/10" : "text-ink-muted hover:bg-muted");
   return (
-    <div className={cn("flex min-h-screen flex-col", dark ? "bg-[#0b1020] text-white" : "bg-surface text-ink")} data-theme={theme}>
+    <div className={cn("flex min-h-screen flex-col", dark ? "bg-black text-white" : "theme-light bg-surface text-ink")} data-theme={theme}>
       <div className="flex items-center justify-between gap-4 px-6 pt-5 lg:px-10">
         <div className="min-w-0 flex-1">{top}</div>
         <div className="flex items-center gap-1">
@@ -67,7 +67,7 @@ export function PresentShell({ children, controls, top, overlay }: { children: (
       <main id="main" className="flex flex-1 flex-col px-6 py-6 lg:px-12">
         {children(theme)}
       </main>
-      <div className={cn("sticky bottom-0 border-t px-4 py-4 lg:px-10", dark ? "border-white/10 bg-[#0b1020]/95" : "border-line bg-surface/95")}>
+      <div className={cn("sticky bottom-0 border-t px-4 py-4 lg:px-10", dark ? "border-white/10 bg-black/95" : "border-line bg-surface/95")}>
         <div className="flex flex-wrap items-center justify-center gap-2 xl:gap-3">{controls(theme)}</div>
       </div>
       {overlay}
@@ -80,7 +80,7 @@ export function PresentButton({ children, onClick, variant = "default", disabled
   const dark = theme === "dark";
   const cls = cn(
     "inline-flex h-16 min-w-16 items-center justify-center gap-2 rounded-2xl px-4 text-lg font-semibold transition-colors disabled:opacity-40 xl:gap-3 xl:px-6",
-    variant === "primary" && "bg-brand text-white hover:bg-brand-hover",
+    variant === "primary" && "bg-brand-solid text-white hover:bg-brand-hover",
     variant === "danger" && (dark ? "bg-white/5 text-red-300 hover:bg-red-500/20" : "bg-danger-soft text-danger hover:bg-danger/15"),
     variant === "default" && (dark ? "bg-white/10 text-white hover:bg-white/15" : "bg-muted text-ink hover:bg-line"),
   );

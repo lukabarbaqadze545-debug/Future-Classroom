@@ -69,8 +69,8 @@ export function CodeEditor({
   };
 
   return (
-    <div className={cn("flex overflow-hidden rounded-xl border border-line-strong bg-[#0f172a] font-mono text-[14px] leading-6 text-slate-100", className)}>
-      <div ref={gutterRef} aria-hidden className="shrink-0 overflow-hidden bg-[#0b1224] px-2 py-3 text-right text-slate-500 select-none">
+    <div className={cn("flex overflow-hidden rounded-xl border border-line-strong bg-[#0a0a0d] font-mono text-[14px] leading-6 text-slate-100", className)}>
+      <div ref={gutterRef} aria-hidden className="shrink-0 overflow-hidden bg-[#060608] px-2 py-3 text-right text-slate-500 select-none">
         {Array.from({ length: lines }, (_, i) => (
           <div key={i}>{i + 1}</div>
         ))}
@@ -92,7 +92,7 @@ export function CodeEditor({
         autoCorrect="off"
         rows={lines}
         wrap="off"
-        className="min-w-0 flex-1 resize-y bg-transparent px-3 py-3 text-slate-100 caret-sky-300 outline-none placeholder:text-slate-500 focus-visible:ring-2 focus-visible:ring-sky-400/60"
+        className="min-w-0 flex-1 resize-y bg-transparent px-3 py-3 text-slate-100 caret-red-300 outline-none placeholder:text-slate-500 focus-visible:ring-2 focus-visible:ring-red-400/60"
         data-testid="code-editor"
       />
     </div>
@@ -102,7 +102,7 @@ export function CodeEditor({
 /** Read-only code block for statements and "predict the output" problems. */
 export function CodeBlock({ code, label }: { code: string; label?: string }) {
   return (
-    <pre aria-label={label} className="overflow-x-auto rounded-xl bg-[#0f172a] p-4 font-mono text-[14px] leading-6 text-slate-100">
+    <pre aria-label={label} className="overflow-x-auto rounded-xl bg-[#0a0a0d] p-4 font-mono text-[14px] leading-6 text-slate-100">
       <code>{code.replace(/\n$/, "")}</code>
     </pre>
   );

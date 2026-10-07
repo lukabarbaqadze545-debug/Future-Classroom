@@ -64,11 +64,11 @@ export default async function TeacherDashboard() {
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <Link href="/present/daily" className="fc-rise fc-spotlight fc-spotlight-dark group relative isolate overflow-hidden rounded-2xl bg-night p-6 text-white shadow-[var(--shadow-card)] ring-1 ring-white/10 transition-shadow hover:shadow-[var(--shadow-raised)]" data-testid="dashboard-warm-up">
           <Aurora />
-          <Target aria-hidden className="relative size-7 text-aurora-cyan" />
+          <Target aria-hidden className="relative size-7 text-glow-c" />
           <p className="relative mt-4 text-lg font-semibold">{d.warmUp}</p>
           <p className="relative mt-1 text-sm text-white/70">{d.warmUpText}</p>
         </Link>
-        <Link href="/teacher/sessions/new" className="fc-rise fc-lift group rounded-2xl border border-brand/20 bg-brand p-6 text-white shadow-[var(--shadow-card)] transition-colors hover:bg-brand-hover" style={{ "--i": 1 } as React.CSSProperties} data-testid="dashboard-start-session">
+        <Link href="/teacher/sessions/new" className="fc-rise fc-lift group rounded-2xl border border-brand/30 bg-linear-to-br from-brand-solid to-[#8f1228] p-6 text-white shadow-[0_18px_44px_-20px_rgb(229_36_47/0.8)] transition-shadow hover:shadow-[0_24px_54px_-18px_rgb(240_65_77/0.9)]" style={{ "--i": 1 } as React.CSSProperties} data-testid="dashboard-start-session">
           <Radio aria-hidden className="size-7" />
           <p className="mt-4 text-lg font-semibold">{d.startSession}</p>
           <p className="mt-1 text-sm text-white/80">{d.startSessionText}</p>

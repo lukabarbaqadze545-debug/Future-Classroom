@@ -60,7 +60,7 @@ function ToastView({ toast, onClose }: { toast: Toast; onClose: () => void }) {
   }
   return (
     <div className="fc-toast pointer-events-auto flex w-full max-w-sm items-center gap-3 rounded-2xl border border-white/10 bg-night/95 p-3 pr-2 text-white shadow-[0_18px_50px_-12px_rgb(0_0_0/0.55)] backdrop-blur-md">
-      <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-white/10 text-aurora-cyan">{icon}</span>
+      <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-white/10 text-glow-c">{icon}</span>
       <span className="min-w-0 flex-1">
         <span className="block text-[15px] font-semibold">{title}</span>
         {text ? <span className="block text-sm text-white/70">{text}</span> : null}

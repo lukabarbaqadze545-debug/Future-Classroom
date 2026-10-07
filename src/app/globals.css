@@ -1,25 +1,75 @@
 @import "tailwindcss";
 
 /*
- * Future Classroom design tokens.
- * Calm, high-contrast and readable on classroom monitors and projectors.
+ * Future Classroom design tokens: black and premium, with one red.
+ * Near-black surfaces separated by hairlines, light text, a single red for
+ * everything that asks to be pressed. `.theme-light` (and printing) switches the
+ * same tokens back to a white page, for the classroom projector's light mode
+ * and for paper.
  */
 @theme {
+  --color-canvas: #060607;
+  --color-surface: #0e0e11;
+  --color-muted: #17171b;
+  --color-line: #25252b;
+  --color-line-strong: #3a3a43;
+
+  --color-ink: #f4f4f5;
+  --color-ink-muted: #a6a6b0;
+  --color-ink-subtle: #8c8c97;
+
+  /* The red: --color-brand for text, borders and strokes; --color-brand-solid behind white text (buttons, bars). */
+  --color-brand: #f0414d;
+  --color-brand-solid: #dc2430;
+  --color-brand-hover: #e8323e;
+  --color-brand-soft: #2a1013;
+  --color-brand-ink: #ff8f97;
+
+  --color-success: #3dd68c;
+  --color-success-soft: #0e2a1f;
+  --color-warn: #f6ad3b;
+  --color-warn-soft: #2a1f0a;
+  --color-danger: #ff7a80;
+  --color-danger-soft: #2e1216;
+  --color-ai: #b9a3ff;
+  --color-ai-soft: #1c1633;
+
+  /* Laboratory accents — each room has its own colour, same components. */
+  --color-lab-programming: #4f46e5;
+  --color-lab-stem: #0e7490;
+  --color-lab-research: #b45309;
+  --color-lab-critical: #be123c;
+  --color-lab-library: #15803d;
+  --color-lab-career: #0369a1;
+
+  /* The moving panels: black with three slow red lights. */
+  --color-night: #09090b;
+  --color-night-soft: #121216;
+  --color-glow-a: #e5242f;
+  --color-glow-b: #9a1230;
+  --color-glow-c: #ff6b75;
+
+  --font-sans: "Inter Variable", "Noto Sans Georgian Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  --radius-card: 14px;
+  --shadow-card: 0 0 0 1px rgb(255 255 255 / 0.015), 0 10px 28px -14px rgb(0 0 0 / 0.7);
+  --shadow-raised: 0 26px 64px -22px rgb(0 0 0 / 0.85), 0 0 0 1px rgb(255 255 255 / 0.05);
+}
+
+/* The white page: the original tokens, for the projector's light mode and for paper. */
+.theme-light {
   --color-canvas: #f5f6f8;
   --color-surface: #ffffff;
   --color-muted: #f0f2f5;
   --color-line: #e2e5ea;
   --color-line-strong: #c9cfd8;
-
   --color-ink: #101828;
   --color-ink-muted: #475467;
   --color-ink-subtle: #5d6679;
-
-  --color-brand: #1d4ed8;
-  --color-brand-hover: #1a44bd;
-  --color-brand-soft: #eaf0fd;
-  --color-brand-ink: #173a9e;
-
+  --color-brand: #c8202b;
+  --color-brand-hover: #b01c26;
+  --color-brand-soft: #fdecee;
+  --color-brand-ink: #9b1620;
   --color-success: #067647;
   --color-success-soft: #eaf8f0;
   --color-warn: #a44a06;
@@ -27,34 +77,40 @@
   --color-danger: #b42318;
   --color-danger-soft: #fdf0ef;
   --color-ai: #5b3fc4;
-
-  /* Laboratory accents — each room has its own colour, same components. */
-  --color-lab-programming: #4338ca;
-  --color-lab-stem: #0e7490;
-  --color-lab-research: #9a3412;
-  --color-lab-critical: #be123c;
-  --color-lab-library: #15803d;
-  --color-lab-career: #0369a1;
   --color-ai-soft: #f2effd;
-
-  /* The dark, moving surfaces (hero panels): deep blue-black with a blue, violet and cyan glow. */
-  --color-night: #070c1b;
-  --color-night-soft: #0d1530;
-  --color-aurora-blue: #3b82f6;
-  --color-aurora-violet: #7c5cff;
-  --color-aurora-cyan: #22d3ee;
-
-  --font-sans: "Inter Variable", "Noto Sans Georgian Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
-
-  --radius-card: 14px;
   --shadow-card: 0 1px 2px rgb(16 24 40 / 0.05), 0 1px 3px rgb(16 24 40 / 0.04);
   --shadow-raised: 0 4px 12px rgb(16 24 40 / 0.08), 0 2px 4px rgb(16 24 40 / 0.04);
+  color-scheme: light;
+}
+@media print {
+  :root {
+    --color-canvas: #ffffff;
+    --color-surface: #ffffff;
+    --color-muted: #f0f2f5;
+    --color-line: #d5d9e0;
+    --color-line-strong: #b8bec9;
+    --color-ink: #101828;
+    --color-ink-muted: #475467;
+    --color-ink-subtle: #5d6679;
+    --color-brand: #c8202b;
+    --color-brand-soft: #fdecee;
+    --color-brand-ink: #9b1620;
+    --color-success: #067647;
+    --color-success-soft: #eaf8f0;
+    --color-warn: #a44a06;
+    --color-warn-soft: #fff6e5;
+    --color-danger: #b42318;
+    --color-danger-soft: #fdf0ef;
+    color-scheme: light;
+  }
 }
 
 @layer base {
   html {
     -webkit-text-size-adjust: 100%;
     text-rendering: optimizeLegibility;
+    color-scheme: dark;
+    background: var(--color-canvas);
   }
 
   /* Browsers give fieldsets min-width: min-content, which lets a wide table
@@ -64,7 +120,10 @@
   }
 
   body {
-    background: var(--color-canvas);
+    background:
+      radial-gradient(1100px 520px at 50% -140px, rgb(229 36 47 / 0.13), transparent 70%),
+      var(--color-canvas);
+    background-repeat: no-repeat;
     color: var(--color-ink);
     font-family: var(--font-sans);
     font-size: 16px;
@@ -79,13 +138,13 @@
   }
 
   :focus-visible {
-    outline: 3px solid color-mix(in srgb, var(--color-brand) 55%, transparent);
+    outline: 3px solid color-mix(in srgb, var(--color-brand) 60%, transparent);
     outline-offset: 2px;
     border-radius: 6px;
   }
 
   ::selection {
-    background: color-mix(in srgb, var(--color-brand) 22%, transparent);
+    background: color-mix(in srgb, var(--color-brand) 38%, transparent);
   }
 
   h1,
@@ -299,28 +358,28 @@ dialog::backdrop {
   width: 62%;
   left: -14%;
   top: -52%;
-  background: radial-gradient(circle at center, rgb(59 130 246 / 0.6), transparent 64%);
+  background: radial-gradient(circle at center, rgb(229 36 47 / 0.55), transparent 64%);
   animation: fc-drift-a 24s ease-in-out infinite alternate;
 }
 .fc-aurora > i:nth-child(2) {
   width: 54%;
   right: -12%;
   top: -34%;
-  background: radial-gradient(circle at center, rgb(124 92 255 / 0.5), transparent 64%);
+  background: radial-gradient(circle at center, rgb(154 18 48 / 0.6), transparent 64%);
   animation: fc-drift-b 31s ease-in-out infinite alternate;
 }
 .fc-aurora > i:nth-child(3) {
   width: 46%;
   left: 28%;
   bottom: -64%;
-  background: radial-gradient(circle at center, rgb(34 211 238 / 0.34), transparent 66%);
+  background: radial-gradient(circle at center, rgb(255 107 117 / 0.26), transparent 66%);
   animation: fc-drift-c 37s ease-in-out infinite alternate;
 }
 .fc-aurora::after {
   content: "";
   position: absolute;
   inset: 0;
-  background-image: linear-gradient(rgb(255 255 255 / 0.045) 1px, transparent 1px), linear-gradient(90deg, rgb(255 255 255 / 0.045) 1px, transparent 1px);
+  background-image: linear-gradient(rgb(255 255 255 / 0.04) 1px, transparent 1px), linear-gradient(90deg, rgb(255 255 255 / 0.04) 1px, transparent 1px);
   background-size: 46px 46px;
   mask-image: radial-gradient(ellipse 85% 75% at 50% 35%, #000 20%, transparent 78%);
 }
@@ -355,7 +414,7 @@ dialog::backdrop {
   }
 }
 .fc-gradient-text {
-  background: linear-gradient(100deg, #ffffff 0%, #b6cdff 30%, #7ee7f8 55%, #b6cdff 78%, #ffffff 100%);
+  background: linear-gradient(100deg, #ffffff 0%, #ffc2c7 30%, #ff6b75 55%, #ffc2c7 78%, #ffffff 100%);
   background-size: 200% 100%;
   -webkit-background-clip: text;
   background-clip: text;
@@ -380,11 +439,11 @@ dialog::backdrop {
 }
 .fc-spotlight::before {
   z-index: -1;
-  background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 50%), rgb(59 130 246 / 0.1), transparent 45%);
+  background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 50%), rgb(229 36 47 / 0.12), transparent 45%);
 }
 .fc-spotlight::after {
   padding: 1px;
-  background: radial-gradient(240px circle at var(--mx, 50%) var(--my, 50%), rgb(59 130 246 / 0.6), transparent 62%);
+  background: radial-gradient(240px circle at var(--mx, 50%) var(--my, 50%), rgb(240 65 77 / 0.7), transparent 62%);
   -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
   -webkit-mask-composite: xor;
   mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
@@ -396,10 +455,10 @@ dialog::backdrop {
   opacity: 1;
 }
 .fc-spotlight-dark::before {
-  background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 50%), rgb(124 156 255 / 0.16), transparent 45%);
+  background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 50%), rgb(255 107 117 / 0.16), transparent 45%);
 }
 .fc-spotlight-dark::after {
-  background: radial-gradient(240px circle at var(--mx, 50%) var(--my, 50%), rgb(150 180 255 / 0.7), transparent 62%);
+  background: radial-gradient(240px circle at var(--mx, 50%) var(--my, 50%), rgb(255 140 148 / 0.75), transparent 62%);
 }
 
 .fc-lift {
@@ -509,7 +568,7 @@ dialog::backdrop {
   height: 2px;
   z-index: 60;
   pointer-events: none;
-  background: linear-gradient(90deg, transparent 0%, #22d3ee 35%, #3b82f6 65%, transparent 100%);
+  background: linear-gradient(90deg, transparent 0%, #ff6b75 35%, #e5242f 65%, transparent 100%);
   animation: fc-sheen 1100ms cubic-bezier(0.3, 0.7, 0.2, 1) forwards;
 }
 
@@ -521,6 +580,7 @@ dialog::backdrop {
   height: 2px;
   border-radius: 2px;
   background: var(--color-brand);
+  box-shadow: 0 0 10px rgb(240 65 77 / 0.7);
   transition: translate 420ms cubic-bezier(0.3, 0.8, 0.2, 1), width 420ms cubic-bezier(0.3, 0.8, 0.2, 1), opacity 200ms;
   pointer-events: none;
 }

@@ -31,7 +31,7 @@ export function BadgesCard() {
               data-earned={has}
               className={cn("fc-spotlight fc-lift flex items-start gap-3.5 rounded-2xl border p-3.5", has ? "border-brand/25 bg-brand-soft/40" : "border-line bg-surface")}
             >
-              <span className={cn("flex size-11 shrink-0 items-center justify-center rounded-xl transition-colors", has ? "bg-linear-to-br from-brand to-aurora-violet text-white shadow-sm" : "bg-muted text-ink-subtle")}>
+              <span className={cn("flex size-11 shrink-0 items-center justify-center rounded-xl transition-colors", has ? "bg-linear-to-br from-brand to-glow-b text-white shadow-sm" : "bg-muted text-ink-subtle")}>
                 <Icon aria-hidden className="size-5" strokeWidth={1.75} />
               </span>
               <span className="min-w-0 flex-1">

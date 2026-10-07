@@ -41,13 +41,13 @@ export default async function HomePage() {
         {/* Hero */}
         <section className="relative isolate overflow-hidden rounded-[32px] bg-night text-white shadow-[var(--shadow-raised)] ring-1 ring-white/10">
           <Aurora />
-          <div className="relative grid gap-10 px-6 py-10 sm:px-12 sm:py-14 lg:grid-cols-[1.4fr_1fr] lg:items-center lg:gap-12">
+          <div className="relative grid gap-10 px-5 py-8 sm:px-12 sm:py-14 lg:grid-cols-[1.4fr_1fr] lg:items-center lg:gap-12">
             <div>
               <p className="fc-rise inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.07] px-3.5 py-1.5 text-sm font-medium text-white/80 backdrop-blur">
-                <MonitorSmartphone aria-hidden className="size-4 text-aurora-cyan" />
+                <MonitorSmartphone aria-hidden className="size-4 text-glow-c" />
                 {l.eyebrow}
               </p>
-              <h1 className="mt-5 text-3xl leading-[1.15] font-semibold tracking-tight sm:text-[40px]">
+              <h1 className="mt-5 text-[27px] leading-[1.18] font-semibold tracking-tight sm:text-[40px]">
                 {words.map((word, i) => (
                   <span key={`${word}-${i}`} className="fc-rise inline-block" style={rise(i + 1)}>
                     {word}
@@ -55,7 +55,7 @@ export default async function HomePage() {
                   </span>
                 ))}
               </h1>
-              <p className="fc-rise mt-5 max-w-2xl text-base text-white/70 sm:text-[17px]" style={rise(words.length + 2)}>
+              <p className="fc-rise mt-4 max-w-2xl text-[15px] text-white/70 sm:mt-5 sm:text-[17px]" style={rise(words.length + 2)}>
                 {l.lead}
               </p>
               {openAccess ? (
@@ -86,10 +86,10 @@ export default async function HomePage() {
               className="fc-rise fc-spotlight fc-spotlight-dark group relative block rounded-3xl lg:mt-14 lg:self-start border border-white/12 bg-white/[0.06] p-6 backdrop-blur-md transition-colors hover:bg-white/[0.09] sm:p-7"
               style={rise(words.length + 4)}
             >
-              <span className="flex items-center gap-2.5 text-xs font-semibold tracking-[0.14em] text-aurora-cyan uppercase">
+              <span className="flex items-center gap-2.5 text-xs font-semibold tracking-[0.14em] text-glow-c uppercase">
                 <span aria-hidden className="relative flex size-2">
-                  <span className="fc-ping absolute inline-flex size-full rounded-full bg-aurora-cyan/70" />
-                  <span className="relative inline-flex size-2 rounded-full bg-aurora-cyan" />
+                  <span className="fc-ping absolute inline-flex size-full rounded-full bg-glow-c/70" />
+                  <span className="relative inline-flex size-2 rounded-full bg-glow-c" />
                 </span>
                 {fmt(dict.today.challenge.title, { n: challenge.number })}
               </span>
