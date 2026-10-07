@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Flame } from "lucide-react";
+import { Activity } from "lucide-react";
 import { requirePageUser } from "@/lib/auth/session";
 import { getDictionary, pageTitle } from "@/lib/i18n/server";
 import { fmt, fmtCount, relativeTime } from "@/lib/i18n/config";
@@ -44,7 +44,7 @@ export default async function ProgressPage() {
               label={p.streak}
               value={
                 <span className="inline-flex items-center gap-1.5">
-                  <Flame aria-hidden className="size-6 text-warn" />
+                  <Activity aria-hidden className="size-6 text-brand" />
                   {progress.streakDays}
                 </span>
               }

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useSyncExternalStore } from "react";
-import { ArrowRight, CalendarDays, Check, Lightbulb, Share2, Target, X } from "lucide-react";
+import { ArrowRight, Lightbulb, Share2, X } from "lucide-react";
 import { useI18n } from "@/lib/i18n/client";
 import { fmt } from "@/lib/i18n/config";
 import { ClientApiError, api, errorMessage } from "@/lib/client/api";
@@ -101,9 +101,34 @@ export function DailyChallenge({ challenge }: { challenge: PublicChallenge }) {
     }
   };
 
+  // From the keyboard: A–D (or 1–4) choose, Enter checks.
+  const open = ready && status === "open" && !busy && !stale;
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.metaKey || event.ctrlKey || event.altKey) return;
+      if ((event.target as Element | null)?.closest("input, textarea, select, [contenteditable]")) return;
+      if (event.key === "Enter" && picked !== null) {
+        event.preventDefault();
+        void check();
+        return;
+      }
+      if (challenge.type !== "choice") return;
+      const index = /^[a-d1-4]$/i.test(event.key) ? (/\d/.test(event.key) ? Number(event.key) - 1 : event.key.toLowerCase().charCodeAt(0) - 97) : -1;
+      const option = challenge.options[index];
+      if (option && !wrongIds.includes(option.id)) setPicked(option.id);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  });
+
   const share = async () => {
-    const squares = Array.from({ length: Math.max(1, attempts) }, (_, i) => (status === "solved" && i === attempts - 1 ? "🟩" : "🟥")).join("");
-    const message = [fmt(t.shareLine, { app: dict.common.appName, n: challenge.number }), `${squares} · 🔥 ${streak}`, `${window.location.origin}/today`].join("\n");
+    const message = [
+      fmt(t.shareLine, { app: dict.common.appName, n: challenge.number }),
+      status === "solved" ? fmt(t.shareSolved, { n: attempts, total: challenge.tries }) : t.shareMissed,
+      fmt(t.shareStreak, { n: streak }),
+      `${window.location.origin}/today`,
+    ].join("\n");
     try {
       if (typeof navigator.share === "function") {
         await navigator.share({ text: message });
@@ -122,36 +147,36 @@ export function DailyChallenge({ challenge }: { challenge: PublicChallenge }) {
   // A question may carry a small program after a blank line: show it as code.
   const [question, ...codeLines] = challenge.prompt.split("\n\n");
   const code = codeLines.join("\n\n");
+  const rise = (i: number) => ({ "--i": i }) as React.CSSProperties;
 
   return (
     <Card className="overflow-hidden" data-testid="daily-challenge" data-status={status}>
-      <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 border-b border-line bg-linear-to-r from-spark-soft to-surface px-5 py-3.5">
-        <span className="flex size-9 items-center justify-center rounded-xl bg-spark text-white shadow-sm">
-          <Target aria-hidden className="size-5" />
-        </span>
+      <div aria-hidden className="h-0.5 bg-linear-to-r from-aurora-blue via-aurora-violet to-aurora-cyan" />
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-2 border-b border-line px-5 py-4 sm:px-6">
         <div className="min-w-0">
-          <h2 className="font-semibold text-ink">{fmt(t.title, { n: challenge.number })}</h2>
-          <p className="flex flex-wrap items-center gap-x-1.5 text-xs text-ink-muted">
-            <CalendarDays aria-hidden className="size-3.5" />
-            <span>{dict.today.weekdays[challenge.weekday - 1]}</span>
-            <span aria-hidden>·</span>
-            <span className="font-medium text-spark">{dict.today.themes[challenge.theme]}</span>
-            <span aria-hidden>·</span>
-            <span>{subject}</span>
+          <h2 className="text-[15px] font-semibold text-ink">{fmt(t.title, { n: challenge.number })}</h2>
+          <p className="mt-0.5 text-xs text-ink-muted">
+            {dict.today.weekdays[challenge.weekday - 1]} · {dict.today.themes[challenge.theme]} · {subject}
           </p>
         </div>
         <ol className="ml-auto flex items-center gap-1.5" aria-label={fmt(t.tryOf, { n: Math.min(attempts + (done ? 0 : 1), challenge.tries), total: challenge.tries })}>
           {Array.from({ length: challenge.tries }, (_, i) => (
-            <li key={i} className={cn("size-3 rounded-full border-2 transition-colors", i < attempts ? (done && status === "solved" && i === attempts - 1 ? "border-success bg-success" : "border-danger/70 bg-danger/70") : "border-line-strong")} />
+            <li
+              key={i}
+              className={cn(
+                "h-1.5 w-7 rounded-full transition-colors duration-500",
+                i < attempts ? (done && status === "solved" && i === attempts - 1 ? "bg-success" : "bg-danger/60") : i === attempts && !done ? "bg-brand/40" : "bg-line-strong/70",
+              )}
+            />
           ))}
         </ol>
       </div>
 
       <div className="p-5 sm:p-6">
-        <div id="daily-prompt" data-testid="challenge-prompt">
+        <div id="daily-prompt" data-testid="challenge-prompt" className="fc-rise">
           <p className="text-xl leading-snug font-semibold whitespace-pre-line text-ink sm:text-2xl">{question}</p>
           {code ? (
-            <pre className="mt-3 overflow-x-auto rounded-2xl bg-ink px-4 py-3 font-mono text-sm leading-relaxed text-white sm:text-[15px]" data-testid="challenge-code">
+            <pre className="mt-3 overflow-x-auto rounded-2xl bg-night px-4 py-3.5 font-mono text-sm leading-relaxed text-white/95 ring-1 ring-white/10 sm:text-[15px]" data-testid="challenge-code">
               {code}
             </pre>
           ) : null}
@@ -179,13 +204,16 @@ export function DailyChallenge({ challenge }: { challenge: PublicChallenge }) {
                       disabled={wrong || busy}
                       data-testid={`option-${option.id}`}
                       onClick={() => setPicked(option.id)}
+                      style={rise(i + 1)}
                       className={cn(
-                        "flex min-h-14 items-center gap-3 rounded-2xl border-2 px-4 py-3 text-left text-[15px] transition-all sm:text-base",
-                        selected ? "border-brand bg-brand-soft shadow-sm" : "border-line bg-surface hover:border-brand/40 hover:bg-brand-soft/30",
-                        wrong && "border-danger/30 bg-danger-soft/50 text-ink-subtle line-through",
+                        "fc-rise group flex min-h-14 items-center gap-3.5 rounded-2xl border bg-surface px-4 py-3 text-left text-[15px] transition-[border-color,background-color,box-shadow,translate] duration-200 sm:text-base",
+                        selected ? "border-brand bg-brand-soft/60 shadow-[0_0_0_3px_color-mix(in_srgb,var(--color-brand)_14%,transparent)]" : "border-line hover:translate-x-0.5 hover:border-brand/40 hover:bg-muted/50",
+                        wrong && "border-line bg-muted/50 text-ink-subtle line-through",
                       )}
                     >
-                      <span className={cn("flex size-8 shrink-0 items-center justify-center rounded-lg text-sm font-semibold", selected ? "bg-brand text-white" : "bg-muted text-ink-muted")}>{wrong ? <X aria-hidden className="size-4" /> : String.fromCharCode(65 + i)}</span>
+                      <span className={cn("flex size-7 shrink-0 items-center justify-center rounded-lg font-mono text-xs font-semibold transition-colors", selected ? "bg-brand text-white" : "bg-muted text-ink-muted group-hover:bg-brand-soft")}>
+                        {wrong ? <X aria-hidden className="size-3.5" /> : String.fromCharCode(65 + i)}
+                      </span>
                       <span className="min-w-0 [overflow-wrap:anywhere]">{option.text}</span>
                     </button>
                   );
@@ -212,19 +240,20 @@ export function DailyChallenge({ challenge }: { challenge: PublicChallenge }) {
                   autoCapitalize="off"
                   spellCheck={false}
                   data-testid="challenge-input"
-                  className="h-14 w-full rounded-2xl border-2 border-line bg-surface px-4 text-lg focus:border-brand focus:outline-none"
+                  className="h-14 w-full rounded-2xl border border-line-strong bg-surface px-4 text-lg transition-shadow focus:border-brand focus:shadow-[0_0_0_3px_color-mix(in_srgb,var(--color-brand)_14%,transparent)] focus:outline-none"
                 />
               </form>
             )}
 
-            <div className="mt-5 flex flex-wrap items-center gap-3">
-              <Button size="lg" onClick={() => void check()} disabled={!canCheck} data-testid="challenge-check">
+            <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2">
+              <Button size="lg" onClick={() => void check()} disabled={!canCheck} data-testid="challenge-check" className="active:scale-[0.97]">
                 {busy ? t.checking : t.check}
                 {!busy ? <ArrowRight aria-hidden className="size-4" /> : null}
               </Button>
               <span className="text-sm text-ink-muted tabular-nums" data-testid="challenge-try">
                 {fmt(t.tryOf, { n: Math.min(attempts + 1, challenge.tries), total: challenge.tries })}
               </span>
+              {challenge.type === "choice" ? <span className="hidden text-xs text-ink-subtle md:inline">{t.keyboardHint}</span> : null}
             </div>
           </div>
         ) : null}
@@ -236,12 +265,12 @@ export function DailyChallenge({ challenge }: { challenge: PublicChallenge }) {
             </p>
           ) : null}
           {!done && feedback?.kind === "wrong" ? (
-            <div className="fc-fade-in mt-4 rounded-2xl border border-warn/25 bg-warn-soft px-4 py-3" data-testid="challenge-wrong">
-              <p className="font-semibold text-warn">{t.wrong}</p>
-              <p className="mt-1 flex gap-2 text-sm text-ink">
-                <Lightbulb aria-hidden className="mt-0.5 size-4 shrink-0 text-warn" />
+            <div className="fc-rise mt-4 rounded-2xl border border-line bg-muted/50 px-4 py-3.5" data-testid="challenge-wrong">
+              <p className="font-semibold text-ink">{t.wrong}</p>
+              <p className="mt-1.5 flex gap-2 text-sm text-ink-muted">
+                <Lightbulb aria-hidden className="mt-0.5 size-4 shrink-0 text-brand" />
                 <span>
-                  <span className="font-medium">{t.hint}:</span> {feedback.hint ?? t.noHint}
+                  <span className="font-medium text-ink">{t.hint}:</span> {feedback.hint ?? t.noHint}
                 </span>
               </p>
             </div>
@@ -249,10 +278,19 @@ export function DailyChallenge({ challenge }: { challenge: PublicChallenge }) {
         </div>
 
         {done ? (
-          <div className="fc-fade-in mt-5 space-y-4" data-testid="challenge-result">
-            <div className={cn("flex items-start gap-3 rounded-2xl p-4", status === "solved" ? "bg-success-soft" : "bg-muted")}>
-              <span className={cn("fc-pop flex size-10 shrink-0 items-center justify-center rounded-full text-white", status === "solved" ? "bg-success" : "bg-ink-subtle")}>
-                {status === "solved" ? <Check aria-hidden className="size-6" strokeWidth={3} /> : <Target aria-hidden className="size-5" />}
+          <div className="mt-5 space-y-4" data-testid="challenge-result">
+            <div className={cn("fc-rise flex items-start gap-4 rounded-2xl border p-4", status === "solved" ? "border-success/25 bg-success-soft/70" : "border-line bg-muted/60")}>
+              <span className="relative flex size-11 shrink-0 items-center justify-center">
+                {status === "solved" ? <span aria-hidden className="fc-ping absolute inset-0 rounded-full bg-success/30" style={{ animationIterationCount: 2 }} /> : null}
+                <span className={cn("relative flex size-11 items-center justify-center rounded-full text-white", status === "solved" ? "bg-success" : "bg-ink-subtle")}>
+                  {status === "solved" ? (
+                    <svg viewBox="0 0 24 24" aria-hidden className="fc-check size-6 fill-none stroke-current" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M5 12.5l4.5 4.5L19 7.5" />
+                    </svg>
+                  ) : (
+                    <X aria-hidden className="size-5" />
+                  )}
+                </span>
               </span>
               <div className="min-w-0">
                 <p className="text-lg font-semibold">{status === "solved" ? t.correct : feedback?.kind === "missed" ? t.missed : t.doneMissed}</p>
@@ -265,17 +303,17 @@ export function DailyChallenge({ challenge }: { challenge: PublicChallenge }) {
               </div>
             </div>
             {feedback?.explanation ? (
-              <div className="rounded-2xl border border-line px-4 py-3">
+              <div className="fc-rise rounded-2xl border border-line px-4 py-3.5" style={rise(1)}>
                 <p className="text-sm font-semibold">{t.whyTitle}</p>
                 <p className="mt-1 text-[15px] whitespace-pre-line text-ink-muted">{feedback.explanation}</p>
               </div>
             ) : null}
-            <div className="flex flex-wrap items-center gap-3">
-              <Button onClick={() => void share()} data-testid="challenge-share">
+            <div className="fc-rise flex flex-wrap items-center gap-3" style={rise(2)}>
+              <Button onClick={() => void share()} data-testid="challenge-share" className="active:scale-[0.97]">
                 <Share2 aria-hidden className="size-4" />
                 {t.share}
               </Button>
-              <Link href={`/subjects/${challenge.subject}`} className="inline-flex h-11 items-center gap-1.5 rounded-xl px-3 text-[15px] font-medium text-brand hover:bg-brand-soft">
+              <Link href={`/subjects/${challenge.subject}`} className="inline-flex h-11 items-center gap-1.5 rounded-xl px-3 text-[15px] font-medium text-brand transition-colors hover:bg-brand-soft">
                 {fmt(t.moreOn, { subject })}
                 <ArrowRight aria-hidden className="size-4" />
               </Link>

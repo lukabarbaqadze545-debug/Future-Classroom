@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { openAccessEnabled } from "@/lib/config";
 import { BookPlus, FileUp, Radio, Target } from "lucide-react";
+import { Aurora } from "@/components/motion/aurora";
 import { requirePageUser, STAFF_ROLES } from "@/lib/auth/session";
 import { getDictionary, pageTitle } from "@/lib/i18n/server";
 import { fmt, fmtCount, relativeTime } from "@/lib/i18n/config";
@@ -61,22 +62,23 @@ export default async function TeacherDashboard() {
 
       {/* Quick actions */}
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <Link href="/present/daily" className="group rounded-2xl border border-spark/25 bg-linear-to-br from-spark-soft to-surface p-6 shadow-[var(--shadow-card)] transition-colors hover:border-spark/50" data-testid="dashboard-warm-up">
-          <Target aria-hidden className="size-7 text-spark" />
-          <p className="mt-4 text-lg font-semibold">{d.warmUp}</p>
-          <p className="mt-1 text-sm text-ink-muted">{d.warmUpText}</p>
+        <Link href="/present/daily" className="fc-rise fc-spotlight fc-spotlight-dark group relative isolate overflow-hidden rounded-2xl bg-night p-6 text-white shadow-[var(--shadow-card)] ring-1 ring-white/10 transition-shadow hover:shadow-[var(--shadow-raised)]" data-testid="dashboard-warm-up">
+          <Aurora />
+          <Target aria-hidden className="relative size-7 text-aurora-cyan" />
+          <p className="relative mt-4 text-lg font-semibold">{d.warmUp}</p>
+          <p className="relative mt-1 text-sm text-white/70">{d.warmUpText}</p>
         </Link>
-        <Link href="/teacher/sessions/new" className="group rounded-2xl border border-brand/20 bg-brand p-6 text-white shadow-[var(--shadow-card)] transition-colors hover:bg-brand-hover" data-testid="dashboard-start-session">
+        <Link href="/teacher/sessions/new" className="fc-rise fc-lift group rounded-2xl border border-brand/20 bg-brand p-6 text-white shadow-[var(--shadow-card)] transition-colors hover:bg-brand-hover" style={{ "--i": 1 } as React.CSSProperties} data-testid="dashboard-start-session">
           <Radio aria-hidden className="size-7" />
           <p className="mt-4 text-lg font-semibold">{d.startSession}</p>
           <p className="mt-1 text-sm text-white/80">{d.startSessionText}</p>
         </Link>
-        <Link href="/teacher/lessons/new" className="rounded-2xl border border-line bg-surface p-6 shadow-[var(--shadow-card)] transition-colors hover:border-line-strong" data-testid="create-lesson">
+        <Link href="/teacher/lessons/new" className="fc-rise fc-spotlight fc-lift rounded-2xl border border-line bg-surface p-6 shadow-[var(--shadow-card)]" style={{ "--i": 2 } as React.CSSProperties} data-testid="create-lesson">
           <BookPlus aria-hidden className="size-7 text-brand" />
           <p className="mt-4 text-lg font-semibold">{d.createLesson}</p>
           <p className="mt-1 text-sm text-ink-muted">{d.createLessonText}</p>
         </Link>
-        <Link href="/teacher/materials" className="rounded-2xl border border-line bg-surface p-6 shadow-[var(--shadow-card)] transition-colors hover:border-line-strong">
+        <Link href="/teacher/materials" className="fc-rise fc-spotlight fc-lift rounded-2xl border border-line bg-surface p-6 shadow-[var(--shadow-card)]" style={{ "--i": 3 } as React.CSSProperties}>
           <FileUp aria-hidden className="size-7 text-brand" />
           <p className="mt-4 text-lg font-semibold">{d.uploadMaterial}</p>
           <p className="mt-1 text-sm text-ink-muted">{d.uploadMaterialText}</p>

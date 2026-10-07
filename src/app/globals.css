@@ -37,14 +37,12 @@
   --color-lab-career: #0369a1;
   --color-ai-soft: #f2effd;
 
-  /* "Today": the warm accents of streaks, experience points and the daily challenge. */
-  --color-spark: #ea580c;
-  --color-spark-soft: #fff1e6;
-  --color-gold: #b7791f;
-  --color-gold-soft: #fff6d6;
-  --color-hero-from: #1e40af;
-  --color-hero-via: #4338ca;
-  --color-hero-to: #6d28d9;
+  /* The dark, moving surfaces (hero panels): deep blue-black with a blue, violet and cyan glow. */
+  --color-night: #070c1b;
+  --color-night-soft: #0d1530;
+  --color-aurora-blue: #3b82f6;
+  --color-aurora-violet: #7c5cff;
+  --color-aurora-cyan: #22d3ee;
 
   --font-sans: "Inter Variable", "Noto Sans Georgian Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
 
@@ -200,40 +198,262 @@ dialog::backdrop {
   margin-bottom: 12px;
 }
 
-/* --- Today: streak flame, rings, celebration -------------------------------------- */
+/* --- Motion ------------------------------------------------------------------------
+ * One language everywhere: things arrive with a short upward rise and a soft focus pull,
+ * numbers count up, rings draw, the dark panels drift slowly. All of it is CSS, runs without
+ * JavaScript where it can, and collapses to nothing under prefers-reduced-motion (see above).
+ */
 
-@keyframes fc-flame {
-  0%,
-  100% {
-    transform: scale(1) rotate(-1deg);
-  }
-  35% {
-    transform: scale(1.06, 1.1) rotate(2deg);
-  }
-  70% {
-    transform: scale(0.97, 1.04) rotate(-2deg);
-  }
-}
-.fc-flame {
-  transform-origin: 50% 90%;
-  animation: fc-flame 1.4s ease-in-out infinite;
-}
-
-@keyframes fc-pop {
-  0% {
+@keyframes fc-rise {
+  from {
     opacity: 0;
-    transform: scale(0.6);
+    transform: translate3d(0, 14px, 0);
+    filter: blur(5px);
   }
-  70% {
-    transform: scale(1.08);
+  to {
+    opacity: 1;
+    transform: none;
+    filter: blur(0);
   }
-  100% {
+}
+/* Stagger children with style={{ "--i": n }}. */
+.fc-rise {
+  animation: fc-rise 760ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  animation-delay: calc(var(--i, 0) * 85ms);
+}
+
+@keyframes fc-page-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 10px, 0);
+  }
+  to {
     opacity: 1;
     transform: none;
   }
 }
-.fc-pop {
-  animation: fc-pop 360ms cubic-bezier(0.2, 0.9, 0.3, 1.2) both;
+.fc-page-in {
+  animation: fc-page-in 440ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+/* Sections arrive as they scroll into view (where the browser can tie animation to scroll; elsewhere they are simply there). */
+@supports (animation-timeline: view()) {
+  @keyframes fc-reveal {
+    from {
+      opacity: 0;
+      transform: translate3d(0, 32px, 0) scale(0.985);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  .fc-reveal {
+    animation: fc-reveal linear both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 60%;
+  }
+}
+
+/* Numbers that count up without JavaScript: <span class="fc-count" style="--to: 99" aria-hidden></span> */
+@property --fc-n {
+  syntax: "<integer>";
+  inherits: false;
+  initial-value: 0;
+}
+@keyframes fc-count {
+  from {
+    --fc-n: 0;
+  }
+}
+.fc-count {
+  --fc-n: var(--to, 0);
+  animation: fc-count 1800ms cubic-bezier(0.16, 0.84, 0.3, 1) both;
+  counter-reset: fcn var(--fc-n);
+  font-variant-numeric: tabular-nums;
+}
+.fc-count::before {
+  content: counter(fcn);
+}
+@supports (animation-timeline: view()) {
+  .fc-count[data-scroll] {
+    animation-timeline: view();
+    animation-range: entry 15% entry 100%;
+  }
+}
+
+/* The dark panel: three slow lights and a faint grid. */
+.fc-aurora {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.fc-aurora > i {
+  position: absolute;
+  aspect-ratio: 1;
+  border-radius: 9999px;
+  will-change: transform;
+}
+.fc-aurora > i:nth-child(1) {
+  width: 62%;
+  left: -14%;
+  top: -52%;
+  background: radial-gradient(circle at center, rgb(59 130 246 / 0.6), transparent 64%);
+  animation: fc-drift-a 24s ease-in-out infinite alternate;
+}
+.fc-aurora > i:nth-child(2) {
+  width: 54%;
+  right: -12%;
+  top: -34%;
+  background: radial-gradient(circle at center, rgb(124 92 255 / 0.5), transparent 64%);
+  animation: fc-drift-b 31s ease-in-out infinite alternate;
+}
+.fc-aurora > i:nth-child(3) {
+  width: 46%;
+  left: 28%;
+  bottom: -64%;
+  background: radial-gradient(circle at center, rgb(34 211 238 / 0.34), transparent 66%);
+  animation: fc-drift-c 37s ease-in-out infinite alternate;
+}
+.fc-aurora::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(rgb(255 255 255 / 0.045) 1px, transparent 1px), linear-gradient(90deg, rgb(255 255 255 / 0.045) 1px, transparent 1px);
+  background-size: 46px 46px;
+  mask-image: radial-gradient(ellipse 85% 75% at 50% 35%, #000 20%, transparent 78%);
+}
+@keyframes fc-drift-a {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  to {
+    transform: translate3d(22%, 26%, 0) scale(1.2);
+  }
+}
+@keyframes fc-drift-b {
+  from {
+    transform: translate3d(0, 0, 0) scale(1.1);
+  }
+  to {
+    transform: translate3d(-26%, 22%, 0) scale(0.92);
+  }
+}
+@keyframes fc-drift-c {
+  from {
+    transform: translate3d(0, 0, 0) scale(0.95);
+  }
+  to {
+    transform: translate3d(-30%, -18%, 0) scale(1.25);
+  }
+}
+
+@keyframes fc-shine {
+  to {
+    background-position: -200% 0;
+  }
+}
+.fc-gradient-text {
+  background: linear-gradient(100deg, #ffffff 0%, #b6cdff 30%, #7ee7f8 55%, #b6cdff 78%, #ffffff 100%);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: fc-shine 9s linear infinite;
+}
+
+/* A soft light that follows the pointer over a card and lights its edge (see SpotlightPointer). */
+.fc-spotlight {
+  position: relative;
+  isolation: isolate;
+}
+.fc-spotlight::before,
+.fc-spotlight::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 280ms ease;
+}
+.fc-spotlight::before {
+  z-index: -1;
+  background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 50%), rgb(59 130 246 / 0.1), transparent 45%);
+}
+.fc-spotlight::after {
+  padding: 1px;
+  background: radial-gradient(240px circle at var(--mx, 50%) var(--my, 50%), rgb(59 130 246 / 0.6), transparent 62%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+}
+.fc-spotlight:hover::before,
+.fc-spotlight:hover::after,
+.fc-spotlight:focus-visible::before,
+.fc-spotlight:focus-visible::after {
+  opacity: 1;
+}
+.fc-spotlight-dark::before {
+  background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 50%), rgb(124 156 255 / 0.16), transparent 45%);
+}
+.fc-spotlight-dark::after {
+  background: radial-gradient(240px circle at var(--mx, 50%) var(--my, 50%), rgb(150 180 255 / 0.7), transparent 62%);
+}
+
+.fc-lift {
+  transition: translate 260ms cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 260ms ease, border-color 260ms ease;
+}
+.fc-lift:hover {
+  translate: 0 -3px;
+  box-shadow: var(--shadow-raised);
+}
+
+/* Rings and strokes that draw themselves. */
+@keyframes fc-draw {
+  from {
+    stroke-dashoffset: var(--len);
+  }
+}
+.fc-draw {
+  animation: fc-draw 1500ms cubic-bezier(0.2, 0.8, 0.2, 1) 200ms both;
+}
+.fc-ring-progress {
+  transition: stroke-dashoffset 900ms cubic-bezier(0.3, 0.7, 0.2, 1);
+}
+@keyframes fc-check {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+.fc-check path {
+  stroke-dasharray: 28;
+  stroke-dashoffset: 28;
+  animation: fc-check 520ms 120ms cubic-bezier(0.5, 0, 0.2, 1) forwards;
+}
+
+/* The activity map fills in as a wave from the oldest week. */
+@keyframes fc-cell {
+  from {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+}
+.fc-cell {
+  animation: fc-cell 520ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  animation-delay: calc(var(--c, 0) * 16ms + 300ms);
+}
+
+@keyframes fc-ping {
+  75%,
+  100% {
+    transform: scale(2.4);
+    opacity: 0;
+  }
+}
+.fc-ping {
+  animation: fc-ping 1.9s cubic-bezier(0, 0, 0.2, 1) infinite;
 }
 
 @keyframes fc-shake {
@@ -261,50 +481,78 @@ dialog::backdrop {
 @keyframes fc-toast-in {
   from {
     opacity: 0;
-    transform: translateY(14px) scale(0.96);
+    transform: translateY(12px) scale(0.97);
+    filter: blur(3px);
   }
   to {
     opacity: 1;
     transform: none;
+    filter: blur(0);
   }
 }
 .fc-toast {
-  animation: fc-toast-in 260ms cubic-bezier(0.2, 0.9, 0.3, 1.1) both;
+  animation: fc-toast-in 320ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
 
-@keyframes fc-confetti {
-  0% {
-    opacity: 1;
-    transform: translate3d(0, 0, 0) rotate(0deg);
+/* A thin light that crosses the top of the window when something is earned. */
+@keyframes fc-sheen {
+  from {
+    transform: translateX(-100%);
   }
-  100% {
-    opacity: 0;
-    transform: translate3d(var(--fc-dx), var(--fc-dy), 0) rotate(var(--fc-spin));
+  to {
+    transform: translateX(100%);
   }
 }
-.fc-confetti {
+.fc-sheen {
+  position: fixed;
+  inset: 0 0 auto 0;
+  height: 2px;
+  z-index: 60;
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent 0%, #22d3ee 35%, #3b82f6 65%, transparent 100%);
+  animation: fc-sheen 1100ms cubic-bezier(0.3, 0.7, 0.2, 1) forwards;
+}
+
+/* The line under the current item of the main navigation slides between items. */
+.fc-nav-bar {
   position: absolute;
-  left: 50%;
-  top: 45%;
-  width: 9px;
-  height: 14px;
+  bottom: 0;
+  left: 0;
+  height: 2px;
   border-radius: 2px;
-  animation: fc-confetti 1.7s cubic-bezier(0.15, 0.7, 0.4, 1) forwards;
+  background: var(--color-brand);
+  transition: translate 420ms cubic-bezier(0.3, 0.8, 0.2, 1), width 420ms cubic-bezier(0.3, 0.8, 0.2, 1), opacity 200ms;
+  pointer-events: none;
 }
 
-@keyframes fc-glow {
-  0%,
-  100% {
-    box-shadow: 0 0 0 0 rgb(234 88 12 / 0.35);
-  }
-  50% {
-    box-shadow: 0 0 0 8px rgb(234 88 12 / 0);
+/* A bar that fills from the left when it appears. */
+@keyframes fc-grow {
+  from {
+    transform: scaleX(0);
   }
 }
-.fc-glow {
-  animation: fc-glow 2s ease-out infinite;
+.fc-grow {
+  transform-origin: left center;
+  animation: fc-grow 1000ms cubic-bezier(0.2, 0.8, 0.2, 1) 250ms both;
 }
 
-.fc-ring-progress {
-  transition: stroke-dashoffset 900ms cubic-bezier(0.3, 0.7, 0.2, 1);
+/* Without motion: everything is simply there. (Scroll-tied and decorative animations are switched off outright, since a duration means nothing to them.) */
+@media (prefers-reduced-motion: reduce) {
+  .fc-reveal,
+  .fc-rise,
+  .fc-page-in,
+  .fc-cell,
+  .fc-count,
+  .fc-draw,
+  .fc-grow,
+  .fc-toast,
+  .fc-ping,
+  .fc-aurora > i,
+  .fc-gradient-text,
+  .fc-check path {
+    animation: none !important;
+  }
+  .fc-check path {
+    stroke-dashoffset: 0;
+  }
 }

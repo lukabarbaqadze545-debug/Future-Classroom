@@ -65,14 +65,14 @@ test("a wrong answer gives a hint and a retry, a right one earns the streak, exp
   await expect(page.getByTestId("challenge-result")).toBeVisible();
   await expect(page.getByTestId("daily-challenge")).toHaveAttribute("data-status", "solved");
   await expect(page.getByTestId("streak-number")).toHaveText("1");
-  await expect(page.getByTestId("xp-total")).not.toHaveText("0 XP");
+  await expect(page.getByTestId("xp-total")).not.toHaveText("0");
   await expect(page.getByTestId("quest-challenge")).toHaveAttribute("data-done", "true");
   await expect(page.getByTestId("badge-firstStep")).toHaveAttribute("data-earned", "true");
   await expect(page.getByTestId("badge-challenge1")).toHaveAttribute("data-earned", "true");
   // Solved on the second try: no "first try" badge.
   await expect(page.getByTestId("badge-firstTry")).toHaveAttribute("data-earned", "false");
   await expect(page.getByTestId("next-challenge")).toContainText(/\d\d:\d\d:\d\d/);
-  await expect(page.getByTestId("toasts")).toContainText("1-day streak!");
+  await expect(page.getByTestId("toasts")).toContainText("1-day streak");
   await expect(page.getByTestId("streak-chip")).toHaveAttribute("aria-label", /1 day streak/);
 
   // Everything survives a reload, and the question is closed for today.
@@ -188,4 +188,48 @@ test("a student cannot open the board view", async ({ page }) => {
   await expect(page).toHaveURL(/\/student$/);
   await page.goto("/present/daily");
   await expect(page).toHaveURL(/\/student$/);
+});
+
+test("answers from the keyboard: A–D choose, Enter checks", async ({ page }) => {
+  await open(page);
+  const q = question();
+  if (q.type === "choice") {
+    const index = q.options.findIndex((o) => o.text === q.answer);
+    await page.keyboard.press(String.fromCharCode(97 + index));
+    await expect(page.getByTestId("challenge-check")).toBeEnabled();
+    await page.keyboard.press("Enter");
+  } else {
+    await page.getByTestId("challenge-input").fill(q.answer);
+    await page.keyboard.press("Enter");
+  }
+  await expect(page.getByTestId("daily-challenge")).toHaveAttribute("data-status", "solved");
+});
+
+test("the activity map shows as many weeks as fit, and the navigation line sits under the current page", async ({ page, browser, baseURL }) => {
+  await open(page);
+  await expect(page.locator('[data-testid="activity-map"] .fc-cell:visible')).toHaveCount(26 * 7);
+  const bar = page.locator(".fc-nav-bar");
+  await expect(bar).toHaveCSS("opacity", "1");
+  expect(await bar.evaluate((el) => el.getBoundingClientRect().width)).toBeGreaterThan(10);
+
+  const phone = await browser.newContext({ baseURL: baseURL!, viewport: { width: 390, height: 844 } });
+  const small = await phone.newPage();
+  await small.goto("/today");
+  await expect(small.getByTestId("today-hero")).toBeVisible();
+  await expect(small.locator('[data-testid="activity-map"] .fc-cell:visible')).toHaveCount(16 * 7);
+  await phone.close();
+});
+
+test("the home page counts what the platform contains, and holds still when motion is off", async ({ browser, baseURL }) => {
+  const context = await browser.newContext({ baseURL: baseURL!, reducedMotion: "reduce" });
+  const page = await context.newPage();
+  await page.goto("/");
+  const numbers = await page.locator("dl dd .sr-only").allInnerTexts();
+  expect(numbers).toHaveLength(4);
+  for (const n of numbers) expect(Number(n)).toBeGreaterThan(0);
+  // Without motion nothing is waiting to appear and nothing drifts.
+  const animated = await page.evaluate(() => [...document.querySelectorAll(".fc-reveal, .fc-rise, .fc-aurora > i, .fc-count")].filter((el) => getComputedStyle(el).animationName !== "none").length);
+  expect(animated).toBe(0);
+  await expect(page.locator(".fc-reveal").first()).toHaveCSS("opacity", "1");
+  await context.close();
 });

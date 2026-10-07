@@ -1,20 +1,20 @@
-import { Compass, Crosshair, Crown, Dumbbell, Flame, Footprints, Medal, Moon, Radio, Star, Sunrise, Swords, Trophy, Zap, type LucideIcon } from "lucide-react";
+import { Award, BadgeCheck, CalendarCheck, CalendarDays, CalendarRange, Crosshair, Flag, FlaskConical, Layers, ListChecks, Moon, Radio, Repeat, Sunrise, Target, type LucideIcon } from "lucide-react";
 
-/** One picture for every badge. */
+/** One line drawing for every achievement. */
 export const BADGE_ICONS: Record<string, LucideIcon> = {
-  firstStep: Footprints,
-  challenge1: Swords,
+  firstStep: Flag,
+  challenge1: Target,
   firstTry: Crosshair,
-  streak3: Flame,
-  streak7: Zap,
-  streak30: Flame,
-  challenges10: Medal,
-  challenges30: Trophy,
-  practice25: Dumbbell,
-  quizAce: Star,
-  explorer: Compass,
+  streak3: CalendarCheck,
+  streak7: CalendarDays,
+  streak30: CalendarRange,
+  challenges10: ListChecks,
+  challenges30: Layers,
+  practice25: Repeat,
+  quizAce: BadgeCheck,
+  explorer: FlaskConical,
   liveClass: Radio,
   nightOwl: Moon,
   earlyBird: Sunrise,
-  level5: Crown,
+  level5: Award,
 };

@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
   BADGES,
+  activityMap,
+  intensityOf,
   CHALLENGE_TRIES,
   QUESTS,
   XP,
@@ -308,5 +310,54 @@ describe("how the game reaches the screen", () => {
     for (const file of readdirSync(dir)) {
       expect(readFileSync(join(dir, file), "utf-8"), file).not.toMatch(/createContext|useContext/);
     }
+  });
+});
+
+describe("the activity map", () => {
+  it("rates a day by what was earned", () => {
+    expect([intensityOf(0, false), intensityOf(0, true), intensityOf(10, true), intensityOf(30, true), intensityOf(80, true), intensityOf(500, true)]).toEqual([0, 1, 1, 2, 3, 4]);
+  });
+
+  it("lays out the last weeks from Monday to Sunday, newest last", () => {
+    const { state } = play([
+      [{ kind: "challenge", outcome: "solved", attempts: 1 }, "2026-10-05"],
+      [{ kind: "practice" }, "2026-10-07"],
+    ]);
+    const map = activityMap(state, "2026-10-07", 4);
+    expect(map).toHaveLength(4);
+    expect(map.every((week) => week.length === 7)).toBe(true);
+    expect(map[3].map((c) => c.day)).toEqual(["2026-10-05", "2026-10-06", "2026-10-07", "2026-10-08", "2026-10-09", "2026-10-10", "2026-10-11"]);
+    expect(map[0][0].day).toBe("2026-09-14");
+    // Monday paid well, Tuesday nothing, Wednesday (today) a little; the rest of the week has not happened.
+    expect(map[3].map((c) => c.level)).toEqual([2, 0, 1, 0, 0, 0, 0]);
+    expect(map[3].filter((c) => c.future).map((c) => c.day)).toEqual(["2026-10-08", "2026-10-09", "2026-10-10", "2026-10-11"]);
+    expect(map[3].filter((c) => c.isToday).map((c) => c.day)).toEqual(["2026-10-07"]);
+  });
+
+  it("remembers the experience of each day and forgets the oldest", () => {
+    let state = emptyState("2026-01-01");
+    for (let i = 0; i < 160; i++) state = applyEvent(state, { kind: "practice" }, at(addDays("2026-01-01", i))).state;
+    const days = Object.keys(state.xpByDay);
+    expect(days).toHaveLength(140);
+    expect(days[0] < days[139]).toBe(true);
+    expect(state.xpByDay[addDays("2026-01-01", 159)]).toBe(XP.practice);
+  });
+});
+
+describe("progress towards badges", () => {
+  it("shows how far each badge is and earns it at the target", () => {
+    const fresh = emptyState("2026-10-01");
+    const rule = (id: string) => BADGES.find((b) => b.id === id)!;
+    expect(rule("streak7").progress(fresh)).toEqual({ value: 0, target: 7 });
+    const { state } = play([
+      [{ kind: "practice" }, "2026-10-01"],
+      [{ kind: "practice" }, "2026-10-02"],
+      [{ kind: "practice" }, "2026-10-03"],
+    ]);
+    expect(rule("streak7").progress(state)).toEqual({ value: 3, target: 7 });
+    expect(rule("streak3").progress(state)).toEqual({ value: 3, target: 3 });
+    expect(state.badges.streak3).toBe("2026-10-03");
+    // Never beyond the target.
+    expect(rule("firstStep").progress({ ...state, days: ["2026-10-01", "2026-10-02"] })).toEqual({ value: 1, target: 1 });
   });
 });

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, BookOpen, Flame, Lightbulb, Radio } from "lucide-react";
+import { Activity, ArrowRight, BookOpen, Lightbulb, Radio } from "lucide-react";
 import { requirePageUser } from "@/lib/auth/session";
 import { getDictionary, pageTitle } from "@/lib/i18n/server";
 import { fmt, fmtCount, relativeTime } from "@/lib/i18n/config";
@@ -78,7 +78,7 @@ export default async function StudentHome() {
         <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-6" data-testid="dashboard-labs">
           {LAB_IDS.map((id) => (
             <li key={id}>
-              <Link href={LAB_ROUTES[id]} className="flex h-full items-center gap-3 rounded-2xl border border-line bg-surface p-3 shadow-[var(--shadow-card)] transition-colors hover:border-brand/40">
+              <Link href={LAB_ROUTES[id]} className="fc-spotlight fc-lift flex h-full items-center gap-3 rounded-2xl border border-line bg-surface p-3 shadow-[var(--shadow-card)]">
                 <LabIcon lab={id} size="sm" />
                 <span className="text-sm leading-tight font-medium">{dict.labs.hub.rooms[id].name}</span>
               </Link>
@@ -223,7 +223,7 @@ export default async function StudentHome() {
               ) : (
                 <div>
                   <p className="flex items-center justify-center gap-1 text-2xl font-semibold tabular-nums">
-                    <Flame aria-hidden className="size-5 text-warn" />
+                    <Activity aria-hidden className="size-5 text-brand" />
                     {progress.streakDays}
                   </p>
                   <p className="text-xs text-ink-muted">{d.streak}</p>

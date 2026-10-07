@@ -10,6 +10,7 @@ import { AuthHashRedirect } from "@/components/auth/auth-hash-redirect";
 import { supabaseConfig } from "@/lib/supabase/config";
 import { schoolTimeZone } from "@/lib/config";
 import { EngagementProvider } from "@/components/engagement/engagement-provider";
+import { SpotlightPointer } from "@/components/motion/spotlight-pointer";
 
 export async function generateMetadata(): Promise<Metadata> {
   const { dict } = await getDictionary();
@@ -38,6 +39,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           {supabaseConfig() ? <AuthHashRedirect /> : null}
           <DraftScopeProvider userId={user?.id ?? null}>
             <EngagementProvider timeZone={schoolTimeZone()}>{children}</EngagementProvider>
+            <SpotlightPointer />
           </DraftScopeProvider>
         </I18nProvider>
       </body>

@@ -23,6 +23,8 @@ export interface EngagementState {
   days: string[];
   /** Days on which the daily challenge was solved. */
   solved: string[];
+  /** Experience earned per school day (the most recent days), for the activity map. */
+  xpByDay: Record<string, number>;
   best: number;
   /** Badge id → the day it was earned. */
   badges: Record<string, string>;
@@ -99,6 +101,7 @@ export function emptyState(today: string): EngagementState {
     xp: 0,
     days: [],
     solved: [],
+    xpByDay: {},
     best: 0,
     badges: {},
     totals: { challenges: 0, firstTry: 0, practice: 0, quizzes: 0, perfectQuizzes: 0, live: 0, joined: 0, night: 0, early: 0 },
@@ -198,6 +201,35 @@ export function weekView(days: string[], today: string): WeekDay[] {
   });
 }
 
+/** How strongly a day shows on the activity map: 0 (nothing) to 4. */
+export function intensityOf(xp: number, active: boolean): 0 | 1 | 2 | 3 | 4 {
+  if (!active && xp <= 0) return 0;
+  if (xp < 25) return 1;
+  if (xp < 60) return 2;
+  if (xp < 120) return 3;
+  return 4;
+}
+
+export interface HeatCell {
+  day: string;
+  level: 0 | 1 | 2 | 3 | 4;
+  future: boolean;
+  isToday: boolean;
+}
+
+/** The last `weeks` weeks as columns of seven days (Monday first), the newest week last. */
+export function activityMap(state: Pick<EngagementState, "days" | "xpByDay">, today: string, weeks: number): HeatCell[][] {
+  const active = new Set(state.days);
+  const monday = addDays(today, -(weekdayOf(today) - 1));
+  return Array.from({ length: weeks }, (_, w) =>
+    Array.from({ length: 7 }, (_, d) => {
+      const day = addDays(monday, (w - (weeks - 1)) * 7 + d);
+      const future = day > today;
+      return { day, level: future ? 0 : intensityOf(state.xpByDay[day] ?? 0, active.has(day)), future, isToday: day === today };
+    }),
+  );
+}
+
 // --- Levels ----------------------------------------------------------------------
 
 /** XP needed to reach a level: 0, 100, 300, 600, 1000, … */
@@ -241,32 +273,50 @@ const allQuestsDone = (state: EngagementState) => QUESTS.every((id) => {
 
 export interface BadgeRule {
   id: string;
-  test: (state: EngagementState) => boolean;
+  /** How far along the visitor is (value / target); the badge is earned when value reaches target. */
+  progress: (state: EngagementState) => { value: number; target: number };
 }
 
+const toward = (value: (s: EngagementState) => number, target: number): BadgeRule["progress"] => (s) => ({ value: Math.min(value(s), target), target });
+
 export const BADGES: BadgeRule[] = [
-  { id: "firstStep", test: (s) => s.days.length >= 1 },
-  { id: "challenge1", test: (s) => s.totals.challenges >= 1 },
-  { id: "firstTry", test: (s) => s.totals.firstTry >= 1 },
-  { id: "streak3", test: (s) => s.best >= 3 },
-  { id: "streak7", test: (s) => s.best >= 7 },
-  { id: "streak30", test: (s) => s.best >= 30 },
-  { id: "challenges10", test: (s) => s.totals.challenges >= 10 },
-  { id: "challenges30", test: (s) => s.totals.challenges >= 30 },
-  { id: "practice25", test: (s) => s.totals.practice >= 25 },
-  { id: "quizAce", test: (s) => s.totals.perfectQuizzes >= 1 },
-  { id: "explorer", test: (s) => s.labs.length >= 3 },
-  { id: "liveClass", test: (s) => s.totals.joined >= 1 },
-  { id: "nightOwl", test: (s) => s.totals.night >= 1 },
-  { id: "earlyBird", test: (s) => s.totals.early >= 1 },
-  { id: "level5", test: (s) => levelOf(s.xp) >= 5 },
+  { id: "firstStep", progress: toward((s) => s.days.length, 1) },
+  { id: "challenge1", progress: toward((s) => s.totals.challenges, 1) },
+  { id: "firstTry", progress: toward((s) => s.totals.firstTry, 1) },
+  { id: "streak3", progress: toward((s) => s.best, 3) },
+  { id: "streak7", progress: toward((s) => s.best, 7) },
+  { id: "streak30", progress: toward((s) => s.best, 30) },
+  { id: "challenges10", progress: toward((s) => s.totals.challenges, 10) },
+  { id: "challenges30", progress: toward((s) => s.totals.challenges, 30) },
+  { id: "practice25", progress: toward((s) => s.totals.practice, 25) },
+  { id: "quizAce", progress: toward((s) => s.totals.perfectQuizzes, 1) },
+  { id: "explorer", progress: toward((s) => s.labs.length, 3) },
+  { id: "liveClass", progress: toward((s) => s.totals.joined, 1) },
+  { id: "nightOwl", progress: toward((s) => s.totals.night, 1) },
+  { id: "earlyBird", progress: toward((s) => s.totals.early, 1) },
+  { id: "level5", progress: toward((s) => levelOf(s.xp), 5) },
 ];
+
+const isEarned = (rule: BadgeRule, state: EngagementState) => {
+  const { value, target } = rule.progress(state);
+  return value >= target;
+};
 
 // --- Events ----------------------------------------------------------------------
 
 /** Brings the per-day counters up to date when a new school day has begun. */
 export function rollover(state: EngagementState, today: string): EngagementState {
   return state.today.day === today ? state : { ...state, today: freshToday(today) };
+}
+
+const XP_DAYS = 140;
+
+/** Adds to a day's experience and forgets the oldest days. */
+function recordXp(byDay: Record<string, number>, day: string, xp: number): Record<string, number> {
+  const next = { ...byDay, [day]: (byDay[day] ?? 0) + xp };
+  const keys = Object.keys(next).sort();
+  for (const key of keys.slice(0, Math.max(0, keys.length - XP_DAYS))) delete next[key];
+  return next;
 }
 
 const cap = <T>(list: T[], max: number) => (list.length > max ? list.slice(list.length - max) : list);
@@ -367,10 +417,12 @@ export function applyEvent(before: EngagementState, event: EngagementEvent, cont
     gained += XP.chest;
   }
 
+  if (gained > 0) next = { ...next, xpByDay: recordXp(next.xpByDay, context.today, gained) };
+
   const newBadges: string[] = [];
   const badges = { ...next.badges };
   for (const rule of BADGES) {
-    if (!badges[rule.id] && rule.test(next)) {
+    if (!badges[rule.id] && isEarned(rule, next)) {
       badges[rule.id] = context.today;
       newBadges.push(rule.id);
     }
@@ -417,6 +469,11 @@ export function parseState(raw: string | null, today: string): EngagementState {
   const count = (value: unknown) => (isNumber(value) && value >= 0 ? Math.floor(value) : 0);
   const t = (o.totals && typeof o.totals === "object" ? o.totals : {}) as Record<string, unknown>;
   const td = (o.today && typeof o.today === "object" ? o.today : {}) as Record<string, unknown>;
+  const xpByDay: Record<string, number> = {};
+  if (o.xpByDay && typeof o.xpByDay === "object") {
+    const entries = Object.entries(o.xpByDay as Record<string, unknown>).filter(([day, xp]) => DAY.test(day) && isNumber(xp) && xp > 0);
+    for (const [day, xp] of entries.sort(([a], [b]) => (a < b ? -1 : 1)).slice(-XP_DAYS)) xpByDay[day] = Math.floor(xp as number);
+  }
   const badges: Record<string, string> = {};
   if (o.badges && typeof o.badges === "object") {
     for (const [id, day] of Object.entries(o.badges as Record<string, unknown>)) {
@@ -430,6 +487,7 @@ export function parseState(raw: string | null, today: string): EngagementState {
     xp: count(o.xp),
     days: days(o.days).slice(-MAX_DAYS),
     solved: days(o.solved).slice(-MAX_DAYS),
+    xpByDay,
     best: count(o.best),
     badges,
     totals: {

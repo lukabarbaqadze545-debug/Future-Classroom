@@ -73,7 +73,7 @@ export function subscribeClock(notify: () => void): () => void {
 
 // --- Celebrations: what the provider shows when something was earned ---
 
-export type Celebration = { kind: "earned"; delta: Delta } | { kind: "confetti" };
+export type Celebration = { kind: "earned"; delta: Delta } | { kind: "sheen" };
 const celebrationListeners = new Set<(celebration: Celebration) => void>();
 
 export function onCelebration(listener: (celebration: Celebration) => void): () => void {
@@ -83,8 +83,8 @@ export function onCelebration(listener: (celebration: Celebration) => void): () 
 
 const celebrate = (celebration: Celebration) => celebrationListeners.forEach((listener) => listener(celebration));
 
-/** A burst of confetti. */
-export const confetti = () => celebrate({ kind: "confetti" });
+/** The light across the top of the window. */
+export const sheen = () => celebrate({ kind: "sheen" });
 
 const schoolDay = () => dayKey(new Date(), timeZone);
 

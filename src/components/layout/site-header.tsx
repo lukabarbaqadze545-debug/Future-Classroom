@@ -10,6 +10,7 @@ import { LanguageSwitcher } from "./language-switcher";
 import { AIStatusBadge } from "./ai-status";
 import { SignOutButton } from "./sign-out-button";
 import { StreakChip } from "@/components/engagement/streak-chip";
+import { PageTransition } from "@/components/motion/page-transition";
 
 export async function SiteHeader() {
   const [{ dict }, user] = await Promise.all([getDictionary(), getCurrentUser()]);
@@ -89,7 +90,7 @@ export async function SiteHeader() {
 export function PageContainer({ children, wide = false }: { children: React.ReactNode; wide?: boolean }) {
   return (
     <main id="main" className={`mx-auto w-full ${wide ? "max-w-[1600px]" : "max-w-7xl"} px-4 py-6 sm:px-6 sm:py-8 lg:px-8`}>
-      {children}
+      <PageTransition>{children}</PageTransition>
     </main>
   );
 }
