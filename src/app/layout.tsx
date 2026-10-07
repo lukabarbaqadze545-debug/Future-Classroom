@@ -8,6 +8,8 @@ import { getCurrentUser } from "@/lib/auth/session";
 import { DraftScopeProvider } from "@/components/labs/use-local-draft";
 import { AuthHashRedirect } from "@/components/auth/auth-hash-redirect";
 import { supabaseConfig } from "@/lib/supabase/config";
+import { schoolTimeZone } from "@/lib/config";
+import { EngagementProvider } from "@/components/engagement/engagement-provider";
 
 export async function generateMetadata(): Promise<Metadata> {
   const { dict } = await getDictionary();
@@ -34,7 +36,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         </a>
         <I18nProvider locale={locale} dict={dict}>
           {supabaseConfig() ? <AuthHashRedirect /> : null}
-          <DraftScopeProvider userId={user?.id ?? null}>{children}</DraftScopeProvider>
+          <DraftScopeProvider userId={user?.id ?? null}>
+            <EngagementProvider timeZone={schoolTimeZone()}>{children}</EngagementProvider>
+          </DraftScopeProvider>
         </I18nProvider>
       </body>
     </html>

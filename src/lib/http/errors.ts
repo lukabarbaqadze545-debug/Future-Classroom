@@ -25,6 +25,7 @@ export type ErrorCode =
   | "auth_unavailable"
   | "conflict"
   | "attempt_first"
+  | "stale_day"
   | "internal";
 
 export class ApiError extends Error {

@@ -11,11 +11,27 @@ export class ClientApiError extends Error {
   }
 }
 
+/** What a successful call looked like, for things that react to it (the "Today" game awards experience for real activity). */
+export interface ApiCall {
+  url: string;
+  method: string;
+  data: unknown;
+}
+
+const listeners = new Set<(call: ApiCall) => void>();
+
+/** Calls `listener` after every successful `api()` call. Returns the function that stops it. */
+export function onApiSuccess(listener: (call: ApiCall) => void): () => void {
+  listeners.add(listener);
+  return () => void listeners.delete(listener);
+}
+
 export async function api<T>(url: string, options: { method?: string; body?: unknown; signal?: AbortSignal; form?: FormData } = {}): Promise<T> {
   let response: Response;
+  const method = options.method ?? (options.body !== undefined || options.form ? "POST" : "GET");
   try {
     response = await fetch(url, {
-      method: options.method ?? (options.body !== undefined || options.form ? "POST" : "GET"),
+      method,
       headers: options.form ? undefined : { "Content-Type": "application/json" },
       body: options.form ?? (options.body !== undefined ? JSON.stringify(options.body) : undefined),
       signal: options.signal,
@@ -25,7 +41,10 @@ export async function api<T>(url: string, options: { method?: string; body?: unk
     if (error instanceof DOMException && error.name === "AbortError") throw error;
     throw new ClientApiError("network", 0, "Network error");
   }
-  if (response.status === 204) return undefined as T;
+  if (response.status === 204) {
+    notify({ url, method, data: undefined });
+    return undefined as T;
+  }
   let data: unknown = null;
   try {
     data = await response.json();
@@ -36,7 +55,18 @@ export async function api<T>(url: string, options: { method?: string; body?: unk
     const err = (data as { error?: { code?: string; message?: string } } | null)?.error;
     throw new ClientApiError(err?.code ?? "internal", response.status, err?.message ?? response.statusText);
   }
+  notify({ url, method, data });
   return data as T;
+}
+
+function notify(call: ApiCall) {
+  for (const listener of listeners) {
+    try {
+      listener(call);
+    } catch {
+      // A listener must never break the call it listens to.
+    }
+  }
 }
 
 export function errorMessage(dict: Dictionary, error: unknown): string {

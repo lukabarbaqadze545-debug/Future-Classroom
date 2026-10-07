@@ -134,6 +134,17 @@ npm run doctor              # checks settings, database, backups, disk
 - The Pyodide files (Python in the browser) are copied to `public/pyodide` by `npm run build` (the `prebuild` script) so Vercel serves them as static files; the built-in books are included in the deployment through `outputFileTracingIncludes` in `next.config.ts`.
 - No environment variables are needed. Set `ANTHROPIC_API_KEY` for the AI features and `DEFAULT_LANGUAGE=en` for an English demo.
 
+## Today: a reason to come back
+
+`/today` is open to everyone (no account needed) and is built to be opened every day:
+
+- **The daily challenge**: one question a day, the same for everybody, new at midnight (Tbilisi time). Each weekday has its own kind of question (Monday numbers, Tuesday science, Wednesday code and tech, Thursday thinking sharp, Friday a surprise from any subject, Saturday our world, Sunday life skills), taken from the built-in lessons and quizzes, so a week is a small course and a question comes back only after every other question of its kind. Three tries: hints after wrong answers, the answer after the third. **It is graded on the server** (`/api/daily/check`); the page never carries the answer, hints or explanation, and the check needs no database, so it works on any host.
+- **Streak, experience points, levels, badges and three daily missions** (the daily chest opens when all three are done). They come from the challenge and from real activity anywhere on the platform: correct practice answers, finished quizzes, live-class answers and joins, work in a laboratory (`src/lib/engagement/api-events.ts` decides what counts). Showing up counts: a missed challenge still keeps the streak.
+- **It is the visitor's own and lives in their browser** (localStorage, `src/lib/engagement/model.ts` is the whole game and is unit-tested). It needs no account, works with open access (where everyone shares one demo student), survives a host without a database, and is not a grade: the teacher does not see it. The privacy page says so. Share button: a result to paste to friends, without the answer.
+- **For teachers**: *Start with today's challenge* on the teacher dashboard puts the question on the classroom display (`/present/daily`) with hints and the answer behind buttons.
+
+`SCHOOL_TIMEZONE` (an IANA name, default `Asia/Tbilisi`) decides where the day changes. About half of the built-in questions have no written explanation yet, so the "Why" panel is missing for them: adding explanations to the lessons in `src/lib/content/lessons/` improves the challenge directly.
+
 ## Architecture
 
 | Layer | Choice |
@@ -209,7 +220,7 @@ tests/unit, tests/e2e, tests/e2e-supabase
 
 ## Configuration
 
-See `.env.example`: `ANTHROPIC_API_KEY`, `AI_MODEL`, `DATABASE_PATH`, `UPLOAD_DIR`, `SEED_DEMO`, `DEMO_MODE`, `SELF_REGISTRATION`, `BACKUP_DIR`, `DEFAULT_LANGUAGE` (`ka` or `en`: the school's default interface language and the language of the demo data), `COOKIE_SECURE`, `PUBLIC_BASE_URL`, `JUDGE0_URL`, `JUDGE0_TOKEN`, `JUDGE0_PYTHON_ID`, `JUDGE0_CPP_ID`, `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` (optional email sign-up and sign-in through Supabase; see docs/SUPABASE-AUTH.md), `OPEN_ACCESS` (on by default: no sign-in at all, visitors choose the demo teacher or demo student view; `OPEN_ACCESS=false` brings sign-in back for real students).
+See `.env.example`: `ANTHROPIC_API_KEY`, `AI_MODEL`, `DATABASE_PATH`, `UPLOAD_DIR`, `SEED_DEMO`, `DEMO_MODE`, `SELF_REGISTRATION`, `BACKUP_DIR`, `DEFAULT_LANGUAGE` (`ka` or `en`: the school's default interface language and the language of the demo data), `COOKIE_SECURE`, `PUBLIC_BASE_URL`, `JUDGE0_URL`, `JUDGE0_TOKEN`, `JUDGE0_PYTHON_ID`, `JUDGE0_CPP_ID`, `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` (optional email sign-up and sign-in through Supabase; see docs/SUPABASE-AUTH.md), `SCHOOL_TIMEZONE` (where the school day changes; default `Asia/Tbilisi`), `OPEN_ACCESS` (on by default: no sign-in at all, visitors choose the demo teacher or demo student view; `OPEN_ACCESS=false` brings sign-in back for real students).
 
 ## Known limitations
 

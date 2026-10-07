@@ -50,3 +50,21 @@ export function demoSignInEnabled(): boolean {
 export function seedDemoEnabled(): boolean {
   return flag("SEED_DEMO", developmentDefault() || openAccessEnabled());
 }
+
+/**
+ * The time zone that decides when a school day begins and ends (SCHOOL_TIMEZONE,
+ * an IANA name; Tbilisi by default): when the daily challenge changes and when a
+ * streak day ends.
+ */
+export function schoolTimeZone(): string {
+  const zone = process.env.SCHOOL_TIMEZONE?.trim();
+  if (zone) {
+    try {
+      new Intl.DateTimeFormat("en", { timeZone: zone });
+      return zone;
+    } catch {
+      // An unknown name falls back to the default rather than breaking every page.
+    }
+  }
+  return "Asia/Tbilisi";
+}

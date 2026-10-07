@@ -1,8 +1,11 @@
-import { ArrowRight, BookOpenCheck, Compass, Library, Lightbulb, MonitorSmartphone, ShieldCheck, Users } from "lucide-react";
+import { ArrowRight, BookOpenCheck, Compass, Target, Library, Lightbulb, MonitorSmartphone, ShieldCheck, Users } from "lucide-react";
 import { LAB_IDS, LAB_ROUTES } from "@/lib/labs/registry";
 import { LabIcon } from "@/components/labs/lab-shell";
 import { getDictionary } from "@/lib/i18n/server";
+import { fmt } from "@/lib/i18n/config";
 import { demoModeEnabled, openAccessEnabled } from "@/lib/config";
+import { publicChallenge } from "@/lib/daily/pick";
+import { todayInSchool } from "@/lib/services/daily";
 import { SiteHeader, PageContainer } from "@/components/layout/site-header";
 import { ButtonLink } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -12,8 +15,9 @@ import Link from "next/link";
 const PRINCIPLE_ICONS = [ShieldCheck, Lightbulb, Users, Library, Compass];
 
 export default async function HomePage() {
-  const { dict } = await getDictionary();
+  const { dict, locale } = await getDictionary();
   const l = dict.landing;
+  const challenge = publicChallenge(todayInSchool(), locale);
   const openAccess = openAccessEnabled();
   return (
     <>
@@ -48,6 +52,25 @@ export default async function HomePage() {
                 </ButtonLink>
               </div>
             )}
+            <Link
+              href="/today"
+              data-testid="landing-today"
+              className="group mt-5 flex max-w-xl items-start gap-4 rounded-3xl border border-spark/25 bg-linear-to-br from-spark-soft to-surface p-5 shadow-[var(--shadow-card)] transition-colors hover:border-spark/50"
+            >
+              <span className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-spark text-white shadow-sm">
+                <Target aria-hidden className="size-6" />
+              </span>
+              <span className="min-w-0">
+                <span className="block text-sm font-semibold text-spark">
+                  {fmt(dict.today.challenge.title, { n: challenge.number })} · {dict.today.weekdays[challenge.weekday - 1]} · {dict.today.themes[challenge.theme]}
+                </span>
+                <span className="mt-1 line-clamp-3 block text-lg leading-snug font-semibold whitespace-pre-line text-ink">{challenge.prompt.split("\n\n")[0]}</span>
+                <span className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-brand group-hover:underline">
+                  {dict.today.challenge.start}
+                  <ArrowRight aria-hidden className="size-4" />
+                </span>
+              </span>
+            </Link>
           </div>
 
           {/* Flow */}

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { openAccessEnabled } from "@/lib/config";
-import { BookPlus, FileUp, Radio } from "lucide-react";
+import { BookPlus, FileUp, Radio, Target } from "lucide-react";
 import { requirePageUser, STAFF_ROLES } from "@/lib/auth/session";
 import { getDictionary, pageTitle } from "@/lib/i18n/server";
 import { fmt, fmtCount, relativeTime } from "@/lib/i18n/config";
@@ -60,7 +60,12 @@ export default async function TeacherDashboard() {
       ) : null}
 
       {/* Quick actions */}
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        <Link href="/present/daily" className="group rounded-2xl border border-spark/25 bg-linear-to-br from-spark-soft to-surface p-6 shadow-[var(--shadow-card)] transition-colors hover:border-spark/50" data-testid="dashboard-warm-up">
+          <Target aria-hidden className="size-7 text-spark" />
+          <p className="mt-4 text-lg font-semibold">{d.warmUp}</p>
+          <p className="mt-1 text-sm text-ink-muted">{d.warmUpText}</p>
+        </Link>
         <Link href="/teacher/sessions/new" className="group rounded-2xl border border-brand/20 bg-brand p-6 text-white shadow-[var(--shadow-card)] transition-colors hover:bg-brand-hover" data-testid="dashboard-start-session">
           <Radio aria-hidden className="size-7" />
           <p className="mt-4 text-lg font-semibold">{d.startSession}</p>

@@ -22,6 +22,9 @@ import { LabIcon } from "@/components/labs/lab-shell";
 import { STATUS_TONE } from "@/components/assignments/review-board";
 import { formatDateTime } from "@/lib/i18n/config";
 import { openAccessEnabled } from "@/lib/config";
+import { challengeNumber } from "@/lib/daily/pick";
+import { todayInSchool } from "@/lib/services/daily";
+import { DeviceStreakStat, TodayStrip } from "@/components/engagement/today-strip";
 
 export async function generateMetadata() {
   return pageTitle((p) => p.home);
@@ -51,6 +54,7 @@ export default async function StudentHome() {
   return (
     <PageContainer>
       <PageHeader title={openAccessEnabled() ? dict.open.helloStudent : fmt(d.greeting, { name: user.displayName.split(" ")[0] })} description={d.lead} />
+      <TodayStrip challengeNumber={challengeNumber(todayInSchool())} />
       {activeSessions.length ? (
         <Card className="mb-6 border-success/40 bg-success-soft/30" data-testid="live-sessions">
           <CardHeader title={<span className="flex items-center gap-2"><span className="fc-pulse size-2.5 rounded-full bg-success" />{d.activeTitle}</span>} />
@@ -213,13 +217,18 @@ export default async function StudentHome() {
                 <p className="text-2xl font-semibold tabular-nums">{progress.completedActivities}</p>
                 <p className="text-xs text-ink-muted">{d.activities}</p>
               </div>
-              <div>
-                <p className="flex items-center justify-center gap-1 text-2xl font-semibold tabular-nums">
-                  <Flame aria-hidden className="size-5 text-warn" />
-                  {progress.streakDays}
-                </p>
-                <p className="text-xs text-ink-muted">{d.streak}</p>
-              </div>
+              {openAccessEnabled() ? (
+                // Everyone shares the demo student here, so the streak is the one of this browser.
+                <DeviceStreakStat label={d.streak} />
+              ) : (
+                <div>
+                  <p className="flex items-center justify-center gap-1 text-2xl font-semibold tabular-nums">
+                    <Flame aria-hidden className="size-5 text-warn" />
+                    {progress.streakDays}
+                  </p>
+                  <p className="text-xs text-ink-muted">{d.streak}</p>
+                </div>
+              )}
               <div>
                 <p className="text-2xl font-semibold tabular-nums">{progress.topics.length}</p>
                 <p className="text-xs text-ink-muted">{d.topics}</p>

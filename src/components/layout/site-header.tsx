@@ -9,15 +9,18 @@ import { NavLinks } from "./nav-links";
 import { LanguageSwitcher } from "./language-switcher";
 import { AIStatusBadge } from "./ai-status";
 import { SignOutButton } from "./sign-out-button";
+import { StreakChip } from "@/components/engagement/streak-chip";
 
 export async function SiteHeader() {
   const [{ dict }, user] = await Promise.all([getDictionary(), getCurrentUser()]);
   const staff = user?.role === "teacher" || user?.role === "admin";
   // Open access: nobody signs in or registers; the same button that signs out switches between the two demo views.
   const openAccess = openAccessEnabled();
+  const today = { href: "/today", label: dict.nav.today };
   const items = staff
     ? [
         { href: "/teacher", label: dict.nav.dashboard, exact: true },
+        today,
         { href: "/subjects", label: dict.nav.subjects },
         { href: "/teacher/lessons", label: dict.nav.lessons },
         { href: "/teacher/sessions", label: dict.nav.sessions },
@@ -33,6 +36,7 @@ export async function SiteHeader() {
     : user
       ? [
           { href: "/student", label: dict.nav.home, exact: true },
+          today,
           { href: "/subjects", label: dict.nav.subjects },
           { href: "/labs", label: dict.nav.labs },
           { href: "/student/assignments", label: dict.nav.assignments },
@@ -42,7 +46,7 @@ export async function SiteHeader() {
           { href: "/student/progress", label: dict.nav.progress },
           { href: "/join", label: dict.nav.join },
         ]
-      : [{ href: "/join", label: dict.nav.join }];
+      : [today, { href: "/join", label: dict.nav.join }];
 
   return (
     <header className="sticky top-0 z-30 border-b border-line bg-surface/95 backdrop-blur supports-[backdrop-filter]:bg-surface/85">
@@ -54,6 +58,7 @@ export async function SiteHeader() {
         <div className="ml-auto flex items-center gap-2">
           <AIStatusBadge status={getAIStatus()} dict={dict} />
           <LanguageSwitcher />
+          <StreakChip />
           {user ? (
             <div className="flex items-center gap-2">
               <Link href="/account" className="hidden rounded-lg px-1 text-right leading-tight hover:bg-muted md:block" data-testid="account-link">

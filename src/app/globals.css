@@ -37,6 +37,15 @@
   --color-lab-career: #0369a1;
   --color-ai-soft: #f2effd;
 
+  /* "Today": the warm accents of streaks, experience points and the daily challenge. */
+  --color-spark: #ea580c;
+  --color-spark-soft: #fff1e6;
+  --color-gold: #b7791f;
+  --color-gold-soft: #fff6d6;
+  --color-hero-from: #1e40af;
+  --color-hero-via: #4338ca;
+  --color-hero-to: #6d28d9;
+
   --font-sans: "Inter Variable", "Noto Sans Georgian Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
 
   --radius-card: 14px;
@@ -189,4 +198,113 @@ dialog::backdrop {
   color: #111;
   box-shadow: 0 1px 4px rgb(16 24 40 / 0.18);
   margin-bottom: 12px;
+}
+
+/* --- Today: streak flame, rings, celebration -------------------------------------- */
+
+@keyframes fc-flame {
+  0%,
+  100% {
+    transform: scale(1) rotate(-1deg);
+  }
+  35% {
+    transform: scale(1.06, 1.1) rotate(2deg);
+  }
+  70% {
+    transform: scale(0.97, 1.04) rotate(-2deg);
+  }
+}
+.fc-flame {
+  transform-origin: 50% 90%;
+  animation: fc-flame 1.4s ease-in-out infinite;
+}
+
+@keyframes fc-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  70% {
+    transform: scale(1.08);
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+.fc-pop {
+  animation: fc-pop 360ms cubic-bezier(0.2, 0.9, 0.3, 1.2) both;
+}
+
+@keyframes fc-shake {
+  0%,
+  100% {
+    transform: none;
+  }
+  20% {
+    transform: translateX(-6px);
+  }
+  40% {
+    transform: translateX(6px);
+  }
+  60% {
+    transform: translateX(-4px);
+  }
+  80% {
+    transform: translateX(3px);
+  }
+}
+.fc-shake {
+  animation: fc-shake 380ms ease-in-out;
+}
+
+@keyframes fc-toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.fc-toast {
+  animation: fc-toast-in 260ms cubic-bezier(0.2, 0.9, 0.3, 1.1) both;
+}
+
+@keyframes fc-confetti {
+  0% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(var(--fc-dx), var(--fc-dy), 0) rotate(var(--fc-spin));
+  }
+}
+.fc-confetti {
+  position: absolute;
+  left: 50%;
+  top: 45%;
+  width: 9px;
+  height: 14px;
+  border-radius: 2px;
+  animation: fc-confetti 1.7s cubic-bezier(0.15, 0.7, 0.4, 1) forwards;
+}
+
+@keyframes fc-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgb(234 88 12 / 0.35);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgb(234 88 12 / 0);
+  }
+}
+.fc-glow {
+  animation: fc-glow 2s ease-out infinite;
+}
+
+.fc-ring-progress {
+  transition: stroke-dashoffset 900ms cubic-bezier(0.3, 0.7, 0.2, 1);
 }
