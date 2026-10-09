@@ -180,9 +180,23 @@ class Parser {
     if (tparams.length) this.tparams.push(tparams);
     try {
       if ((this.isWord("struct") || this.isWord("class") || this.isWord("union")) && this.isClassDefinition()) {
-        out.push(this.classDecl(tparams));
+        const cls = this.classDecl(tparams);
+        out.push(cls);
         // `struct P { … } a, b;` declares variables as well.
-        if (!this.isOp(";")) throw unsupported("declaring variables together with a struct definition", this.peek().line, this.peek().col);
+        if (!this.isOp(";")) {
+          if (tparams.length) throw unsupported("declaring variables together with a template definition", this.peek().line, this.peek().col);
+          const base = this.namedType(cls.name, { line: cls.line, col: cls.col });
+          const decls: Declarator[] = [];
+          do {
+            const type = this.pointerRef(base);
+            const nameTok = this.peek();
+            const name = this.expectIdent("a variable name").s;
+            const dims = this.arrayDims();
+            const init = this.initializerOpt();
+            decls.push({ name, type, dims, init, loc: this.loc(nameTok) });
+          } while (this.accept(","));
+          out.push({ k: "global", stmt: { k: "decl", type: base, decls, storage: "", constexpr: false, line: cls.line, col: cls.col }, line: cls.line, col: cls.col });
+        }
         this.expectOp(";");
         return;
       }

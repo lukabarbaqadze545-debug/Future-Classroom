@@ -32,6 +32,7 @@ import { eqFn, lessFn, three } from "./order";
 import { It, charAt, iterElemTy, snapshotOf } from "./iter";
 import { checkArgs, numArg, val, type Call } from "./helpers";
 import { lowerBound, upperBound } from "./containers";
+import { nthElement, partialSort, stdSort } from "./stdsort";
 
 /** <algorithm>, <numeric> and friends. */
 
@@ -207,33 +208,45 @@ export function algorithmCall(fc: FnCompiler, name: string, e: Call): CE | null 
       checkArgs(fc, e, name, 2, 3);
       const r = rangeArgs(fc, e, 0);
       const less = lessOf(fc, e, 2, r.elem);
+      // std::sort is libstdc++'s introsort (equal elements end up where g++ puts them); stable_sort is stable.
+      const sorter = name === "sort" ? stdSort : (arr: any[], lt: (a: any, b: any) => boolean) => sortWith(arr, lt);
       return val(T_VOID, (fr) => {
         const range = r.range(fr);
-        range.write(sortWith(range.read(), less(fr)));
+        range.write(sorter(range.read(), less(fr)));
       }, line);
     }
     case "partial_sort": {
       checkArgs(fc, e, name, 3, 4);
       const first = fc.expr(e.args[0]).ev;
+      const middle = fc.expr(e.args[1]).ev;
       const last = fc.expr(e.args[2]).ev;
       const t = strip(fc.typeOfExpr(e.args[0]));
       const elem = t.k === "iter" ? iterElemTy(t.of) : t.k === "ptr" ? t.to : T_INT;
       const less = lessOf(fc, e, 3, elem);
       return val(T_VOID, (fr) => {
-        const range = rangeRef(first(fr), last(fr), line);
-        range.write(sortWith(range.read(), less(fr)));
+        const f = first(fr);
+        const m = middle(fr);
+        const range = rangeRef(f, last(fr), line);
+        const mid = m instanceof It ? m.i - (f as It).i : (m as ElemPlace).i - (f as ElemPlace).i;
+        const a = range.read();
+        partialSort(a, 0, mid, a.length, less(fr));
+        range.write(a);
       }, line);
     }
     case "nth_element": {
       checkArgs(fc, e, name, 3, 4);
       const first = fc.expr(e.args[0]).ev;
+      const nth = fc.expr(e.args[1]).ev;
       const last = fc.expr(e.args[2]).ev;
       const t = strip(fc.typeOfExpr(e.args[0]));
       const elem = t.k === "iter" ? iterElemTy(t.of) : t.k === "ptr" ? t.to : T_INT;
       const less = lessOf(fc, e, 3, elem);
       return val(T_VOID, (fr) => {
-        const range = rangeRef(first(fr), last(fr), line);
-        range.write(sortWith(range.read(), less(fr)));
+        const f = first(fr);
+        const m = nth(fr);
+        const range = rangeRef(f, last(fr), line);
+        const k = m instanceof It ? m.i - (f as It).i : (m as ElemPlace).i - (f as ElemPlace).i;
+        range.write(nthElement(range.read(), k, less(fr)));
       }, line);
     }
     case "reverse": {
@@ -572,15 +585,32 @@ export function algorithmCall(fc: FnCompiler, name: string, e: Call): CE | null 
       }, line);
     }
     case "equal": {
-      checkArgs(fc, e, name, 3, 4);
+      // equal(f1, l1, f2) · equal(f1, l1, f2, pred) · equal(f1, l1, f2, l2)
+      checkArgs(fc, e, name, 3, 5);
       const r = rangeArgs(fc, e, 0);
+      const secondTy = strip(fc.typeOfExpr(e.args[2]));
+      const secondRev = secondTy.k === "iter" && !!secondTy.reverse;
+      const twoRanges = e.args.length >= 5 || (e.args.length === 4 && ["iter", "ptr", "arr"].includes(strip(fc.typeOfExpr(e.args[3])).k));
       const other = fc.expr(e.args[2]).ev;
-      const eq = eqFn(fc.cc, r.elem, e);
+      const last2 = twoRanges ? fc.expr(e.args[3]).ev : null;
+      let same: (fr: Frame) => (x: any, y: any) => boolean;
+      if (!twoRanges && e.args.length === 4) {
+        const c = callable(fc, fc.expr(e.args[3]), e, r.elem, 2);
+        same = (fr) => {
+          const f = c(fr);
+          return (x, y) => !!f(x, y);
+        };
+      } else {
+        const eq = eqFn(fc.cc, r.elem, e);
+        same = () => eq;
+      }
       return val(T_BOOL, (fr) => {
         const a = r.range(fr).read();
         const o = other(fr);
-        const arr = o instanceof ElemPlace ? o.arr.slice(o.i, o.i + a.length) : o instanceof It ? (o.c as Vec).a.slice(o.i, o.i + a.length) : [];
-        return arr.length === a.length && a.every((x, i) => eq(x, arr[i]));
+        const end = last2 ? last2(fr) : o instanceof It ? new It(o.c, o.i + a.length, o.snap) : new ElemPlace(o.arr, o.i + a.length);
+        const b = rangeOf(o, end, secondRev, line).read();
+        const eq = same(fr);
+        return b.length === a.length && a.every((x, i) => eq(x, b[i]));
       }, line);
     }
     case "lexicographical_compare": {

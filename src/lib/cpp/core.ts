@@ -20,6 +20,14 @@ export const enum Op {
   Ret,
   Label,
   Switch,
+  /** `if (c) f;` as one step */
+  CondExec,
+  /** `if (c) a; else b;` as one step */
+  IfElse,
+  /** A conditional jump to either of two places (a loop test that is jumped to). */
+  Br,
+  /** Runs `f`, then tests `c` and jumps: the end of a loop body, its step and the test, in one step. */
+  ExecBr,
 }
 
 export type Instr =
@@ -30,9 +38,13 @@ export type Instr =
   | { op: Op.Jt; c: (fr: Frame) => boolean; to: Label }
   | { op: Op.Call; fn: FnInfo; args: ((fr: Frame) => any)[]; dst: number; line: number; /** virtual: pick the override by the object in slot 1 */ virt: boolean }
   | { op: Op.CallInd; callee: (fr: Frame) => any; args: ((fr: Frame) => any)[]; dst: number; line: number }
-  | { op: Op.Ret; v: ((fr: Frame) => any) | null }
+  | { op: Op.Ret; v: ((fr: Frame) => any) | null; line?: number }
   | { op: Op.Label; l: Label }
-  | { op: Op.Switch; sel: (fr: Frame) => any; table: Map<any, Label>; dflt: Label | null; end: Label };
+  | { op: Op.Switch; sel: (fr: Frame) => any; table: Map<any, Label>; dflt: Label | null; end: Label }
+  | { op: Op.CondExec; c: (fr: Frame) => boolean; f: (fr: Frame) => any; line: number }
+  | { op: Op.IfElse; c: (fr: Frame) => boolean; a: (fr: Frame) => any; b: (fr: Frame) => any; line: number }
+  | { op: Op.Br; c: (fr: Frame) => boolean; t: Label; e: Label }
+  | { op: Op.ExecBr; f: (fr: Frame) => any; c: (fr: Frame) => boolean; t: Label; e: Label; line: number };
 
 /** How a parameter is passed. */
 export type PassKind = "value" | "ref" | "obj";
@@ -75,6 +87,8 @@ export interface FnInfo {
   code: Instr[] | null;
   /** A body without calls to user code: run it directly. */
   fast: ((fr: Frame) => any) | null;
+  /** The line of the one statement of a `fast` function (for error messages). */
+  fastLine?: number;
   compiled: boolean;
   compiling: boolean;
   /** Natives are implemented in JS and called with evaluated arguments. */

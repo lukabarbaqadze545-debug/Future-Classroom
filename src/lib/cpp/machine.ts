@@ -61,6 +61,9 @@ export class Machine {
       if (rt.depth > rt.maxDepth) throw limitError("stack-overflow", "the recursion went too deep (stack overflow)");
       try {
         return fn0.fast(fr0);
+      } catch (e) {
+        if (e instanceof CppError && e.diagnostic.line === 0) e.diagnostic.line = fn0.fastLine ?? fn0.line;
+        throw e;
       } finally {
         rt.depth--;
       }
@@ -108,7 +111,10 @@ export class Machine {
               for (let i = 0; i < args.length; i++) nf[i + 1] = args[i](fr);
             }
             if (callee.fast) {
+              const callerLine = line;
+              line = callee.fastLine ?? line;
               const v = callee.fast(nf);
+              line = callerLine;
               if (ins.dst >= 0) fr[ins.dst] = v;
               break;
             }
@@ -151,6 +157,7 @@ export class Machine {
             break;
           }
           case Op.Ret: {
+            if (ins.line !== undefined) line = ins.line;
             const value = ins.v ? ins.v(fr) : undefined;
             if (stack.length === 0) return value;
             const s = stack.pop()!;
@@ -169,6 +176,23 @@ export class Machine {
             pc = target.pc;
             break;
           }
+          case Op.CondExec:
+            line = ins.line;
+            if (ins.c(fr)) ins.f(fr);
+            break;
+          case Op.IfElse:
+            line = ins.line;
+            if (ins.c(fr)) ins.a(fr);
+            else ins.b(fr);
+            break;
+          case Op.Br:
+            pc = ins.c(fr) ? ins.t.pc : ins.e.pc;
+            break;
+          case Op.ExecBr:
+            line = ins.line;
+            ins.f(fr);
+            pc = ins.c(fr) ? ins.t.pc : ins.e.pc;
+            break;
           case Op.Label:
             break;
         }

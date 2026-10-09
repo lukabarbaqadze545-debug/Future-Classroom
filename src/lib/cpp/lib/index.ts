@@ -565,7 +565,14 @@ export function installLibrary(cc: Compiler): Lib & {
           deleteObject(rt, info, q instanceof ObjPlace ? q.o : q instanceof ElemPlace ? q.arr[q.i] : q, line);
         }, line);
       }
-      return val(T_VOID, (fr) => void ev(fr), line);
+      // delete of a plain value: nothing runs, but deleting the same memory twice crashes real programs
+      return val(T_VOID, (fr) => {
+        const q = ev(fr);
+        if (q === null || q === undefined) return;
+        const owner: any = q instanceof ElemPlace ? q.arr : q;
+        if (owner.__dead) throw runtimeError("double-delete", "this memory was already deleted", line);
+        owner.__dead = true;
+      }, line);
     },
   };
   return lib;

@@ -33,6 +33,29 @@ export function textArg(fc: FnCompiler, ce: CE, at: Loc): (fr: Frame) => string 
   return fc.err("bad-argument", `${tyStr(ce.ty)} cannot be used as text here`, at, { type: tyStr(ce.ty) });
 }
 
+/**
+ * std::string::compare as libstdc++ answers it: the difference of the first two bytes that differ
+ * (so "apple" against "Apple" is 32, not 1), or else the difference of the lengths.
+ */
+export function stringCompare(a: string, b: string): number {
+  const n = Math.min(a.length, b.length);
+  for (let i = 0; i < n; i++) {
+    const d = a.charCodeAt(i) - b.charCodeAt(i);
+    if (d !== 0) return d;
+  }
+  return a.length - b.length;
+}
+
+/** strcmp: the same, but a string that ends first is compared by its terminating zero. */
+export function cStringCompare(a: string, b: string): number {
+  const n = Math.min(a.length, b.length);
+  for (let i = 0; i < n; i++) {
+    const d = a.charCodeAt(i) - b.charCodeAt(i);
+    if (d !== 0) return d;
+  }
+  return a.length === b.length ? 0 : a.length > b.length ? a.charCodeAt(n) : -b.charCodeAt(n);
+}
+
 function checkPos(pos: number, size: number, line: number): void {
   if (pos < 0 || pos > size) throw runtimeError("index-range", `position ${pos} is outside the string (size ${size})`, line, { index: pos, size, kind: "string" });
 }
@@ -135,16 +158,22 @@ export function stringMethod(fc: FnCompiler, obj: CE, name: string, e: Call): CE
           return s;
         }, line);
       }
+      const argTy = strip(fc.typeOfExpr(e.args[0]));
       const text = textArg(fc, fc.expr(e.args[0]), e);
       const pos = e.args.length > 1 ? numArg(fc, fc.expr(e.args[1]), e) : null;
       const len = e.args.length > 2 ? numArg(fc, fc.expr(e.args[2]), e) : null;
+      // append(const char *s, n) takes the first n characters; append(str, pos, len) takes a piece from pos
+      const countOnly = argTy.k !== "str" && e.args.length === 2;
       return val(T_STR, (fr) => {
         const s = self(fr);
         let add = text(fr);
         if (pos) {
           const p = pos(fr);
-          checkPos(p, add.length, line);
-          add = add.slice(p, len ? p + len(fr) : undefined);
+          if (countOnly) add = add.slice(0, p);
+          else {
+            checkPos(p, add.length, line);
+            add = add.slice(p, len ? p + len(fr) : undefined);
+          }
         }
         s.s = set ? add : s.s + add;
         return s;
@@ -257,12 +286,32 @@ export function stringMethod(fc: FnCompiler, obj: CE, name: string, e: Call): CE
       }, line);
     }
     case "compare": {
-      checkArgs(fc, e, name, 1);
-      const t = textArg(fc, fc.expr(e.args[0]), e);
+      checkArgs(fc, e, name, 1, 5);
+      // compare(str) · compare(pos, len, str) · compare(pos, len, str, spos, slen)
+      if (e.args.length === 1) {
+        const t = textArg(fc, fc.expr(e.args[0]), e);
+        return val(T_INT, (fr) => {
+          const a = self(fr).s;
+          const b = t(fr);
+          return stringCompare(a, b);
+        }, line);
+      }
+      if (e.args.length !== 3 && e.args.length !== 5) return fc.err("arg-count", "compare takes (str), (pos, len, str) or (pos, len, str, spos, slen)", e, { name: "compare", expected: "1, 3 or 5", given: e.args.length });
+      const pos = numArg(fc, fc.expr(e.args[0]), e);
+      const len = numArg(fc, fc.expr(e.args[1]), e);
+      const t = textArg(fc, fc.expr(e.args[2]), e);
+      const spos = e.args.length === 5 ? numArg(fc, fc.expr(e.args[3]), e) : () => 0;
+      const slen = e.args.length === 5 ? numArg(fc, fc.expr(e.args[4]), e) : () => Infinity;
       return val(T_INT, (fr) => {
-        const a = self(fr).s;
-        const b = t(fr);
-        return a < b ? -1 : a > b ? 1 : 0;
+        const s = self(fr).s;
+        const p = pos(fr);
+        if (p > s.length) throw runtimeError("index-range", `position ${p} is outside the string (size ${s.length})`, line, { index: p, size: s.length, kind: "string" });
+        const a = s.slice(p, p + len(fr));
+        const full = t(fr);
+        const sp = spos(fr);
+        if (sp > full.length) throw runtimeError("index-range", `position ${sp} is outside the string (size ${full.length})`, line, { index: sp, size: full.length, kind: "string" });
+        const b = full.slice(sp, sp + slen(fr));
+        return stringCompare(a, b);
       }, line);
     }
     case "starts_with":
@@ -387,7 +436,7 @@ export function stringBinary(fc: FnCompiler, op: string, l: CE, r: CE, at: Loc):
 export function stringCompound(fc: FnCompiler, op: string, l: CE, r: CE, at: Loc): CE | null {
   if (op !== "+") return null;
   const t = strip(r.ty);
-  const ok = t.k === "str" || r.lit !== undefined || (t.k === "ptr" && isChar(strip(t.to))) || isChar(t);
+  const ok = t.k === "str" || r.lit !== undefined || (t.k === "ptr" && isChar(strip(t.to))) || (t.k === "arr" && isChar(strip(t.of))) || isChar(t);
   if (!ok) return fc.err("bad-operands", `cannot add ${tyStr(r.ty)} to a string`, at, { type: tyStr(r.ty) });
   const b = textArg(fc, r, at);
   const lv = l.ev;
@@ -478,7 +527,7 @@ export function cStringCall(fc: FnCompiler, name: string, e: Call): CE | null {
           x = x.slice(0, n(fr));
           y = y.slice(0, n(fr));
         }
-        return x < y ? -1 : x > y ? 1 : 0;
+        return cStringCompare(x, y);
       }, line);
     }
     case "strcpy":

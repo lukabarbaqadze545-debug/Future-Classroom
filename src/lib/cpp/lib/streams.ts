@@ -548,7 +548,7 @@ function formatOne(spec: Spec, v: any, width: number | undefined, prec: number |
       const mag = Math.abs(x);
       body = conv === "f" || conv === "F" ? formatFixed(mag, p, alt) : conv === "e" || conv === "E" ? formatExp(mag, p, conv === "E", alt) : formatGeneral(mag, p, conv === "G", alt);
       if (Number.isNaN(x)) body = conv === "F" || conv === "E" || conv === "G" ? "NAN" : "nan";
-      sign = neg && !Number.isNaN(x) ? "-" : flags.includes("+") ? "+" : flags.includes(" ") ? " " : "";
+      sign = neg || Number.isNaN(x) ? "-" : flags.includes("+") ? "+" : flags.includes(" ") ? " " : "";
       return finish(sign, body, w, left, zero && Number.isFinite(x));
     }
     case "c":

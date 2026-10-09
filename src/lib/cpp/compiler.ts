@@ -946,14 +946,18 @@ export class Compiler {
       lines.push(run.line);
       run = null;
     };
+    // Anything after a return (or an unconditional jump) that nothing jumps to can never run.
+    let dead = false;
     for (const ins of code) {
       if (ins.op === Op.Label) {
         if (targets.has(ins.l)) {
           flush();
           merged.push(ins);
+          dead = false;
         }
         continue;
       }
+      if (dead) continue;
       if (ins.op === Op.Exec) {
         if (!run) run = { fs: [], line: ins.line };
         run.fs.push(ins.f);
@@ -961,11 +965,13 @@ export class Compiler {
       }
       flush();
       merged.push(ins);
+      if (ins.op === Op.Ret || ins.op === Op.Jmp || ins.op === Op.Switch) dead = true;
     }
     flush();
+    const fused = this.fuse(merged);
     // Positions (labels are kept as no-op instructions only where something jumps to them: give each its pc, then drop them)
     const out: Instr[] = [];
-    for (const ins of merged) {
+    for (const ins of fused) {
       if (ins.op === Op.Label) {
         ins.l.pc = out.length;
         continue;
@@ -979,7 +985,9 @@ export class Compiler {
       if (out.length === 1 && last.op === Op.Ret) {
         const v = last.v;
         fn.fast = v ? (fr) => v(fr) : () => undefined;
+        fn.fastLine = last.line ?? fn.line;
       } else if (first.op === Op.Exec && last.op === Op.Ret) {
+        fn.fastLine = first.line;
         const f = first.f;
         const v = last.v;
         fn.fast = (fr) => {
@@ -987,6 +995,87 @@ export class Compiler {
           return v ? v(fr) : undefined;
         };
       }
+    }
+    return out;
+  }
+
+  /**
+   * Peephole pass: the most common little shapes become one instruction each, so a tight loop
+   * takes one step per round instead of four or five. Behaviour is unchanged.
+   */
+  private fuse(code: Instr[]): Instr[] {
+    // How often each label is jumped to, and where each label sits.
+    const jumps = new Map<Label, number>();
+    const bump = (l: Label | null) => l && jumps.set(l, (jumps.get(l) ?? 0) + 1);
+    for (const ins of code) {
+      if (ins.op === Op.Jmp || ins.op === Op.Jf || ins.op === Op.Jt) bump(ins.to);
+      else if (ins.op === Op.Switch) {
+        for (const l of ins.table.values()) bump(l);
+        bump(ins.dflt);
+        bump(ins.end);
+      }
+    }
+    const indexOf = new Map<Label, number>();
+    code.forEach((ins, i) => {
+      if (ins.op === Op.Label) indexOf.set(ins.l, i);
+    });
+    // The loop test a `Jmp` goes back to: the Jf right after its label, plus a fresh label just past that Jf.
+    const afterTest = new Map<Instr, Label>();
+    const testAt = (l: Label): Instr | null => {
+      let i = indexOf.get(l);
+      if (i === undefined) return null;
+      while (code[i] && code[i].op === Op.Label) i++;
+      const t = code[i];
+      return t && t.op === Op.Jf ? t : null;
+    };
+    for (const ins of code) {
+      if (ins.op === Op.Jmp) {
+        const t = testAt(ins.to);
+        if (t && !afterTest.has(t)) afterTest.set(t, { pc: -1 });
+      }
+    }
+    const out: Instr[] = [];
+    for (let i = 0; i < code.length; i++) {
+      const ins = code[i];
+      const next = code[i + 1];
+      // if (c) stmt;
+      if (ins.op === Op.Jf && next && next.op === Op.Exec && !afterTest.has(ins)) {
+        const l1 = code[i + 2];
+        if (l1 && l1.op === Op.Label && l1.l === ins.to && jumps.get(ins.to) === 1) {
+          out.push({ op: Op.CondExec, c: ins.c, f: next.f, line: next.line });
+          i += 1;
+          continue;
+        }
+        // if (c) a; else b;
+        const jmp = code[i + 2];
+        const l1b = code[i + 3];
+        const elseExec = code[i + 4];
+        const l2 = code[i + 5];
+        if (jmp && jmp.op === Op.Jmp && l1b && l1b.op === Op.Label && l1b.l === ins.to && elseExec && elseExec.op === Op.Exec && l2 && l2.op === Op.Label && l2.l === jmp.to && jumps.get(ins.to) === 1 && jumps.get(jmp.to) === 1) {
+          out.push({ op: Op.IfElse, c: ins.c, a: next.f, b: elseExec.f, line: next.line });
+          i += 4; // the labels are not targets of anything else
+          out.push(l2);
+          continue;
+        }
+      }
+      // end of a loop: [body tail and step], then back to the test
+      if (ins.op === Op.Exec && next && next.op === Op.Jmp) {
+        const t = testAt(next.to);
+        if (t && t.op === Op.Jf) {
+          out.push({ op: Op.ExecBr, f: ins.f, c: t.c, t: afterTest.get(t)!, e: t.to, line: ins.line });
+          i += 1;
+          continue;
+        }
+      }
+      if (ins.op === Op.Jmp) {
+        const t = testAt(ins.to);
+        if (t && t.op === Op.Jf) {
+          out.push({ op: Op.Br, c: t.c, t: afterTest.get(t)!, e: t.to });
+          continue;
+        }
+      }
+      out.push(ins);
+      if (afterTest.has(ins)) out.push({ op: Op.Label, l: afterTest.get(ins)! });
     }
     return out;
   }

@@ -4,6 +4,7 @@ import type { CE, ClassInfo, Frame } from "../core";
 import type { Compiler } from "../compiler";
 import type { FnCompiler } from "../fncompiler";
 import { needsClone } from "../conv";
+import { makeHeap, popHeap, pushHeap } from "./stdsort";
 import { Bits, CStr, Deq, ElemPlace, Func, HMap, HSet, ObjPlace, OMap, OSet, PQ, Pair, SStream, Tup, Vec, type Place } from "../values";
 import { T_BOOL, T_CHAR, T_INT, T_LONG, T_SIZE, T_STR, T_VOID, decay, isClassLike, isIntegral, noConst, pairOf, sameType, stdTy, strip, tyStr, withConst, type Ty } from "../types";
 import { eqFn, keyFn, lessFn, three, type Cmp3 } from "./order";
@@ -270,8 +271,9 @@ export function construct(fc: FnCompiler, ty: Ty, args: Expr[], at: Loc): CE {
           const b = fc.expr(args[1]).ev;
           const a = first.ev;
           return val(ty, (fr) => {
-            const pq = new PQ([], cmp);
-            for (const x of rangeElements(a(fr), b(fr), line)) heapPush(pq, x);
+            // priority_queue(first, last) copies the elements and makes a heap of them
+            const pq = new PQ(rangeElements(a(fr), b(fr), line), cmp);
+            heapify(pq);
             return pq;
           }, line);
         }
@@ -419,6 +421,8 @@ function constructString(fc: FnCompiler, args: Expr[], at: Loc): CE {
   const text = textArg(fc, first, at);
   const pos = numArg(fc, fc.expr(args[1]), at);
   const len = args.length > 2 ? numArg(fc, fc.expr(args[2]), at) : null;
+  // string(const char *s, n): the first n characters of a C string
+  if (ft.k !== "str" && args.length === 2) return val(T_STR, (fr) => new CStr(text(fr).slice(0, pos(fr))), line);
   return val(T_STR, (fr) => {
     const s = text(fr);
     const p = pos(fr);
@@ -608,36 +612,21 @@ export function hashInsert(c: any, x: any): boolean {
 /* ----------------------------------- heap ----------------------------------- */
 
 export function heapPush(pq: PQ, x: any): void {
-  const a = pq.a;
-  a.push(x);
-  let i = a.length - 1;
-  while (i > 0) {
-    const p = (i - 1) >> 1;
-    if (pq.cmp(a[p], a[i]) >= 0) break;
-    [a[p], a[i]] = [a[i], a[p]];
-    i = p;
-  }
+  pq.a.push(x);
+  pushHeap(pq.a, 0, pq.a.length, (p, q) => pq.cmp(p, q) < 0);
 }
 
 export function heapPop(pq: PQ): any {
   const a = pq.a;
   const top = a[0];
-  const last = a.pop();
-  if (a.length > 0) {
-    a[0] = last;
-    let i = 0;
-    for (;;) {
-      const l = 2 * i + 1;
-      const r = l + 1;
-      let m = i;
-      if (l < a.length && pq.cmp(a[m], a[l]) < 0) m = l;
-      if (r < a.length && pq.cmp(a[m], a[r]) < 0) m = r;
-      if (m === i) break;
-      [a[m], a[i]] = [a[i], a[m]];
-      i = m;
-    }
-  }
+  popHeap(a, 0, a.length, (p, q) => pq.cmp(p, q) < 0);
+  a.pop();
   return top;
+}
+
+/** The heap of a priority_queue built from existing elements (std::make_heap). */
+export function heapify(pq: PQ): void {
+  makeHeap(pq.a, 0, pq.a.length, (p, q) => pq.cmp(p, q) < 0);
 }
 
 /* ------------------------------------ range-for ------------------------------------ */

@@ -44,7 +44,8 @@ function scaled(x: number, scale: number): bigint {
 }
 
 const nonFinite = (x: number, upper = false): string | null => {
-  if (Number.isNaN(x)) return upper ? "NAN" : "nan";
+  // On x86 the NaN made by 0.0/0.0, sqrt(-1) and the like has its sign bit set, and glibc prints it as -nan.
+  if (Number.isNaN(x)) return upper ? "-NAN" : "-nan";
   if (!Number.isFinite(x)) return (x < 0 ? "-" : "") + (upper ? "INF" : "inf");
   return null;
 };

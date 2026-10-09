@@ -8,6 +8,7 @@ import { It, iterElemTy } from "./iter";
 import { eqFn } from "./order";
 import { BackInserter, callable, lessOf, rangeArgs, rangeRef, type RangeRef } from "./algos";
 import { checkArgs, val, type Call } from "./helpers";
+import { makeHeap, popHeap, pushHeap, sortHeap } from "./stdsort";
 
 /**
  * More of <algorithm> and <numeric>: the set operations, merge, partition,
@@ -92,6 +93,31 @@ export function moreAlgorithms(fc: FnCompiler, name: string, e: Call): CE | null
           if (name === "set_union" || name === "set_symmetric_difference" || name === "merge") while (j < b.length) res.push(copy(b[j++]));
         }
         return emitTo(ov(fr), res, line);
+      }, line);
+    }
+    case "make_heap":
+    case "push_heap":
+    case "pop_heap":
+    case "sort_heap":
+    case "is_heap": {
+      checkArgs(fc, e, name, 2, 3);
+      const r = rangeArgs(fc, e, 0);
+      const less = lessOf(fc, e, 2, r.elem);
+      const ops = { make_heap: makeHeap, push_heap: pushHeap, pop_heap: popHeap, sort_heap: sortHeap } as const;
+      if (name === "is_heap") {
+        return val(T_BOOL, (fr) => {
+          const a = r.range(fr).read();
+          const lt = less(fr);
+          for (let i = 1; i < a.length; i++) if (lt(a[(i - 1) >> 1], a[i])) return false;
+          return true;
+        }, line);
+      }
+      const op = ops[name];
+      return val(T_VOID, (fr) => {
+        const range = r.range(fr);
+        const a = range.read();
+        op(a, 0, a.length, less(fr));
+        range.write(a);
       }, line);
     }
     case "includes": {

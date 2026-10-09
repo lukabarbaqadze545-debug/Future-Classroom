@@ -1,4 +1,4 @@
-import { semanticError, unsupported, limitError } from "./errors";
+import { semanticError, unsupported, limitError, runtimeError } from "./errors";
 import type { Declarator, Expr, FuncDecl, Loc, Stmt, TypeSpec } from "./ast";
 import { Op, type CE, type ClassInfo, type FnInfo, type Frame, type Instr, type Label, type ParamInfo, type VarInfo } from "./core";
 import type { Compiler } from "./compiler";
@@ -356,6 +356,11 @@ export class FnCompiler {
         const cstr = this.cc.lib.cstring;
         return { ty: target, ev: (fr) => this.newStr(cstr(ev(fr))), line: at.line };
       }
+      if (from.k === "arr" && from.of.k === "int" && from.of.ch) {
+        const ev = ce.ev;
+        const cstr = this.cc.lib.cstring;
+        return { ty: target, ev: (fr) => this.newStr(cstr(new ElemPlace(ev(fr), 0))), line: at.line };
+      }
       if (from.k === "int" && from.ch && what === "cast") {
         const ev = ce.ev;
         return { ty: target, ev: (fr) => this.newStr(String.fromCharCode(ev(fr) & 255)), line: at.line };
@@ -471,7 +476,19 @@ export class FnCompiler {
     this.popScope();
     this.emitDestroys(this.destroyLists[0], null);
     if (this.retTy === null) fn.ret = T_VOID;
-    const end = this.fn.name === "main" && !this.fn.cls ? { op: Op.Ret as const, v: () => 0 } : { op: Op.Ret as const, v: null };
+    this.fellOffEnd = this.retTy !== null && this.retTy.k !== "void" && !fn.isCtor && !fn.isDtor && !(fn.name === "main" && !fn.cls);
+    const fnName = this.fn.qname;
+    const end =
+      this.fn.name === "main" && !this.fn.cls
+        ? { op: Op.Ret as const, v: () => 0 }
+        : this.fellOffEnd
+          ? {
+              op: Op.Ret as const,
+              v: (): never => {
+                throw runtimeError("missing-return", `the function '${fnName}' reached its end without returning a value`, 0, { name: fnName });
+              },
+            }
+          : { op: Op.Ret as const, v: null };
     this.out.push(end);
     fn.code = this.out;
     fn.nslots = this.nslots;
@@ -784,7 +801,7 @@ export class FnCompiler {
   private emitReturn(value: ((fr: Frame) => any) | null, keep: VarInfo | null = null): void {
     const pending = this.destroyLists.some((l) => l.some((e) => e.v !== keep));
     if (!pending) {
-      this.out.push({ op: Op.Ret, v: value });
+      this.out.push({ op: Op.Ret, v: value, line: this.curLine });
       return;
     }
     let result: ((fr: Frame) => any) | null = null;
@@ -794,7 +811,7 @@ export class FnCompiler {
       result = (fr) => fr[t];
     }
     this.emitDestroysFrom(0, keep);
-    this.out.push({ op: Op.Ret, v: result });
+    this.out.push({ op: Op.Ret, v: result, line: this.curLine });
   }
 
   private returnStatement(s: Extract<Stmt, { k: "return" }>): void {
@@ -1064,6 +1081,8 @@ export class FnCompiler {
   }
 
   private lastDeclared: VarInfo | null = null;
+  /** The function returns a value, so reaching its closing brace is a mistake. */
+  fellOffEnd = false;
 
   private declareVariableInner(typeSpec: TypeSpec, d: Declarator, where: "local" | "global" | "static", isConstexpr: boolean): void {
     let ty = this.cc.resolveType(d.type, this);
@@ -1078,6 +1097,9 @@ export class FnCompiler {
       const base = ty;
       const dimCEs = d.dims.map((x) => (x ? this.expr(x) : null));
       const consts = dimCEs.map((c) => (c && c.cst !== undefined ? Number(c.cst) : null));
+      consts.forEach((c) => {
+        if (c !== null && c < 0) this.err("array-size-negative", `the size of array '${d.name}' cannot be negative (it is ${c})`, at, { name: d.name, size: c });
+      });
       if (consts.every((c, i) => c !== null || d.dims[i] === null)) {
         dims = consts.map((c) => (c === null ? -1 : c));
         let t: Ty = base;
@@ -1280,7 +1302,7 @@ export class FnCompiler {
   private checkNarrowing(ce: CE, to: Ty, at: Loc): void {
     const f = strip(ce.ty);
     const t = strip(to);
-    if (ce.cst !== undefined && typeof ce.cst !== "boolean") return;
+    if (ce.cst !== undefined && typeof ce.cst !== "boolean" && !(isFloating(f) && isIntegral(t))) return;
     const narrowing = (isFloating(f) && isIntegral(t)) || (f.k === "double" && t.k === "float") || (f.k === "int" && t.k === "int" && (f.bits > t.bits || (f.signed !== t.signed && f.bits >= t.bits)));
     if (narrowing) this.err("narrowing", `narrowing conversion of ${tyStr(ce.ty)} to ${tyStr(to)} inside { }`, at, { from: tyStr(ce.ty), to: tyStr(to) });
   }
@@ -1652,6 +1674,13 @@ export class FnCompiler {
         const i = params.length;
         if (h && h.k === "fn" && h.params[i]) ty = h.params[i];
         else this.unsupported("lambdas with 'auto' parameters outside of an algorithm call", e);
+      } else if (ty.k === "ref" && ty.to.k === "tparam" && ty.to.name === "auto") {
+        // `auto &a`, `const auto &a`: the same, bound by reference
+        const h = hint ? strip(hint) : null;
+        const i = params.length;
+        if (!(h && h.k === "fn" && h.params[i])) this.unsupported("lambdas with 'auto' parameters outside of an algorithm call", e);
+        const inner = strip(h.params[i]);
+        ty = { k: "ref", to: ty.to.c ? withConst(inner) : inner };
       }
       const declared = ty;
       let pass: ParamInfo["pass"] = "value";
