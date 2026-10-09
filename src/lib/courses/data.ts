@@ -42,9 +42,9 @@ function build(): void {
   exerciseIndex = new Map();
   let order = 0;
   for (const course of Object.values(COURSES)) {
-    for (const module of course.modules) {
-      for (const lesson of module.lessons) {
-        const ref: LessonRef = { course, module, lesson, order: order++ };
+    for (const mod of course.modules) {
+      for (const lesson of mod.lessons) {
+        const ref: LessonRef = { course, module: mod, lesson, order: order++ };
         lessonIndex.set(lesson.id, ref);
         for (const exercise of lesson.exercises) exerciseIndex.set(exercise.id, { ref, exercise });
       }

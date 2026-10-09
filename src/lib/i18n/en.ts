@@ -5,6 +5,7 @@
  */
 import { labsEn } from "./labs-en";
 import { assistantEn } from "./assistant-en";
+import { coursesEn } from "./courses-en";
 
 export const en = {
   meta: {
@@ -124,6 +125,7 @@ export const en = {
     learn: "Learn",
     library: "Library",
     assistant: "Learning Assistant",
+    courses: "Courses",
     progress: "My progress",
     join: "Join a class",
     labs: "Labs",
@@ -548,6 +550,10 @@ export const en = {
         liveClass: { name: "Live class", text: "Join a live class." },
         nightOwl: { name: "Late hours", text: "Solve a challenge between 10 pm and 4 am." },
         earlyBird: { name: "Early start", text: "Solve a challenge between 4 am and 7 am." },
+        coder1: { name: "First program", text: "Solve a programming task in a course." },
+        coder10: { name: "Ten programs", text: "Solve 10 programming tasks in a course." },
+        coder50: { name: "Fifty programs", text: "Solve 50 programming tasks in a course." },
+        lessons5: { name: "Five lessons", text: "Finish 5 lessons of a course." },
         level5: { name: "Level 5", text: "Reach level 5." },
       },
     },
@@ -1206,6 +1212,7 @@ export const en = {
   },
   labs: labsEn,
   assistant: assistantEn,
+  courses: coursesEn,
 };
 
 type Widen<T> = T extends string

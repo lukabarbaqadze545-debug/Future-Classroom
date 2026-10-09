@@ -28,7 +28,7 @@ export interface EngagementState {
   best: number;
   /** Badge id → the day it was earned. */
   badges: Record<string, string>;
-  totals: { challenges: number; firstTry: number; practice: number; quizzes: number; perfectQuizzes: number; live: number; joined: number; night: number; early: number; words: number };
+  totals: { challenges: number; firstTry: number; practice: number; quizzes: number; perfectQuizzes: number; live: number; joined: number; night: number; early: number; words: number; code: number; lessons: number };
   /** The laboratories the visitor has worked in (ever). */
   labs: string[];
   /** Counters of the current school day; reset when the day changes. */
@@ -38,6 +38,8 @@ export interface EngagementState {
     attempts: number;
     practice: number;
     practiceXp: number;
+    /** Experience from solved programming tasks today (capped). */
+    codeXp: number;
     /** Words known in the vocabulary practice, and the experience they gave (capped). */
     words: number;
     wordsXp: number;
@@ -56,6 +58,10 @@ export type EngagementEvent =
   | { kind: "practice" }
   /** A word the visitor knew while practising their words. */
   | { kind: "word" }
+  /** A programming task of a course was solved for the first time (1 easy … 3 hard). */
+  | { kind: "code"; weight: 1 | 2 | 3 }
+  /** A course lesson was finished (all its tasks solved). */
+  | { kind: "lesson" }
   | { kind: "quiz"; score: number; max: number }
   /** An answer in a live class. */
   | { kind: "live" }
@@ -89,6 +95,9 @@ export const XP = {
   practiceDailyCap: 40,
   word: 2,
   wordDailyCap: 30,
+  codePerWeight: 12,
+  codeDailyCap: 180,
+  lesson: 20,
   quizBase: 10,
   quizScore: 10,
   live: 3,
@@ -111,14 +120,14 @@ export function emptyState(today: string): EngagementState {
     xpByDay: {},
     best: 0,
     badges: {},
-    totals: { challenges: 0, firstTry: 0, practice: 0, quizzes: 0, perfectQuizzes: 0, live: 0, joined: 0, night: 0, early: 0, words: 0 },
+    totals: { challenges: 0, firstTry: 0, practice: 0, quizzes: 0, perfectQuizzes: 0, live: 0, joined: 0, night: 0, early: 0, words: 0, code: 0, lessons: 0 },
     labs: [],
     today: freshToday(today),
   };
 }
 
 function freshToday(day: string): EngagementState["today"] {
-  return { day, challenge: "open", attempts: 0, practice: 0, practiceXp: 0, words: 0, wordsXp: 0, live: 0, joined: false, labs: [], chest: false };
+  return { day, challenge: "open", attempts: 0, practice: 0, practiceXp: 0, codeXp: 0, words: 0, wordsXp: 0, live: 0, joined: false, labs: [], chest: false };
 }
 
 // --- Days ------------------------------------------------------------------------
@@ -299,6 +308,10 @@ export const BADGES: BadgeRule[] = [
   { id: "words25", progress: toward((s) => s.totals.words, 25) },
   { id: "words100", progress: toward((s) => s.totals.words, 100) },
   { id: "quizAce", progress: toward((s) => s.totals.perfectQuizzes, 1) },
+  { id: "coder1", progress: toward((s) => s.totals.code, 1) },
+  { id: "coder10", progress: toward((s) => s.totals.code, 10) },
+  { id: "coder50", progress: toward((s) => s.totals.code, 50) },
+  { id: "lessons5", progress: toward((s) => s.totals.lessons, 5) },
   { id: "explorer", progress: toward((s) => s.labs.length, 3) },
   { id: "liveClass", progress: toward((s) => s.totals.joined, 1) },
   { id: "nightOwl", progress: toward((s) => s.totals.night, 1) },
@@ -386,6 +399,21 @@ export function applyEvent(before: EngagementState, event: EngagementEvent, cont
       const xp = Math.min(XP.word, room);
       today.wordsXp += xp;
       gained += xp;
+      break;
+    }
+    case "code": {
+      totals.code++;
+      // A solved task counts as an answer for the daily goal, and earns more the harder it is (up to a daily cap).
+      today.practice++;
+      const room = Math.max(0, XP.codeDailyCap - today.codeXp);
+      const xp = Math.min(XP.codePerWeight * event.weight, room);
+      today.codeXp += xp;
+      gained += xp;
+      break;
+    }
+    case "lesson": {
+      totals.lessons++;
+      gained += XP.lesson;
       break;
     }
     case "quiz": {
@@ -519,6 +547,8 @@ export function parseState(raw: string | null, today: string): EngagementState {
       night: count(t.night),
       early: count(t.early),
       words: count(t.words),
+      code: count(t.code),
+      lessons: count(t.lessons),
     },
     labs: strings(o.labs, 40),
     today: {
@@ -527,6 +557,7 @@ export function parseState(raw: string | null, today: string): EngagementState {
       attempts: Math.min(count(td.attempts), CHALLENGE_TRIES),
       practice: count(td.practice),
       practiceXp: count(td.practiceXp),
+      codeXp: count(td.codeXp),
       words: count(td.words),
       wordsXp: count(td.wordsXp),
       live: count(td.live),

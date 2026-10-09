@@ -1,6 +1,7 @@
 import type { Dictionary } from "./en";
 import { labsKa } from "./labs-ka";
 import { assistantKa } from "./assistant-ka";
+import { coursesKa } from "./courses-ka";
 
 /** Georgian UI strings (ქართული). Must match the English dictionary shape. */
 export const ka: Dictionary = {
@@ -121,6 +122,7 @@ export const ka: Dictionary = {
     learn: "სწავლა",
     library: "ბიბლიოთეკა",
     assistant: "სასწავლო ასისტენტი",
+    courses: "კურსები",
     progress: "ჩემი პროგრესი",
     join: "კლასში შესვლა",
     labs: "ლაბორატორიები",
@@ -545,6 +547,10 @@ export const ka: Dictionary = {
         liveClass: { name: "ცოცხალი გაკვეთილი", text: "ჩაერთე ცოცხალ გაკვეთილში." },
         nightOwl: { name: "გვიან საღამოს", text: "ამოხსენი გამოწვევა 22:00-სა და 04:00-ს შორის." },
         earlyBird: { name: "ადრე დილით", text: "ამოხსენი გამოწვევა 04:00-სა და 07:00-ს შორის." },
+        coder1: { name: "პირველი პროგრამა", text: "ამოხსენი პროგრამირების ამოცანა კურსში." },
+        coder10: { name: "ათი პროგრამა", text: "ამოხსენი 10 პროგრამირების ამოცანა კურსში." },
+        coder50: { name: "ორმოცდაათი პროგრამა", text: "ამოხსენი 50 პროგრამირების ამოცანა კურსში." },
+        lessons5: { name: "ხუთი გაკვეთილი", text: "დაასრულე კურსის 5 გაკვეთილი." },
         level5: { name: "მე-5 დონე", text: "მიაღწიე მე-5 დონეს." },
       },
     },
@@ -1203,4 +1209,5 @@ export const ka: Dictionary = {
   },
   labs: labsKa,
   assistant: assistantKa,
+  courses: coursesKa,
 };

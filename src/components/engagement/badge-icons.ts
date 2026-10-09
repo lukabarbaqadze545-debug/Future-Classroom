@@ -1,4 +1,4 @@
-import { Award, BadgeCheck, BookA, CalendarCheck, CalendarDays, CalendarRange, Crosshair, Flag, FlaskConical, Languages, Layers, ListChecks, Moon, Radio, Repeat, Sunrise, Target, type LucideIcon } from "lucide-react";
+import { Award, BadgeCheck, Braces, Code2, GraduationCap, Terminal, BookA, CalendarCheck, CalendarDays, CalendarRange, Crosshair, Flag, FlaskConical, Languages, Layers, ListChecks, Moon, Radio, Repeat, Sunrise, Target, type LucideIcon } from "lucide-react";
 
 /** One line drawing for every achievement. */
 export const BADGE_ICONS: Record<string, LucideIcon> = {
@@ -18,5 +18,9 @@ export const BADGE_ICONS: Record<string, LucideIcon> = {
   liveClass: Radio,
   nightOwl: Moon,
   earlyBird: Sunrise,
+  coder1: Terminal,
+  coder10: Code2,
+  coder50: Braces,
+  lessons5: GraduationCap,
   level5: Award,
 };
