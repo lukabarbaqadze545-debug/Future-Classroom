@@ -116,6 +116,13 @@ async function doExercise(lesson: Lesson, e: Exercise): Promise<void> {
 
 async function doBlock(lesson: Lesson, b: Extract<Block, { k: "code" | "predict" }>): Promise<void> {
   const key = `${lesson.id}/${b.id}`;
+  if (b.k === "code" && b.error) {
+    // A program that is meant to fail: the runner must report this problem (there is no output to compare).
+    const mine = runCpp(b.code, { stdin: b.stdin ?? "", stepLimit: 50_000_000 });
+    if (mine.status === "ok" || mine.diagnostic?.code !== b.error) fail(key, `expected the diagnostic "${b.error}" but got ${mine.status} ${mine.diagnostic?.code}`);
+    next.outputs[key] = { sig: blockSig(b), out: "" };
+    return;
+  }
   const sig = blockSig(b);
   const old = previous.outputs[key];
   let out: string;

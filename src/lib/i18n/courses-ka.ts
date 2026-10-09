@@ -154,7 +154,7 @@ export const coursesKa: CoursesDictionary = {
   playground: {
     title: "C++ სათამაშო მოედანი",
     lead: "დაწერე ნებისმიერი C++ პროგრამა, მიეცი შემავალი მონაცემები და გაუშვი. პროგრამა შენს ბრაუზერში მუშაობს და არსად იგზავნება.",
-    template: "#include <iostream>\nusing namespace std;\n\nint main() {\n    cout << \"Hello!\" << endl;\n    return 0;\n}\n",
+    template: "#include <iostream>\nusing namespace std;\n\nint main() {\n    // დაწერე შენი პროგრამა აქ\n    cout << \"Hello!\" << endl;\n    return 0;\n}\n",
     supports: "რას უშვებს",
     supportsText: "C++17-ის დიდ ნაწილს: რიცხვებს, სტრიქონებს, ვექტორებს, ასოციაციურ მასივებს (map), სიმრავლეებს, რიგებს, ალგორითმებს, სტრუქტურებს, კლასებს მემკვიდრეობით, შაბლონებსა და ლამბდებს. ეს სრული კომპილატორი არ არის: ფაილები, ნაკადები და გამონაკლისები არ მუშაობს.",
     check: "შეცდომების შემოწმება",

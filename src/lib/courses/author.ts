@@ -23,9 +23,21 @@ export const warn = callout("warn");
 export const note = callout("note");
 export const remember = callout("remember");
 
-export function code(id: string, source: string, opts: { out?: string; stdin?: string; caption?: string; readonly?: boolean } = {}): Block {
-  return { k: "code", id, code: trimCode(source), out: opts.out, stdin: opts.stdin, caption: opts.caption ? T(opts.caption) : undefined, readonly: opts.readonly };
+export function code(id: string, source: string, opts: { out?: string; stdin?: string; caption?: string; readonly?: boolean; error?: string } = {}): Block {
+  return { k: "code", id, code: trimCode(source), out: opts.out, stdin: opts.stdin, caption: opts.caption ? T(opts.caption) : undefined, readonly: opts.readonly, error: opts.error };
 }
+
+/** A small deterministic random generator for test data (same numbers every time). */
+export function rng(seed: number): (lo: number, hi: number) => number {
+  let s = seed >>> 0;
+  return (lo, hi) => {
+    s = (Math.imul(s, 1664525) + 1013904223) >>> 0;
+    return lo + Math.floor((s / 4294967296) * (hi - lo + 1));
+  };
+}
+
+/** Input lines from rows of numbers: lines([1, 2], [3]) is "1 2\n3\n". */
+export const lines = (...rows: (number | string)[][]): string => rows.map((r) => r.join(" ")).join("\n") + "\n";
 
 export function predict(id: string, source: string, opts: { stdin?: string; ask?: string; why?: string } = {}): Block {
   return { k: "predict", id, code: trimCode(source), stdin: opts.stdin, ask: opts.ask ? T(opts.ask) : undefined, why: opts.why ? T(opts.why) : undefined };

@@ -27,7 +27,7 @@ export type Block =
   | { k: "list"; items: Text[]; ordered?: boolean }
   | { k: "callout"; tone: CalloutTone; title?: Text; text: Text }
   /** A program the student can read, change and run. `out` is what it prints (checked by the tests). */
-  | { k: "code"; id: string; code: string; stdin?: string; out?: string; caption?: Text; /** Shown read-only (a fragment, not a program). */ readonly?: boolean }
+  | { k: "code"; id: string; code: string; stdin?: string; out?: string; caption?: Text; /** Shown read-only (a fragment, not a program). */ readonly?: boolean; /** A program that is meant to fail: the diagnostic code the runner reports (checked by the tests). */ error?: string }
   /** "What will this print?" — the student types the output; the server runs the program to check it. */
   | { k: "predict"; id: string; code: string; stdin?: string; ask?: Text; why?: Text }
   /** A multiple-choice question. `answer` is the index of the right option. */
