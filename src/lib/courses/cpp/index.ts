@@ -1,6 +1,7 @@
 import { T } from "../author";
 import type { Course } from "../types";
 import { module1 } from "./m1";
+import { module2 } from "./m2";
 import { planned } from "./planned";
 
 export const cppCourse: Course = {
@@ -12,6 +13,6 @@ export const cppCourse: Course = {
     "მოსწავლეებისთვის, რომლებსაც პროგრამირება არასოდეს შეუსწავლიათ. კომპიუტერთან მუშაობის გარდა არაფერი გჭირდება: არც დაყენებული პროგრამა, არც ანგარიში.",
     "For students who have never programmed. You need nothing but a computer: no software to install, no account.",
   ),
-  modules: [module1],
+  modules: [module1, module2],
   planned,
 };

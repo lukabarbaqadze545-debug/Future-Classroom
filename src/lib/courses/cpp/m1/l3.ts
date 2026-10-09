@@ -1,4 +1,4 @@
-import { code, exercise, h, lesson, ol, p, predict, quiz, remember, tip, ul, warn } from "../../author";
+import { code, exercise, h, lesson, ol, p, predict, quiz, remember, tip, warn } from "../../author";
 
 export const l3 = lesson({
   id: "cpp-1-3",

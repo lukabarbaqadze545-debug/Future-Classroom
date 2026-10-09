@@ -922,6 +922,319 @@
      "output": "Subtotal: 750.00\nDiscount: 750.00\nTotal: 0.00\n"
     }
    ]
+  },
+  "cpp-2-1-a": {
+   "sig": "c7761fbc2e36d4a2",
+   "samples": [
+    {
+     "input": "7\n",
+     "output": "1\n"
+    }
+   ],
+   "tests": [
+    {
+     "input": "8\n",
+     "output": "0\n"
+    },
+    {
+     "input": "0\n",
+     "output": "0\n"
+    },
+    {
+     "input": "-3\n",
+     "output": "1\n"
+    },
+    {
+     "input": "-4\n",
+     "output": "0\n"
+    },
+    {
+     "input": "1\n",
+     "output": "1\n"
+    },
+    {
+     "input": "-1\n",
+     "output": "1\n"
+    },
+    {
+     "input": "1000000000\n",
+     "output": "0\n"
+    },
+    {
+     "input": "-999999999\n",
+     "output": "1\n"
+    }
+   ]
+  },
+  "cpp-2-1-b": {
+   "sig": "ecb89e938144e955",
+   "samples": [
+    {
+     "input": "2024\n",
+     "output": "1\n"
+    }
+   ],
+   "tests": [
+    {
+     "input": "1900\n",
+     "output": "0\n"
+    },
+    {
+     "input": "2000\n",
+     "output": "1\n"
+    },
+    {
+     "input": "2023\n",
+     "output": "0\n"
+    },
+    {
+     "input": "2100\n",
+     "output": "0\n"
+    },
+    {
+     "input": "1600\n",
+     "output": "1\n"
+    },
+    {
+     "input": "4\n",
+     "output": "1\n"
+    },
+    {
+     "input": "100\n",
+     "output": "0\n"
+    },
+    {
+     "input": "400\n",
+     "output": "1\n"
+    },
+    {
+     "input": "9999\n",
+     "output": "0\n"
+    },
+    {
+     "input": "1996\n",
+     "output": "1\n"
+    },
+    {
+     "input": "2022\n",
+     "output": "0\n"
+    }
+   ]
+  },
+  "cpp-2-1-c": {
+   "sig": "ff16981dfc2e3fde",
+   "samples": [
+    {
+     "input": "3 4 5\n",
+     "output": "1\n"
+    }
+   ],
+   "tests": [
+    {
+     "input": "1 2 3\n",
+     "output": "0\n"
+    },
+    {
+     "input": "1 1 1\n",
+     "output": "1\n"
+    },
+    {
+     "input": "10 1 1\n",
+     "output": "0\n"
+    },
+    {
+     "input": "2 3 10\n",
+     "output": "0\n"
+    },
+    {
+     "input": "5 5 9\n",
+     "output": "1\n"
+    },
+    {
+     "input": "5 5 10\n",
+     "output": "0\n"
+    },
+    {
+     "input": "2000000000 2000000000 2000000000\n",
+     "output": "1\n"
+    },
+    {
+     "input": "2000000000 1 1999999999\n",
+     "output": "0\n"
+    },
+    {
+     "input": "2000000000 1 1999999998\n",
+     "output": "0\n"
+    }
+   ]
+  },
+  "cpp-2-1-d": {
+   "sig": "3dbfc979d1ec40a6",
+   "samples": [
+    {
+     "input": "5 1 10\n",
+     "output": "1\n"
+    }
+   ],
+   "tests": [
+    {
+     "input": "1 1 10\n",
+     "output": "1\n"
+    },
+    {
+     "input": "10 1 10\n",
+     "output": "1\n"
+    },
+    {
+     "input": "0 1 10\n",
+     "output": "0\n"
+    },
+    {
+     "input": "11 1 10\n",
+     "output": "0\n"
+    },
+    {
+     "input": "-5 -10 -1\n",
+     "output": "1\n"
+    },
+    {
+     "input": "500 0 100\n",
+     "output": "0\n"
+    },
+    {
+     "input": "0 0 0\n",
+     "output": "1\n"
+    },
+    {
+     "input": "-1000000000 -1000000000 1000000000\n",
+     "output": "1\n"
+    }
+   ]
+  },
+  "cpp-2-1-e": {
+   "sig": "d4d75223cfe251df",
+   "samples": [
+    {
+     "input": "15\n",
+     "output": "1\n"
+    }
+   ],
+   "tests": [
+    {
+     "input": "13\n",
+     "output": "1\n"
+    },
+    {
+     "input": "19\n",
+     "output": "1\n"
+    },
+    {
+     "input": "12\n",
+     "output": "0\n"
+    },
+    {
+     "input": "20\n",
+     "output": "0\n"
+    },
+    {
+     "input": "0\n",
+     "output": "0\n"
+    },
+    {
+     "input": "120\n",
+     "output": "0\n"
+    },
+    {
+     "input": "7\n",
+     "output": "0\n"
+    }
+   ]
+  },
+  "cpp-2-1-f": {
+   "sig": "e2c5d17407e77cb7",
+   "samples": [
+    {
+     "input": "0.3 0.3\n",
+     "output": "1\n"
+    }
+   ],
+   "tests": [
+    {
+     "input": "1.0000001 1.0000002\n",
+     "output": "1\n"
+    },
+    {
+     "input": "1 1.001\n",
+     "output": "0\n"
+    },
+    {
+     "input": "2.5 2.5000004\n",
+     "output": "1\n"
+    },
+    {
+     "input": "-1 -1.0000009\n",
+     "output": "1\n"
+    },
+    {
+     "input": "-1 1\n",
+     "output": "0\n"
+    },
+    {
+     "input": "1000000 1000000.5\n",
+     "output": "0\n"
+    },
+    {
+     "input": "0 0.0000011\n",
+     "output": "0\n"
+    },
+    {
+     "input": "5 -5\n",
+     "output": "0\n"
+    }
+   ]
+  },
+  "cpp-2-1-g": {
+   "sig": "6ab3b9d3e7306ce2",
+   "samples": [
+    {
+     "input": "2 3\n",
+     "output": "1\n"
+    }
+   ],
+   "tests": [
+    {
+     "input": "3 2\n",
+     "output": "1\n"
+    },
+    {
+     "input": "2 4\n",
+     "output": "0\n"
+    },
+    {
+     "input": "3 5\n",
+     "output": "0\n"
+    },
+    {
+     "input": "0 1\n",
+     "output": "1\n"
+    },
+    {
+     "input": "-2 -3\n",
+     "output": "1\n"
+    },
+    {
+     "input": "-3 -5\n",
+     "output": "0\n"
+    },
+    {
+     "input": "1000000000 999999999\n",
+     "output": "1\n"
+    },
+    {
+     "input": "-7 8\n",
+     "output": "1\n"
+    }
+   ]
   }
  },
  "outputs": {
@@ -1096,6 +1409,42 @@
   "cpp-1-8/plan": {
    "sig": "b5443dd7be8ac8df",
    "out": "11.00\n"
+  },
+  "cpp-2-1/compare": {
+   "sig": "ee373f3edf3a5b64",
+   "out": "1\n0\n1\n1\nfalse\ntrue\n"
+  },
+  "cpp-2-1/double": {
+   "sig": "4369904980f1f7c5",
+   "out": "0\n1\n"
+  },
+  "cpp-2-1/logic": {
+   "sig": "769337296880aa6d",
+   "out": "true\nfalse\ntrue\ntrue\n"
+  },
+  "cpp-2-1/p1": {
+   "sig": "a4eb3fc0c9f66762",
+   "out": "110\n"
+  },
+  "cpp-2-1/p2": {
+   "sig": "67eb16d614ea0c6f",
+   "out": "0 1 0\n"
+  },
+  "cpp-2-1/precedence": {
+   "sig": "e2d526c92c4b42a5",
+   "out": "1\n0\n"
+  },
+  "cpp-2-1/range": {
+   "sig": "aac3ec0053169773",
+   "out": "1\n0\n"
+  },
+  "cpp-2-1/short": {
+   "sig": "add8fdc3420cd028",
+   "out": "0\n1\n"
+  },
+  "cpp-2-1/text": {
+   "sig": "2d0faed424131684",
+   "out": "1 1\n1 1\n"
   }
  }
 }
