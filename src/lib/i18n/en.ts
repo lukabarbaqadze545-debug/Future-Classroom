@@ -332,6 +332,7 @@ export const en = {
     email_not_confirmed: "Confirm your email first: open the link we sent you.",
     auth_unavailable: "The sign-in service isn't answering right now. Try again in a few minutes.",
     conflict: "Something changed in the meantime. Reload and try again.",
+    not_solved: "The solution opens once your own program passes every test.",
     attempt_first: "Try an answer first — the full solution opens after your first attempt.",
     stale_day: "A new challenge has started. Reload the page to see it.",
     internal: "Something went wrong on the server.",

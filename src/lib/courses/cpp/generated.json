@@ -1,0 +1,33 @@
+{
+ "version": 1,
+ "exercises": {
+  "cpp-1-1-a": {
+   "sig": "daff52cf45e55236",
+   "samples": [
+    {
+     "input": "",
+     "output": "Hello, Georgia!\n"
+    }
+   ],
+   "tests": []
+  }
+ },
+ "outputs": {
+  "cpp-1-1/hello": {
+   "sig": "16f8a9d18aa03907",
+   "out": "Hello, World!\n"
+  },
+  "cpp-1-1/lines": {
+   "sig": "d0a41998b6dce89f",
+   "out": "ABC\nD\nE\nF G\n"
+  },
+  "cpp-1-1/mixed": {
+   "sig": "dda03fab76b44ef4",
+   "out": "Hello\n2025\n5\n2 + 3\n"
+  },
+  "cpp-1-1/p1": {
+   "sig": "1e59c9d14aa149bb",
+   "out": "12\n3\n"
+  }
+ }
+}
