@@ -1,7 +1,10 @@
 import "server-only";
 import { getDb } from "@/lib/db";
 import type { CurrentUser } from "@/lib/auth/session";
+import { HEADWORD_LINE } from "@/lib/knowledge/dictionary";
 import { getMaterial } from "./materials";
+
+export { HEADWORD_LINE };
 
 /**
  * Reading a school material on the site, from the passages that were indexed
@@ -50,9 +53,6 @@ interface ChunkMeta {
   chapter: string | null;
   section: string | null;
 }
-
-/** A dictionary entry starts with its headword line: `AFTERNOON /ˌæftərˈnuːn/ • noun • A1`. */
-export const HEADWORD_LINE = /^(.+?) (\/.*?) • ([^•]+) • ([ABC][12])$/;
 
 function splitParagraphs(text: string): string[] {
   return text

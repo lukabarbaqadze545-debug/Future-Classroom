@@ -8,12 +8,15 @@ import { fmt, fmtCount } from "@/lib/i18n/config";
 import { api, errorMessage } from "@/lib/client/api";
 import { SUBJECTS, type Subject } from "@/lib/domain/catalog";
 import type { AssistantMode, AssistantResult, NumberedPassage, ResearchQuestionKind, SavedQuestion } from "@/lib/services/learning-assistant";
+import type { WordSuggestion } from "@/lib/services/dictionary";
 import { Badge, type Tone } from "@/components/ui/badge";
 import { Button, ButtonLink } from "@/components/ui/button";
 import { Checkbox, Input, Select, Textarea } from "@/components/ui/form";
 import { Notice } from "@/components/ui/notice";
 import { Spinner } from "@/components/ui/misc";
 import { cn } from "@/components/ui/cn";
+import { DictionaryBlock } from "./dictionary-block";
+import { useWordSuggestions } from "./use-suggestions";
 
 const MODES: AssistantMode[] = ["explain", "locate", "evidence", "check", "questions", "research"];
 const MODE_ICONS: Record<AssistantMode, typeof Search> = { explain: Lightbulb, locate: FileSearch, evidence: Scale, check: ListChecks, questions: CircleHelp, research: FlaskConical };
@@ -45,6 +48,8 @@ export interface LearningAssistantProps {
   embedded?: boolean;
   /** Teachers can hand a question or a research start to students as an assignment. */
   staff?: boolean;
+  /** Whether this person can open a dictionary: word look-ups are suggested only then. */
+  dictionary?: boolean;
 }
 
 function escapeRegex(value: string) {
@@ -70,7 +75,7 @@ function Highlighted({ text, words }: { text: string; words: string[] }) {
   );
 }
 
-export function LearningAssistant({ initialMode = "explain", initialText = "", material: initialMaterial, initialSubject = "", aiAvailable, initialSaved = [], embedded = false, staff = false }: LearningAssistantProps) {
+export function LearningAssistant({ initialMode = "explain", initialText = "", material: initialMaterial, initialSubject = "", aiAvailable, initialSaved = [], embedded = false, staff = false, dictionary = false }: LearningAssistantProps) {
   const { dict } = useI18n();
   const a = dict.assistant;
   const router = useRouter();
@@ -91,6 +96,12 @@ export function LearningAssistant({ initialMode = "explain", initialText = "", m
   const [starting, setStarting] = useState(false);
   const resultRef = useRef<HTMLDivElement>(null);
   const ranInitial = useRef(false);
+  // Suggestions while a word is being typed (explain and locate only).
+  const [focused, setFocused] = useState(false);
+  const [active, setActive] = useState(-1);
+  const [dismissed, setDismissed] = useState("");
+  const suggestions = useWordSuggestions(text, (mode === "explain" || mode === "locate") && !busy);
+  const listOpen = focused && suggestions.length > 0 && dismissed !== text;
 
   const pageLabel = (start: number | null, end: number | null) =>
     start === null ? null : end !== null && end !== start ? fmt(a.pages, { from: start, to: end }) : fmt(a.page, { n: start });
@@ -147,6 +158,18 @@ export function LearningAssistant({ initialMode = "explain", initialText = "", m
   const submit = (event: FormEvent) => {
     event.preventDefault();
     void run({ mode, text, topic });
+  };
+
+  const pickSuggestion = (suggestion: WordSuggestion) => {
+    const chosen = suggestion.language === "en" ? suggestion.word : suggestion.text;
+    setDismissed(chosen);
+    void run({ mode: mode === "locate" ? "locate" : "explain", text: chosen });
+  };
+
+  /** A phrase or spelling pressed inside the dictionary block is looked up like a typed question. */
+  const lookUp = (value: string) => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    void run({ mode: mode === "locate" ? "locate" : "explain", text: value });
   };
 
   const switchMode = (next: AssistantMode) => {
@@ -262,22 +285,78 @@ export function LearningAssistant({ initialMode = "explain", initialText = "", m
           <label htmlFor="assistant-text" className={cn(mode === "check" ? "mb-1.5 block text-sm font-medium" : "sr-only")}>
             {mode === "check" ? modeCopy.label : a.textLabel}
           </label>
-          <Textarea
-            id="assistant-text"
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && !e.shiftKey && !textIsLong) {
-                e.preventDefault();
-                void run({ mode, text, topic });
-              }
-            }}
-            placeholder={modeCopy.placeholder}
-            rows={textIsLong ? 4 : 2}
-            maxLength={2000}
-            className="text-base"
-            data-testid="assistant-text"
-          />
+          <div className="relative">
+            <Textarea
+              id="assistant-text"
+              value={text}
+              onChange={(e) => {
+                setText(e.target.value);
+                setActive(-1);
+              }}
+              onFocus={() => setFocused(true)}
+              onBlur={() => setFocused(false)}
+              onKeyDown={(e) => {
+                if (listOpen) {
+                  if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+                    e.preventDefault();
+                    const step = e.key === "ArrowDown" ? 1 : -1;
+                    // Slots are "none" (-1) and each suggestion; the arrows walk around them.
+                    setActive((i) => ((i + 1 + step + suggestions.length + 1) % (suggestions.length + 1)) - 1);
+                    return;
+                  }
+                  if (e.key === "Escape") {
+                    e.preventDefault();
+                    setDismissed(text);
+                    return;
+                  }
+                  if (e.key === "Enter" && !e.shiftKey && active >= 0 && active < suggestions.length) {
+                    e.preventDefault();
+                    pickSuggestion(suggestions[active]);
+                    return;
+                  }
+                }
+                if (e.key === "Enter" && !e.shiftKey && !textIsLong) {
+                  e.preventDefault();
+                  void run({ mode, text, topic });
+                }
+              }}
+              placeholder={modeCopy.placeholder}
+              rows={textIsLong ? 4 : 2}
+              maxLength={2000}
+              className="text-base"
+              data-testid="assistant-text"
+              role="combobox"
+              aria-expanded={listOpen}
+              aria-controls="assistant-suggest"
+              aria-autocomplete="list"
+              aria-activedescendant={listOpen && active >= 0 ? `assistant-suggest-${active}` : undefined}
+            />
+            {listOpen ? (
+              <ul id="assistant-suggest" role="listbox" aria-label={a.dictionary.suggestions} data-testid="assistant-suggest" className="absolute inset-x-0 top-full z-30 mt-1.5 overflow-hidden rounded-2xl border border-line-strong bg-surface shadow-[var(--shadow-raised)]">
+                {suggestions.map((s, i) => (
+                  <li
+                    key={`${s.language}-${s.text}-${s.word}`}
+                    id={`assistant-suggest-${i}`}
+                    role="option"
+                    aria-selected={i === active}
+                    data-testid="assistant-suggest-item"
+                    onMouseDown={(e) => {
+                      e.preventDefault();
+                      pickSuggestion(s);
+                    }}
+                    onMouseEnter={() => setActive(i)}
+                    className={cn("flex cursor-pointer items-center gap-3 px-4 py-2.5 text-[15px]", i === active ? "bg-brand-soft" : "hover:bg-muted")}
+                  >
+                    <span className="min-w-0 flex-1 truncate">
+                      <span className="font-semibold text-ink">{s.text}</span>
+                      <span className="text-ink-muted"> · {s.language === "en" ? s.spanish : s.word}</span>
+                    </span>
+                    <Badge>{s.level}</Badge>
+                  </li>
+                ))}
+              </ul>
+            ) : null}
+          </div>
         </div>
         <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
           {material ? (
@@ -320,6 +399,18 @@ export function LearningAssistant({ initialMode = "explain", initialText = "", m
               </button>
             ))}
           </div>
+          {dictionary ? (
+            <div className="mt-4" data-testid="assistant-word-examples">
+              <p className="mb-2 text-sm font-medium text-ink-muted">{a.dictionary.tryTitle}</p>
+              <div className="flex flex-wrap gap-2">
+                {a.dictionary.tryWords.map((q) => (
+                  <button key={q} type="button" onClick={() => void run({ mode: "explain", text: q })} className="rounded-full border border-line bg-surface px-3.5 py-2 text-left text-sm hover:border-brand/40 hover:bg-brand-soft/40">
+                    {q}
+                  </button>
+                ))}
+              </div>
+            </div>
+          ) : null}
         </div>
       ) : null}
 
@@ -331,6 +422,8 @@ export function LearningAssistant({ initialMode = "explain", initialText = "", m
         {result && !busy ? (
           <div className="space-y-5" data-testid="assistant-result" data-found={result.match === "full" ? "yes" : result.match === "partial" ? "partial" : "no"}>
             <ResultLead result={result} />
+            {result.understood && (result.mode === "explain" || result.mode === "locate") ? <SearchedFor result={result} /> : null}
+            {result.dictionary && (result.mode === "explain" || result.mode === "locate") ? <DictionaryBlock result={result.dictionary} onLookup={lookUp} /> : null}
 
             {result.mode === "explain" ? <ExplainBlock result={result} cite={cite} /> : null}
             {result.mode === "evidence" && result.statement ? <EvidenceBlock result={result} cite={cite} /> : null}
@@ -510,11 +603,28 @@ export function LearningAssistant({ initialMode = "explain", initialText = "", m
 
 /* ------------------------------ result blocks ------------------------------ */
 
+/** What the question was understood to be about, when that is not simply what was typed. */
+function SearchedFor({ result }: { result: AssistantResult }) {
+  const { dict } = useI18n();
+  const a = dict.assistant;
+  const u = result.understood!;
+  const plain = (value: string) => value.toLowerCase().replace(/[\s?？!.,;:"„“”]+/g, " ").trim();
+  if (u.sides) return <p className="text-sm text-ink-muted" data-testid="assistant-understood">{fmt(a.searchedForCompare, { a: u.sides[0], b: u.sides[1] })}</p>;
+  if (plain(u.focus) === plain(result.query)) return null;
+  return (
+    <p className="text-sm text-ink-muted" data-testid="assistant-understood">
+      {fmt(a.searchedFor, { focus: u.focus })}
+    </p>
+  );
+}
+
 function ResultLead({ result }: { result: AssistantResult }) {
   const { dict } = useI18n();
   const a = dict.assistant;
   const total = result.searched.materials + result.searched.lessons;
   if (total === 0) return <Notice tone="info">{a.nothingToSearch}</Notice>;
+  // A word found in the dictionary is an answer, even when no passage mentions it.
+  if (!result.found && result.dictionary?.matches.length) return null;
   if (!result.found) {
     return (
       <Notice tone="warn" title={a.notFoundTitle}>

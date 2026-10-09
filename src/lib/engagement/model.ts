@@ -28,7 +28,7 @@ export interface EngagementState {
   best: number;
   /** Badge id → the day it was earned. */
   badges: Record<string, string>;
-  totals: { challenges: number; firstTry: number; practice: number; quizzes: number; perfectQuizzes: number; live: number; joined: number; night: number; early: number };
+  totals: { challenges: number; firstTry: number; practice: number; quizzes: number; perfectQuizzes: number; live: number; joined: number; night: number; early: number; words: number };
   /** The laboratories the visitor has worked in (ever). */
   labs: string[];
   /** Counters of the current school day; reset when the day changes. */
@@ -38,6 +38,9 @@ export interface EngagementState {
     attempts: number;
     practice: number;
     practiceXp: number;
+    /** Words known in the vocabulary practice, and the experience they gave (capped). */
+    words: number;
+    wordsXp: number;
     live: number;
     joined: boolean;
     labs: string[];
@@ -51,6 +54,8 @@ export type EngagementEvent =
   | { kind: "challenge"; outcome: "solved" | "missed"; attempts: number }
   /** A correct answer while practising a lesson. */
   | { kind: "practice" }
+  /** A word the visitor knew while practising their words. */
+  | { kind: "word" }
   | { kind: "quiz"; score: number; max: number }
   /** An answer in a live class. */
   | { kind: "live" }
@@ -82,6 +87,8 @@ export const XP = {
   challengeMissed: 5,
   practice: 5,
   practiceDailyCap: 40,
+  word: 2,
+  wordDailyCap: 30,
   quizBase: 10,
   quizScore: 10,
   live: 3,
@@ -104,14 +111,14 @@ export function emptyState(today: string): EngagementState {
     xpByDay: {},
     best: 0,
     badges: {},
-    totals: { challenges: 0, firstTry: 0, practice: 0, quizzes: 0, perfectQuizzes: 0, live: 0, joined: 0, night: 0, early: 0 },
+    totals: { challenges: 0, firstTry: 0, practice: 0, quizzes: 0, perfectQuizzes: 0, live: 0, joined: 0, night: 0, early: 0, words: 0 },
     labs: [],
     today: freshToday(today),
   };
 }
 
 function freshToday(day: string): EngagementState["today"] {
-  return { day, challenge: "open", attempts: 0, practice: 0, practiceXp: 0, live: 0, joined: false, labs: [], chest: false };
+  return { day, challenge: "open", attempts: 0, practice: 0, practiceXp: 0, words: 0, wordsXp: 0, live: 0, joined: false, labs: [], chest: false };
 }
 
 // --- Days ------------------------------------------------------------------------
@@ -289,6 +296,8 @@ export const BADGES: BadgeRule[] = [
   { id: "challenges10", progress: toward((s) => s.totals.challenges, 10) },
   { id: "challenges30", progress: toward((s) => s.totals.challenges, 30) },
   { id: "practice25", progress: toward((s) => s.totals.practice, 25) },
+  { id: "words25", progress: toward((s) => s.totals.words, 25) },
+  { id: "words100", progress: toward((s) => s.totals.words, 100) },
   { id: "quizAce", progress: toward((s) => s.totals.perfectQuizzes, 1) },
   { id: "explorer", progress: toward((s) => s.labs.length, 3) },
   { id: "liveClass", progress: toward((s) => s.totals.joined, 1) },
@@ -367,6 +376,15 @@ export function applyEvent(before: EngagementState, event: EngagementEvent, cont
       const room = Math.max(0, XP.practiceDailyCap - today.practiceXp);
       const xp = Math.min(XP.practice, room);
       today.practiceXp += xp;
+      gained += xp;
+      break;
+    }
+    case "word": {
+      totals.words++;
+      today.words++;
+      const room = Math.max(0, XP.wordDailyCap - today.wordsXp);
+      const xp = Math.min(XP.word, room);
+      today.wordsXp += xp;
       gained += xp;
       break;
     }
@@ -500,6 +518,7 @@ export function parseState(raw: string | null, today: string): EngagementState {
       joined: count(t.joined),
       night: count(t.night),
       early: count(t.early),
+      words: count(t.words),
     },
     labs: strings(o.labs, 40),
     today: {
@@ -508,6 +527,8 @@ export function parseState(raw: string | null, today: string): EngagementState {
       attempts: Math.min(count(td.attempts), CHALLENGE_TRIES),
       practice: count(td.practice),
       practiceXp: count(td.practiceXp),
+      words: count(td.words),
+      wordsXp: count(td.wordsXp),
       live: count(td.live),
       joined: td.joined === true,
       labs: strings(td.labs, 10),

@@ -151,6 +151,9 @@ the stored file, PDF/DOCX from their existing passages (page numbers kept);
 | Page and component | `src/app/learning-assistant/`, `src/components/assistant/learning-assistant.tsx` |
 | Strings | `src/lib/i18n/assistant-en.ts`, `assistant-ka.ts`; terms in `terminology.ts` |
 | Re-reading files | `scripts/reindex-materials.ts` (`npm run materials:reindex`) |
+| Understanding a question | `src/lib/knowledge/intent.ts` (section 9) |
+| Dictionary: parsing, finding, spelling | `src/lib/knowledge/dictionary.ts` (pure), `src/lib/services/dictionary.ts` (visibility, cache, links) |
+| My words (Leitner boxes) | `src/lib/vocab/model.ts` (pure), `src/components/vocab/` (browser store, practice page) |
 
 ### Honesty rules, and where they are enforced
 
@@ -225,3 +228,123 @@ the stored file, PDF/DOCX from their existing passages (page numbers kept);
   teachers cannot yet add their own terms.
 - The Georgian wording of the new screens has not yet been read by a native
   editor (see docs/AUDIT.md, section 8).
+
+## 9. Questions, the dictionary and My words
+
+Added after an evaluation of the assistant against the school's English–Spanish
+dictionary book (2,000 entries). Questions were written the way students ask
+("what does afternoon mean?"), but the search treated every word the same, so
+the scaffolding drowned the subject: every entry has a "Meaning:" line, and the
+entry for a short common word (HAVE, ONE, BACK, NOW) was often not among the
+first three passages. Measured on a sample of 250 words, the exact entry was in
+the top three for 63 % of the questions before and 90 % after the change
+described in 9.1; with the dictionary index in 9.2 the entry is found for all
+of them.
+
+### 9.1 Understanding the question
+
+`understandQuery(text)` returns the **kind** of the question (define,
+translate, compare, example, how, why, or general), its **focus** (what it is
+about, without the scaffolding), the two **sides** of a comparison and the
+**language asked for** ("in Spanish"). English and Georgian, pure, no material
+is read. The focus is what is searched; the question as typed is what is shown
+and saved, and the page says what was searched ("Searched for: „afternoon“")
+whenever the two differ. It applies to Explain, Find, Questions and Research —
+not to Evidence and Check, which take a statement, not a question.
+
+Rules are ordered and conservative: a language name alone is not a translation
+request ("I like Spanish"), "what is the mean" is not "x means", a long phrase
+before "in Spanish" is a sentence, not a look-up. A focus is never empty.
+
+### 9.2 The dictionary
+
+Any indexed material written as dictionary entries (headword line, then
+Spanish / Meaning / Example / → / Common / Note) is a dictionary; the school's
+book is the only one built in, and a teacher's upload in the same layout works
+too. `parseDictionary` reads the entries from the stored passages (an entry may
+run over a passage boundary), `DictionaryIndex` finds in both directions:
+
+| How it was found | Example | Said in the answer |
+| --- | --- | --- |
+| The headword | afternoon | (no label) |
+| A form of a headword (regular and irregular) | went → go, children → child, studies → study | „went“ is a form of this word |
+| A phrase listed under a headword | good afternoon | „good afternoon“ is listed under this word |
+| The Spanish translation (with or without the article, accents, plural, other gender) | la tarde, tardes, correcta | Spanish „la tarde“ is the translation of this word |
+| Part of a longer translation | baño → el cuarto de baño | Spanish „…“ contains your word |
+| Used in an entry's example but not an entry | (rare words) | Your word is used in this entry, but has no entry of its own — shown only for plain look-ups |
+| A close spelling | recieve → receive | "Did you mean:" — never shown as an entry |
+
+Nothing is shown as an entry that the book does not contain: a guess is a
+suggestion, and when a word is not in the book the answer says so. Entries are
+shown as printed (IPA, part of speech, level, Spanish, meaning, example with its
+translation, common phrases, the book's note) with the page they are on (a link
+into the reader that scrolls to the word), the book's title, and — when the
+device has a speech voice — buttons to hear the English, the Spanish and the
+example. There is no audio service behind this and the answer says so.
+
+`runAssistant` adds `dictionary` to the result for Explain and Find when the
+question is about a word: define, translate and example questions, a bare word
+or short phrase, and both sides of a comparison; never for how/why questions
+nor Georgian text. A scope on another material or subject keeps the dictionary
+out; **visibility is the material's**, so a dictionary a person cannot open is
+never searched for them, and the parsed index is cached per material and
+rebuilt when its passages change.
+
+**While typing**, `GET /api/learning-assistant/words?q=` completes English
+headwords (easiest level first) and Spanish translations; the search box is a
+combobox (arrow keys, Enter, Escape) and asks for nothing while a sentence is
+typed. `POST /api/learning-assistant/words` returns the entries of saved words,
+and `wordsOfTheDay(user, day, n)` picks the same words for everyone on a school
+day (shown on Today, and as today's words on the My words page).
+
+### 9.3 My words
+
+A word can be saved from its entry. The list is kept **in the visitor's own
+browser** (localStorage, `fc:words:v1`), like the Today game: the site needs no
+account and a host such as Vercel keeps no data between visits. It says so on
+the page; clearing the browser's site data removes the list and it does not
+follow a person to another device. Nothing is sent to a teacher.
+
+Practice is Leitner boxes (`src/lib/vocab/model.ts`): a new word is due the same
+day; a word you know moves up a box and returns after 1, 3, 7, 14, then 30
+days; a word you miss goes back to the first box and is due again today. Two
+ways to practise, in either direction (English → Spanish or Spanish →
+English): **cards** (show the answer, then "I knew it" / "Not yet" — the
+person grades themselves) and **choose the answer** (four options, the other
+three from words of the same kind). A round is the ten words that are due; if
+none is, the person may practise anyway.
+
+Each word known earns 2 XP in the Today game up to 30 XP a day, counts for the
+streak, and two badges (25 and 100 known words) were added. Saving a word earns
+nothing, so it cannot be farmed.
+
+### 9.4 Tests
+
+- `tests/unit/intent.test.ts` — the question kinds and their focus in English
+  and Georgian, and the cases that must *not* be read as a look-up.
+- `tests/unit/dictionary.test.ts` — parsing all 2,000 entries (levels 407 /
+  352 / 469 / 420 / 352), forms, phrases, Spanish lookups, suggestions, and
+  measured thresholds over the whole book: every headword and every first
+  translation found; of misspellings (swap, missing or doubled letter) 95 %+
+  have the right word first and 99 %+ in the first three; regular verb forms
+  99 %+.
+- `tests/unit/dictionary-service.test.ts` — visibility (private, teachers,
+  students), the page link really opens the page the entry is on, language
+  asked for, assistant answers, scope, and the 100-word question benchmark.
+- `tests/unit/vocab.test.ts` — boxes and intervals, rounds, stored-format
+  repair, and the XP/badge rules.
+- `tests/e2e/dictionary.spec.ts` — typing, suggestions with the keyboard, the
+  entry, saving, practising with cards and with choices, in Georgian on a
+  phone, and the word of the day on Today.
+
+### 9.5 Limits
+
+- English–Spanish only: Georgian words are not looked up (the page does not
+  pretend to). Spanish verb conjugations are not reduced to the infinitive.
+- Forms are found by rules and a list of irregular forms; a rare irregular
+  form not in the list is not found, and the spelling help may suggest a
+  similar word instead.
+- Voices depend on the device. Where none is installed the listen buttons are
+  not shown.
+- "My words" is per browser. Syncing across devices would need accounts, which
+  the open-access site does not have.

@@ -540,6 +540,8 @@ export const en = {
         challenges10: { name: "Ten challenges", text: "Solve 10 daily challenges." },
         challenges30: { name: "Thirty challenges", text: "Solve 30 daily challenges." },
         practice25: { name: "Practice", text: "25 correct answers in lessons." },
+        words25: { name: "25 words", text: "Know a word 25 times when practising your words." },
+        words100: { name: "100 words", text: "Know a word 100 times when practising your words." },
         quizAce: { name: "Perfect quiz", text: "Get every question right in a quiz." },
         explorer: { name: "Three laboratories", text: "Work in 3 different laboratories." },
         liveClass: { name: "Live class", text: "Join a live class." },
