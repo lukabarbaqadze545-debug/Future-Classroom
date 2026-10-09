@@ -1,0 +1,6 @@
++g1 +g2 main +x +y +z -z -y f-end -x 
++a +b [Holder] | [~Holder] -b -a 
++bn [Base] +dn [Derived] [~Derived] -dn [~Base] -bn 
++bn [Base] +dn [Derived] [~Derived] -dn [~Base] -bn 
+[~PlainBase] 
++static +a0 +a1 +a2 end -a2 -a1 -a0 [~PlainDerived] [~PlainBase] -static -g2 -g1 
