@@ -1,0 +1,12 @@
+make a
+make b
+hi b
+drop b
+hi a
+copy a'
+hi a'
+drop a'
+make heap
+drop heap
+end
+drop a

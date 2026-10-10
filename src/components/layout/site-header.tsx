@@ -28,6 +28,7 @@ export async function SiteHeader() {
         { href: "/teacher/students", label: dict.nav.classes },
         { href: "/teacher/assignments", label: dict.nav.assignments },
         { href: "/teacher/quizzes", label: dict.nav.quizzes },
+        { href: "/courses", label: dict.nav.courses },
         { href: "/labs", label: dict.nav.labs },
         { href: "/library", label: dict.nav.library },
         { href: "/learning-assistant", label: dict.nav.assistant },
@@ -39,6 +40,7 @@ export async function SiteHeader() {
           { href: "/student", label: dict.nav.home, exact: true },
           today,
           { href: "/subjects", label: dict.nav.subjects },
+          { href: "/courses", label: dict.nav.courses },
           { href: "/labs", label: dict.nav.labs },
           { href: "/student/assignments", label: dict.nav.assignments },
           { href: "/library", label: dict.nav.library },
@@ -47,7 +49,7 @@ export async function SiteHeader() {
           { href: "/student/progress", label: dict.nav.progress },
           { href: "/join", label: dict.nav.join },
         ]
-      : [today, { href: "/join", label: dict.nav.join }];
+      : [today, { href: "/courses", label: dict.nav.courses }, { href: "/join", label: dict.nav.join }];
 
   return (
     <header className="sticky top-0 z-30 border-b border-line bg-surface/95 backdrop-blur supports-[backdrop-filter]:bg-surface/85">

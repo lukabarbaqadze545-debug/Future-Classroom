@@ -1,0 +1,12 @@
++L0 -L0 +L1 body -L1 +L2 -L2 
++A -A 1 +A +B -B -A 2 +A +B -B -A 3
++m got:m
++n got:n
+copy:m' 
+copy:m' take:m' -m' 
++temp take:temp -temp 
++tmp2 ref:tmp2 -tmp2 
++discarded -discarded after
++w0 -w0 +w1 -w1 
++sw -sw 
+end -m' -n -m 

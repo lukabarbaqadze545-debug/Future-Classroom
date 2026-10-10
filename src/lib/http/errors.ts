@@ -26,6 +26,7 @@ export type ErrorCode =
   | "conflict"
   | "attempt_first"
   | "stale_day"
+  | "not_solved"
   | "internal";
 
 export class ApiError extends Error {

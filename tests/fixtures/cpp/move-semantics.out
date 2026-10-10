@@ -1,0 +1,9 @@
+ctor alpha
+copy alpha
+move alpha
+a=[] c=[alpha]
+[][hello]
+03
+dtor [alpha]
+dtor [alpha]
+dtor []

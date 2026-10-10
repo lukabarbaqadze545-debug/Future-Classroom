@@ -15,6 +15,15 @@ const eslintConfig = defineConfig([
     // The Pyodide runtime copied from node_modules before a build (scripts/copy-pyodide.mjs).
     "public/pyodide/**",
   ]),
+  {
+    // The C++ interpreter runs a dynamically typed language: its run-time values (numbers, BigInts, strings,
+    // objects, places) are `any` on purpose, and the compiler checks types before anything runs.
+    files: ["src/lib/cpp/**/*.ts"],
+    rules: {
+      "@typescript-eslint/no-explicit-any": "off",
+      "@typescript-eslint/no-this-alias": "off",
+    },
+  },
 ]);
 
 export default eslintConfig;
