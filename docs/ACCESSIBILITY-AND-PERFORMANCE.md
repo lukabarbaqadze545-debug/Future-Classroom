@@ -63,7 +63,18 @@ Measured with Lighthouse (the default phone profile: a mid-range phone, slow 4G
 and a CPU four times slower than this machine) against a production build with
 the demo school, signed in as a student:
 
-(Results are filled in below after the final measurement.)
+| Page | Performance | Accessibility | Best practices | First paint | Largest paint | Blocking time | Layout shift | Size | Console errors |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Sign-in page | 86 | 100 | 100 | 2.2 s | 3.7 s | 110 ms | 0.002 | 388 KiB | none |
+| Student home | 80 | 100 | 100 | 1.8 s | 3.8 s | 330 ms | 0.001 | 360 KiB | none |
+| Laboratories | 86 | 100 | 100 | 1.9 s | 3.6 s | 190 ms | 0.001 | 338 KiB | none |
+| Career & University | 87 | 100 | 100 | 1.8 s | 3.6 s | 140 ms | 0.001 | 384 KiB | none |
+
+Second run, after the fixes below. The accessibility and best-practice columns
+were the same in both runs except for the console error (best practices 96 → 100).
+The performance score is noisy under the throttled CPU: across the two runs of the
+same build it moved between **78 and 95** (for example the laboratories page 95,
+then 86), so read it as "about 80–95", not as one number.
 
 What the numbers say:
 
