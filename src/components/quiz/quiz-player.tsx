@@ -43,7 +43,7 @@ export function QuizResultView({ result, quizId, lessonId }: { result: AttemptVi
           <li key={question.id}>
             <Card className={cn("p-5", question.correct ? "border-success/30" : "border-warn/30")}>
               <div className="flex items-start gap-3">
-                <span className={cn("flex size-7 shrink-0 items-center justify-center rounded-full", question.correct ? "bg-success text-white" : "bg-warn-soft text-warn")} aria-hidden>
+                <span className={cn("flex size-7 shrink-0 items-center justify-center rounded-full", question.correct ? "bg-success text-[#04140c]" : "bg-warn-soft text-warn")} aria-hidden>
                   {question.correct ? <Check className="size-4" /> : <X className="size-4" />}
                 </span>
                 <div className="min-w-0 flex-1">

@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { Flame } from "lucide-react";
-import { getCurrentUser } from "@/lib/auth/session";
+import { Activity } from "lucide-react";
+import { requirePageUser } from "@/lib/auth/session";
 import { getDictionary, pageTitle } from "@/lib/i18n/server";
 import { fmt, fmtCount, relativeTime } from "@/lib/i18n/config";
 import { getMistakesToReview, getStudentProgress } from "@/lib/services/progress";
@@ -18,7 +18,7 @@ export async function generateMetadata() {
 }
 
 export default async function ProgressPage() {
-  const user = (await getCurrentUser())!;
+  const user = await requirePageUser(["student"], "/student");
   const { dict, locale } = await getDictionary();
   const p = dict.student.progress;
   const progress = getStudentProgress(user.id);
@@ -44,7 +44,7 @@ export default async function ProgressPage() {
               label={p.streak}
               value={
                 <span className="inline-flex items-center gap-1.5">
-                  <Flame aria-hidden className="size-6 text-warn" />
+                  <Activity aria-hidden className="size-6 text-brand" />
                   {progress.streakDays}
                 </span>
               }

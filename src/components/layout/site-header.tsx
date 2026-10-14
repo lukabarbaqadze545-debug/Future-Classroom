@@ -2,19 +2,26 @@ import Link from "next/link";
 import { getCurrentUser } from "@/lib/auth/session";
 import { getDictionary } from "@/lib/i18n/server";
 import { getAIStatus } from "@/lib/ai";
+import { openAccessEnabled } from "@/lib/config";
 import { ButtonLink } from "@/components/ui/button";
 import { Logo } from "./logo";
 import { NavLinks } from "./nav-links";
 import { LanguageSwitcher } from "./language-switcher";
 import { AIStatusBadge } from "./ai-status";
 import { SignOutButton } from "./sign-out-button";
+import { StreakChip } from "@/components/engagement/streak-chip";
+import { PageTransition } from "@/components/motion/page-transition";
 
 export async function SiteHeader() {
   const [{ dict }, user] = await Promise.all([getDictionary(), getCurrentUser()]);
   const staff = user?.role === "teacher" || user?.role === "admin";
+  // Open access: nobody signs in or registers; the same button that signs out switches between the two demo views.
+  const openAccess = openAccessEnabled();
+  const today = { href: "/today", label: dict.nav.today };
   const items = staff
     ? [
         { href: "/teacher", label: dict.nav.dashboard, exact: true },
+        today,
         { href: "/subjects", label: dict.nav.subjects },
         { href: "/teacher/lessons", label: dict.nav.lessons },
         { href: "/teacher/sessions", label: dict.nav.sessions },
@@ -30,6 +37,7 @@ export async function SiteHeader() {
     : user
       ? [
           { href: "/student", label: dict.nav.home, exact: true },
+          today,
           { href: "/subjects", label: dict.nav.subjects },
           { href: "/labs", label: dict.nav.labs },
           { href: "/student/assignments", label: dict.nav.assignments },
@@ -39,7 +47,7 @@ export async function SiteHeader() {
           { href: "/student/progress", label: dict.nav.progress },
           { href: "/join", label: dict.nav.join },
         ]
-      : [{ href: "/join", label: dict.nav.join }];
+      : [today, { href: "/join", label: dict.nav.join }];
 
   return (
     <header className="sticky top-0 z-30 border-b border-line bg-surface/95 backdrop-blur supports-[backdrop-filter]:bg-surface/85">
@@ -51,15 +59,16 @@ export async function SiteHeader() {
         <div className="ml-auto flex items-center gap-2">
           <AIStatusBadge status={getAIStatus()} dict={dict} />
           <LanguageSwitcher />
+          <StreakChip />
           {user ? (
             <div className="flex items-center gap-2">
               <Link href="/account" className="hidden rounded-lg px-1 text-right leading-tight hover:bg-muted md:block" data-testid="account-link">
                 <div className="text-sm font-medium text-ink">{user.displayName}</div>
                 <div className="text-xs text-ink-subtle">{dict.roles[user.role]}</div>
               </Link>
-              <SignOutButton label={dict.nav.signOut} />
+              <SignOutButton label={openAccess ? dict.open.switchRole : dict.nav.signOut} />
             </div>
-          ) : (
+          ) : openAccess ? null : (
             <ButtonLink href="/login" variant="secondary" size="sm">
               {dict.nav.signIn}
             </ButtonLink>
@@ -81,7 +90,7 @@ export async function SiteHeader() {
 export function PageContainer({ children, wide = false }: { children: React.ReactNode; wide?: boolean }) {
   return (
     <main id="main" className={`mx-auto w-full ${wide ? "max-w-[1600px]" : "max-w-7xl"} px-4 py-6 sm:px-6 sm:py-8 lg:px-8`}>
-      {children}
+      <PageTransition>{children}</PageTransition>
     </main>
   );
 }

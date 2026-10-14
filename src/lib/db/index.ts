@@ -2,6 +2,7 @@ import Database from "better-sqlite3";
 import fs from "node:fs";
 import path from "node:path";
 import { MIGRATIONS } from "./schema";
+import { dataDir } from "./paths";
 import { seedDemoSchool } from "./seed";
 import { syncBuiltInContent } from "./builtin";
 import { upgradeMaterialIndexes } from "./material-index";
@@ -14,7 +15,7 @@ type GlobalWithDb = typeof globalThis & { __fcDb?: DB; __fcDbSeeding?: boolean }
 const g = globalThis as GlobalWithDb;
 
 export function databasePath(): string {
-  return process.env.DATABASE_PATH || path.join(process.cwd(), "data", "future-classroom.db");
+  return process.env.DATABASE_PATH || path.join(dataDir(), "future-classroom.db");
 }
 
 export function migrate(db: DB): void {

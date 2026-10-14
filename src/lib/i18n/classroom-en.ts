@@ -33,6 +33,10 @@ export const classroomEn = {
   updating: "Updates every few seconds.",
   connectionLost: "Connection lost — showing the last known state. Trying again…",
   noStudents: "This class has no students yet. Add students on the class page.",
+  unavailable: {
+    title: "Classroom control is off while open access is on",
+    text: "With open access everyone shares one demo student, so there is no one to watch or guide. Classroom control works when students sign in with their own accounts: set OPEN_ACCESS=false on the school server.",
+  },
   scope: "Your view covers pages of Future Classroom. Games and other websites are blocked on the computers themselves.",
   status: {
     active: "Working",

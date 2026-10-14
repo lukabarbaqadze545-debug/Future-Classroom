@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { now } from "@/lib/db";
 import { ArrowRight, Printer } from "lucide-react";
-import { getCurrentUser, isStaff } from "@/lib/auth/session";
+import { isStaff, requirePageUser, ALL_ROLES } from "@/lib/auth/session";
 import { getDictionary } from "@/lib/i18n/server";
 import { fmtCount } from "@/lib/i18n/config";
 import { tr } from "@/lib/labs/localized";
@@ -30,7 +30,7 @@ export async function generateMetadata() {
 }
 
 export default async function CareerPage({ searchParams }: { searchParams: Promise<{ field?: string }> }) {
-  const user = (await getCurrentUser())!;
+  const user = await requirePageUser(ALL_ROLES, "/career");
   const { dict, locale } = await getDictionary();
   const c = dict.labs.career;
   const staff = isStaff(user);

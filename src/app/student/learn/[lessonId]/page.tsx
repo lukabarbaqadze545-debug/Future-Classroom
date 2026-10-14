@@ -1,5 +1,5 @@
 import { notFound, redirect } from "next/navigation";
-import { getCurrentUser } from "@/lib/auth/session";
+import { requirePageUser } from "@/lib/auth/session";
 import { getPublishedLesson, lessonVersion } from "@/lib/services/lessons";
 import { getLocale, pageTitle } from "@/lib/i18n/server";
 import { listAttemptsForStudent, listQuizzesForLesson } from "@/lib/services/quizzes";
@@ -23,7 +23,7 @@ export async function generateMetadata({ params }: { params: Promise<{ lessonId:
 const PRACTICE_TYPES = new Set(["multiple_choice", "short_answer", "exercise"]);
 
 export default async function TopicPage({ params, searchParams }: { params: Promise<{ lessonId: string }>; searchParams: Promise<{ tab?: string; version?: string }> }) {
-  const user = (await getCurrentUser())!;
+  const user = await requirePageUser(["student"], "/student");
   const [{ lessonId }, { tab, version }, locale] = await Promise.all([params, searchParams, getLocale()]);
   let lesson;
   try {

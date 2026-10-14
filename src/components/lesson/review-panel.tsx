@@ -57,7 +57,7 @@ export function ReviewPanel({ lessonId, language, status: initialStatus, history
               <span
                 className={cn(
                   "mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full border-2 text-xs font-semibold",
-                  i < reached || (i === reached && step !== "draft") ? "border-success bg-success text-white" : i === reached ? "border-brand text-brand" : "border-line-strong text-ink-subtle",
+                  i < reached || (i === reached && step !== "draft") ? "border-success bg-success text-[#04140c]" : i === reached ? "border-brand text-brand" : "border-line-strong text-ink-subtle",
                 )}
                 aria-hidden
               >

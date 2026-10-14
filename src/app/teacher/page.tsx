@@ -1,6 +1,8 @@
 import Link from "next/link";
-import { BookPlus, FileUp, Radio } from "lucide-react";
-import { getCurrentUser } from "@/lib/auth/session";
+import { openAccessEnabled } from "@/lib/config";
+import { BookPlus, FileUp, Radio, Target } from "lucide-react";
+import { Aurora } from "@/components/motion/aurora";
+import { requirePageUser, STAFF_ROLES } from "@/lib/auth/session";
 import { getDictionary, pageTitle } from "@/lib/i18n/server";
 import { fmt, fmtCount, relativeTime } from "@/lib/i18n/config";
 import { inLocale, listLessonsForTeacher } from "@/lib/services/lessons";
@@ -22,7 +24,7 @@ export async function generateMetadata() {
 }
 
 export default async function TeacherDashboard() {
-  const user = (await getCurrentUser())!;
+  const user = await requirePageUser(STAFF_ROLES, "/teacher");
   const { dict, locale } = await getDictionary();
   const d = dict.teacher.dashboard;
   const lessons = inLocale(listLessonsForTeacher(user.id), locale);
@@ -37,7 +39,7 @@ export default async function TeacherDashboard() {
 
   return (
     <PageContainer>
-      <PageHeader title={fmt(d.greeting, { name: firstName })} description={d.lead} />
+      <PageHeader title={openAccessEnabled() ? dict.open.helloTeacher : fmt(d.greeting, { name: firstName })} description={d.lead} />
 
       {live.length ? (
         <Card className="mb-6 border-success/40 bg-success-soft/30" data-testid="teacher-live-sessions">
@@ -59,18 +61,24 @@ export default async function TeacherDashboard() {
       ) : null}
 
       {/* Quick actions */}
-      <div className="grid gap-4 md:grid-cols-3">
-        <Link href="/teacher/sessions/new" className="group rounded-2xl border border-brand/20 bg-brand p-6 text-white shadow-[var(--shadow-card)] transition-colors hover:bg-brand-hover" data-testid="dashboard-start-session">
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        <Link href="/present/daily" className="fc-rise fc-spotlight fc-spotlight-dark group relative isolate overflow-hidden rounded-2xl bg-night p-6 text-white shadow-[var(--shadow-card)] ring-1 ring-white/10 transition-shadow hover:shadow-[var(--shadow-raised)]" data-testid="dashboard-warm-up">
+          <Aurora />
+          <Target aria-hidden className="relative size-7 text-glow-c" />
+          <p className="relative mt-4 text-lg font-semibold">{d.warmUp}</p>
+          <p className="relative mt-1 text-sm text-white/70">{d.warmUpText}</p>
+        </Link>
+        <Link href="/teacher/sessions/new" className="fc-rise fc-lift group rounded-2xl border border-brand/30 bg-linear-to-br from-brand-solid to-[#8f1228] p-6 text-white shadow-[0_18px_44px_-20px_rgb(229_36_47/0.8)] transition-shadow hover:shadow-[0_24px_54px_-18px_rgb(240_65_77/0.9)]" style={{ "--i": 1 } as React.CSSProperties} data-testid="dashboard-start-session">
           <Radio aria-hidden className="size-7" />
           <p className="mt-4 text-lg font-semibold">{d.startSession}</p>
           <p className="mt-1 text-sm text-white/80">{d.startSessionText}</p>
         </Link>
-        <Link href="/teacher/lessons/new" className="rounded-2xl border border-line bg-surface p-6 shadow-[var(--shadow-card)] transition-colors hover:border-line-strong" data-testid="create-lesson">
+        <Link href="/teacher/lessons/new" className="fc-rise fc-spotlight fc-lift rounded-2xl border border-line bg-surface p-6 shadow-[var(--shadow-card)]" style={{ "--i": 2 } as React.CSSProperties} data-testid="create-lesson">
           <BookPlus aria-hidden className="size-7 text-brand" />
           <p className="mt-4 text-lg font-semibold">{d.createLesson}</p>
           <p className="mt-1 text-sm text-ink-muted">{d.createLessonText}</p>
         </Link>
-        <Link href="/teacher/materials" className="rounded-2xl border border-line bg-surface p-6 shadow-[var(--shadow-card)] transition-colors hover:border-line-strong">
+        <Link href="/teacher/materials" className="fc-rise fc-spotlight fc-lift rounded-2xl border border-line bg-surface p-6 shadow-[var(--shadow-card)]" style={{ "--i": 3 } as React.CSSProperties}>
           <FileUp aria-hidden className="size-7 text-brand" />
           <p className="mt-4 text-lg font-semibold">{d.uploadMaterial}</p>
           <p className="mt-1 text-sm text-ink-muted">{d.uploadMaterialText}</p>

@@ -11,9 +11,11 @@ import { clip, hasNegation, splitSentences, stem, textLanguage, tokens, uniqueTe
 import { checkUnderstanding, validateClaims, type CheckedClaim, type UnderstandingStatus } from "@/lib/knowledge/grounding";
 import { assumptionsFor, soundsLikeOpinion, statementTypes, type AssumptionId, type StatementType } from "@/lib/knowledge/reasoning";
 import { suggestQuestions, type QuestionKind } from "@/lib/knowledge/questions";
+import { understandQuery, type IntentKind, type QueryIntent, type TargetLanguage } from "@/lib/knowledge/intent";
 import type { KnowledgeType } from "@/lib/knowledge/knowledge";
 import { searchKnowledge, type KnowledgeHit, type Passage, type QueryTerm } from "./knowledge-search";
 import { getMaterial } from "./materials";
+import { lookupWord, type DictionaryResult } from "./dictionary";
 import { addItem, createResearchProject } from "@/lib/labs/research/service";
 
 /**
@@ -80,9 +82,20 @@ export interface ExplainAI {
   checkQuestion: string;
 }
 
+/** What the question was understood to ask, so the person can see what was really searched. */
+export interface Understood {
+  kind: IntentKind;
+  /** What the question is about, without its scaffolding ("afternoon" for "what does afternoon mean?"). */
+  focus: string;
+  sides: [string, string] | null;
+  target: TargetLanguage | null;
+}
+
 export interface AssistantResult {
   mode: AssistantMode;
   query: string;
+  /** Null for modes that take a statement rather than a question ("evidence", "check"). */
+  understood: Understood | null;
   scope: { materialId: string | null; materialTitle: string | null; subject: Subject | null };
   searched: { materials: number; lessons: number };
   terms: QueryTerm[];
@@ -92,6 +105,12 @@ export interface AssistantResult {
    * of its words and may not answer it; "none": nothing was found.
    */
   match: "full" | "partial" | "none";
+  /**
+   * The entry in a school dictionary for a word the question is about, shown
+   * before the passages; null when the question is not a look-up or no
+   * dictionary has the word.
+   */
+  dictionary: DictionaryResult | null;
   passages: NumberedPassage[];
   key: KeyItem[];
   ai: ExplainAI | null;
@@ -104,6 +123,27 @@ export interface AssistantResult {
 export type ResearchQuestionKind = "what_known" | "how_works" | "why_matters" | "compare_views" | "evidence_strength";
 
 /* ------------------------------- helpers -------------------------------- */
+
+/**
+ * Whether the question is about a word, and if so what the dictionaries have
+ * for it. Questions about ideas ("how does photosynthesis work") are not looked
+ * up; a comparison looks up both sides.
+ */
+export function dictionaryFor(user: CurrentUser, intent: QueryIntent, scope: { materialId?: string; subject?: Subject }): DictionaryResult | null {
+  if (intent.kind === "how" || intent.kind === "why") return null;
+  // Only a question that asks about a word may show entries that merely use it in an example; a bare word or a topic
+  // ("gravity") must not fill a science question with language-book entries.
+  const asksAboutWord = intent.kind === "define" || intent.kind === "translate" || intent.kind === "example";
+  const options = { target: intent.target, allowMentions: asksAboutWord, materialId: scope.materialId, subject: scope.subject };
+  let result: DictionaryResult | null;
+  if (intent.kind === "compare" && intent.sides) {
+    const [a, b] = intent.sides.map((side) => lookupWord(user, side, { ...options, allowMentions: false, limit: 1 }));
+    result = a || b ? { query: intent.sides.join(" / "), direction: a?.direction ?? "en-es", matches: [...(a?.matches ?? []), ...(b?.matches ?? [])], suggestions: [] } : null;
+  } else {
+    result = lookupWord(user, intent.focus, options);
+  }
+  return result && (result.matches.length > 0 || result.suggestions.length > 0) ? result : null;
+}
 
 /** The sentence of a passage that best matches the question, and the words to highlight. */
 export function bestExcerpt(text: string, queryStems: ReadonlySet<string>, cap = 280): { excerpt: string; highlights: string[] } {
@@ -248,7 +288,11 @@ export async function runAssistant(user: CurrentUser, raw: AssistantRequest): Pr
   const material = input.materialId ? getMaterial(input.materialId, user) : null;
   const scope = { materialId: material?.id, subject: material ? undefined : input.subject };
   const query = input.mode === "check" && input.topic ? input.topic : input.text;
-  const g = gather(user, input.mode === "check" && input.topic ? `${input.topic} ${input.text}` : query, scope, input.mode === "locate" ? 6 : 5);
+  // A question is searched by what it is about, not by its scaffolding: "what does afternoon mean?" is a search for "afternoon".
+  const asQuestion = input.mode === "explain" || input.mode === "locate" || input.mode === "questions" || input.mode === "research";
+  const intent = asQuestion ? understandQuery(query) : null;
+  const searchText = intent ? intent.focus : input.mode === "check" && input.topic ? `${input.topic} ${input.text}` : query;
+  const g = gather(user, searchText, scope, input.mode === "locate" ? 6 : 5);
   const found = g.passages.length > 0;
   const bestCoverage = Math.max(0, ...g.all.slice(0, 3).map((p) => p.coverage));
   const match: AssistantResult["match"] = !found ? "none" : g.terms.length >= 2 && bestCoverage < 0.5 ? "partial" : "full";
@@ -256,11 +300,13 @@ export async function runAssistant(user: CurrentUser, raw: AssistantRequest): Pr
   const result: AssistantResult = {
     mode: input.mode,
     query,
+    understood: intent ? { kind: intent.kind, focus: intent.focus, sides: intent.sides, target: intent.target } : null,
     scope: { materialId: material?.id ?? null, materialTitle: material?.title ?? null, subject: scope.subject ?? null },
     searched: g.searched,
     terms: g.terms,
     found,
     match,
+    dictionary: intent && (input.mode === "explain" || input.mode === "locate") ? dictionaryFor(user, intent, scope) : null,
     passages: g.passages,
     key: [],
     ai: null,
@@ -374,7 +420,7 @@ const pageLabel = (start: number | null, end: number | null) => (start === null 
 export function startResearch(user: CurrentUser, raw: z.input<typeof startResearchSchema>): { projectId: string } {
   const input = startResearchSchema.parse(raw);
   const material = input.materialId ? getMaterial(input.materialId, user) : null;
-  const g = gather(user, input.topic, { materialId: material?.id, subject: material ? undefined : input.subject }, 5);
+  const g = gather(user, understandQuery(input.topic).focus, { materialId: material?.id, subject: material ? undefined : input.subject }, 5);
   const subject = material?.subject ?? input.subject ?? g.passages[0]?.subject ?? "";
   const project = createResearchProject(user, { title: clip(input.topic, 150), subject, data: { topic: input.topic, question: input.question, questionType: input.questionType } });
   const sourceIds = new Map<string, string>();

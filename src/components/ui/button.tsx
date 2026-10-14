@@ -6,11 +6,11 @@ type Variant = "primary" | "secondary" | "ghost" | "danger" | "success" | "subtl
 type Size = "sm" | "md" | "lg" | "xl";
 
 const variants: Record<Variant, string> = {
-  primary: "bg-brand text-white hover:bg-brand-hover shadow-sm disabled:bg-brand/50",
+  primary: "bg-brand-solid text-white shadow-[inset_0_1px_0_rgb(255_255_255/0.18),0_8px_22px_-10px_rgb(229_36_47/0.85)] hover:bg-brand-hover hover:shadow-[inset_0_1px_0_rgb(255_255_255/0.22),0_10px_30px_-8px_rgb(240_65_77/0.9)] disabled:bg-brand-solid/40 disabled:text-white/60 disabled:shadow-none",
   secondary: "bg-surface text-ink border border-line-strong hover:bg-muted disabled:text-ink-subtle",
   ghost: "text-ink-muted hover:bg-muted hover:text-ink disabled:text-ink-subtle/60",
   danger: "bg-surface text-danger border border-danger/30 hover:bg-danger-soft disabled:opacity-50",
-  success: "bg-success text-white hover:bg-success/90 shadow-sm disabled:opacity-50",
+  success: "bg-success text-[#04140c] hover:bg-success/90 shadow-sm disabled:opacity-50",
   subtle: "bg-brand-soft text-brand-ink hover:bg-brand-soft/70 disabled:opacity-50",
 };
 

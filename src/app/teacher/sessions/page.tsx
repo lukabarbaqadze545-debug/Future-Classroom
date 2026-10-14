@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getCurrentUser } from "@/lib/auth/session";
+import { requirePageUser, STAFF_ROLES } from "@/lib/auth/session";
 import { getDictionary, pageTitle } from "@/lib/i18n/server";
 import { formatDateTime } from "@/lib/i18n/config";
 import { listSessionsForTeacher } from "@/lib/services/sessions";
@@ -13,7 +13,7 @@ export async function generateMetadata() {
 }
 
 export default async function SessionsPage() {
-  const user = (await getCurrentUser())!;
+  const user = await requirePageUser(STAFF_ROLES, "/teacher");
   const { dict, locale } = await getDictionary();
   const s = dict.teacher.sessions;
   const sessions = listSessionsForTeacher(user.id);

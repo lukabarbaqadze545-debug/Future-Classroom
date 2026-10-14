@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getCurrentUser } from "@/lib/auth/session";
+import { requirePageUser, ALL_ROLES } from "@/lib/auth/session";
 import { getDictionary } from "@/lib/i18n/server";
 import { tr } from "@/lib/labs/localized";
 import { findCareer, FIELDS } from "@/lib/labs/career/careers";
@@ -25,7 +25,7 @@ export default async function CareerDetailPage({ params }: Props) {
   const { id } = await params;
   const career = findCareer(id);
   if (!career) notFound();
-  const user = (await getCurrentUser())!;
+  const user = await requirePageUser(ALL_ROLES, "/career");
   const { dict, locale } = await getDictionary();
   const c = dict.labs.career;
   return (

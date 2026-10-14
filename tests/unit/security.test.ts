@@ -120,7 +120,7 @@ describe("answers stay on the server until the student has answered", () => {
 });
 
 describe("demo sign-in and demo accounts are opt-in for production builds; registration can be switched off", () => {
-  const saved = { NODE_ENV: process.env.NODE_ENV, DEMO_MODE: process.env.DEMO_MODE, SEED_DEMO: process.env.SEED_DEMO, SELF_REGISTRATION: process.env.SELF_REGISTRATION };
+  const saved = { NODE_ENV: process.env.NODE_ENV, DEMO_MODE: process.env.DEMO_MODE, SEED_DEMO: process.env.SEED_DEMO, SELF_REGISTRATION: process.env.SELF_REGISTRATION, OPEN_ACCESS: process.env.OPEN_ACCESS };
   const env = process.env as Record<string, string | undefined>;
   afterEach(() => {
     for (const [key, value] of Object.entries(saved)) {
@@ -130,6 +130,8 @@ describe("demo sign-in and demo accounts are opt-in for production builds; regis
   });
 
   it("is off in production unless enabled, on in development", () => {
+    // Open access (on by default) seeds the demo school and allows demo sign-in by itself; this is about a school that turned it off.
+    env.OPEN_ACCESS = "false";
     delete env.DEMO_MODE;
     delete env.SEED_DEMO;
     delete env.SELF_REGISTRATION;

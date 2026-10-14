@@ -1,5 +1,5 @@
 import { ShieldCheck } from "lucide-react";
-import { getCurrentUser, isStaff } from "@/lib/auth/session";
+import { isStaff, requirePageUser, ALL_ROLES } from "@/lib/auth/session";
 import { getDictionary } from "@/lib/i18n/server";
 import { isSubject } from "@/lib/domain/catalog";
 import { getAIProvider } from "@/lib/ai";
@@ -8,6 +8,8 @@ import { ASSISTANT_MODES, listSaved, type AssistantMode } from "@/lib/services/l
 import { PageContainer } from "@/components/layout/site-header";
 import { PageHeader } from "@/components/ui/misc";
 import { LearningAssistant } from "@/components/assistant/learning-assistant";
+import { MyWordsLink } from "@/components/vocab/my-words-link";
+import { hasDictionary } from "@/lib/services/dictionary";
 
 export async function generateMetadata() {
   const { dict } = await getDictionary();
@@ -17,7 +19,7 @@ export async function generateMetadata() {
 type Props = { searchParams: Promise<{ mode?: string; q?: string; material?: string; subject?: string }> };
 
 export default async function LearningAssistantPage({ searchParams }: Props) {
-  const user = (await getCurrentUser())!;
+  const user = await requirePageUser(ALL_ROLES, "/learning-assistant");
   const { dict } = await getDictionary();
   const a = dict.assistant;
   const params = await searchParams;
@@ -33,9 +35,10 @@ export default async function LearningAssistantPage({ searchParams }: Props) {
     }
   }
 
+  const dictionary = hasDictionary(user);
   return (
     <PageContainer>
-      <PageHeader title={a.title} description={isStaff(user) ? a.staffLead : a.lead} />
+      <PageHeader title={a.title} description={isStaff(user) ? a.staffLead : a.lead} actions={dictionary ? <MyWordsLink /> : undefined} />
       <p className="mb-6 flex items-start gap-2 rounded-2xl border border-brand/20 bg-brand-soft/30 px-4 py-3 text-sm text-ink-muted">
         <ShieldCheck aria-hidden className="mt-0.5 size-4 shrink-0 text-brand" />
         {a.honesty}
@@ -48,6 +51,7 @@ export default async function LearningAssistantPage({ searchParams }: Props) {
         aiAvailable={getAIProvider() !== null}
         initialSaved={listSaved(user)}
         staff={isStaff(user)}
+        dictionary={dictionary}
       />
     </PageContainer>
   );

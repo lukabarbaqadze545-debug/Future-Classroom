@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { HeartHandshake } from "lucide-react";
-import { getCurrentUser, isStaff } from "@/lib/auth/session";
+import { isStaff, requirePageUser, ALL_ROLES } from "@/lib/auth/session";
 import { getDictionary } from "@/lib/i18n/server";
 import { fmt } from "@/lib/i18n/config";
 import { tr } from "@/lib/labs/localized";
@@ -21,7 +21,7 @@ export async function generateMetadata() {
 }
 
 export default async function CriticalThinkingPage() {
-  const user = (await getCurrentUser())!;
+  const user = await requirePageUser(ALL_ROLES, "/labs");
   const { dict, locale } = await getDictionary();
   const c = dict.labs.critical;
   const staff = isStaff(user);

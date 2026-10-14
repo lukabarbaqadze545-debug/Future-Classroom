@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { ArrowRight, BookOpen, Flame, Lightbulb, Radio } from "lucide-react";
-import { getCurrentUser } from "@/lib/auth/session";
+import { Activity, ArrowRight, BookOpen, Lightbulb, Radio } from "lucide-react";
+import { requirePageUser } from "@/lib/auth/session";
 import { getDictionary, pageTitle } from "@/lib/i18n/server";
 import { fmt, fmtCount, relativeTime } from "@/lib/i18n/config";
 import { getStudentProgress } from "@/lib/services/progress";
@@ -21,13 +21,17 @@ import { LAB_IDS, LAB_ROUTES } from "@/lib/labs/registry";
 import { LabIcon } from "@/components/labs/lab-shell";
 import { STATUS_TONE } from "@/components/assignments/review-board";
 import { formatDateTime } from "@/lib/i18n/config";
+import { openAccessEnabled } from "@/lib/config";
+import { challengeNumber } from "@/lib/daily/pick";
+import { todayInSchool } from "@/lib/services/daily";
+import { DeviceStreakStat, TodayStrip } from "@/components/engagement/today-strip";
 
 export async function generateMetadata() {
   return pageTitle((p) => p.home);
 }
 
 export default async function StudentHome() {
-  const user = (await getCurrentUser())!;
+  const user = await requirePageUser(["student"], "/student");
   const { dict, locale } = await getDictionary();
   const d = dict.student.dashboard;
   const progress = getStudentProgress(user.id);
@@ -49,7 +53,8 @@ export default async function StudentHome() {
 
   return (
     <PageContainer>
-      <PageHeader title={fmt(d.greeting, { name: user.displayName.split(" ")[0] })} description={d.lead} />
+      <PageHeader title={openAccessEnabled() ? dict.open.helloStudent : fmt(d.greeting, { name: user.displayName.split(" ")[0] })} description={d.lead} />
+      <TodayStrip challengeNumber={challengeNumber(todayInSchool())} />
       {activeSessions.length ? (
         <Card className="mb-6 border-success/40 bg-success-soft/30" data-testid="live-sessions">
           <CardHeader title={<span className="flex items-center gap-2"><span className="fc-pulse size-2.5 rounded-full bg-success" />{d.activeTitle}</span>} />
@@ -73,7 +78,7 @@ export default async function StudentHome() {
         <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-6" data-testid="dashboard-labs">
           {LAB_IDS.map((id) => (
             <li key={id}>
-              <Link href={LAB_ROUTES[id]} className="flex h-full items-center gap-3 rounded-2xl border border-line bg-surface p-3 shadow-[var(--shadow-card)] transition-colors hover:border-brand/40">
+              <Link href={LAB_ROUTES[id]} className="fc-spotlight fc-lift flex h-full items-center gap-3 rounded-2xl border border-line bg-surface p-3 shadow-[var(--shadow-card)]">
                 <LabIcon lab={id} size="sm" />
                 <span className="text-sm leading-tight font-medium">{dict.labs.hub.rooms[id].name}</span>
               </Link>
@@ -212,13 +217,18 @@ export default async function StudentHome() {
                 <p className="text-2xl font-semibold tabular-nums">{progress.completedActivities}</p>
                 <p className="text-xs text-ink-muted">{d.activities}</p>
               </div>
-              <div>
-                <p className="flex items-center justify-center gap-1 text-2xl font-semibold tabular-nums">
-                  <Flame aria-hidden className="size-5 text-warn" />
-                  {progress.streakDays}
-                </p>
-                <p className="text-xs text-ink-muted">{d.streak}</p>
-              </div>
+              {openAccessEnabled() ? (
+                // Everyone shares the demo student here, so the streak is the one of this browser.
+                <DeviceStreakStat label={d.streak} />
+              ) : (
+                <div>
+                  <p className="flex items-center justify-center gap-1 text-2xl font-semibold tabular-nums">
+                    <Activity aria-hidden className="size-5 text-brand" />
+                    {progress.streakDays}
+                  </p>
+                  <p className="text-xs text-ink-muted">{d.streak}</p>
+                </div>
+              )}
               <div>
                 <p className="text-2xl font-semibold tabular-nums">{progress.topics.length}</p>
                 <p className="text-xs text-ink-muted">{d.topics}</p>

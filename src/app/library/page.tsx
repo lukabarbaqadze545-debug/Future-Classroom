@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { now } from "@/lib/db";
 import { Plus, Printer, ShieldCheck } from "lucide-react";
-import { getCurrentUser, isStaff } from "@/lib/auth/session";
+import { isStaff, requirePageUser, ALL_ROLES } from "@/lib/auth/session";
 import { getDictionary } from "@/lib/i18n/server";
 import { fmt, formatDate } from "@/lib/i18n/config";
 import { isSubject } from "@/lib/domain/catalog";
@@ -26,7 +26,7 @@ export async function generateMetadata() {
 }
 
 export default async function LibraryPage({ searchParams }: { searchParams: Promise<{ subject?: string }> }) {
-  const user = (await getCurrentUser())!;
+  const user = await requirePageUser(ALL_ROLES, "/library");
   const { dict, locale } = await getDictionary();
   const { subject } = await searchParams;
   const b = dict.labs.library;

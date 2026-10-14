@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { ClipboardList, Pencil, Radio } from "lucide-react";
-import { getCurrentUser, isStaff } from "@/lib/auth/session";
+import { isStaff, requirePageUser, ALL_ROLES } from "@/lib/auth/session";
 import { getDictionary } from "@/lib/i18n/server";
 import { fmt } from "@/lib/i18n/config";
 import { tr } from "@/lib/labs/localized";
@@ -30,7 +30,7 @@ export default async function ProblemPage({ params }: Props) {
   const { id } = await params;
   const problem = getProblem(id);
   if (!problem) notFound();
-  const user = (await getCurrentUser())!;
+  const user = await requirePageUser(ALL_ROLES, "/labs");
   const { dict, locale } = await getDictionary();
   const p = dict.labs.programming;
   const staff = isStaff(user);

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ExternalLink } from "lucide-react";
-import { getCurrentUser } from "@/lib/auth/session";
+import { requirePageUser, STAFF_ROLES } from "@/lib/auth/session";
 import { getDictionary, pageTitle } from "@/lib/i18n/server";
 import { fmt, formatDateTime } from "@/lib/i18n/config";
 import { ApiError } from "@/lib/http/errors";
@@ -21,7 +21,7 @@ export async function generateMetadata() {
 
 export default async function TeacherAssignmentPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const user = (await getCurrentUser())!;
+  const user = await requirePageUser(STAFF_ROLES, "/teacher");
   let data;
   try {
     data = getAssignmentForTeacher(id, user);

@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { getCurrentUser, isStaff } from "@/lib/auth/session";
+import { isStaff, requirePageUser, ALL_ROLES } from "@/lib/auth/session";
 import { getDictionary, pageTitle } from "@/lib/i18n/server";
 import { fmt, formatDateTime } from "@/lib/i18n/config";
 import { tr } from "@/lib/labs/localized";
@@ -23,7 +23,7 @@ export async function generateMetadata() {
 /** Read-only view of a student's STEM record, with teacher feedback. */
 export default async function RecordPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const user = (await getCurrentUser())!;
+  const user = await requirePageUser(ALL_ROLES, "/labs");
   let record;
   try {
     record = getRecordFor(id, user);

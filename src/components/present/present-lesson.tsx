@@ -81,7 +81,7 @@ export function PresentLesson({ lesson }: { lesson: { id: string; title: string;
                 <ul className="mt-10 space-y-6">
                   {lesson.content.objectives.map((o) => (
                     <li key={o} className="flex gap-5 text-[clamp(20px,2.4vw,38px)] leading-snug wrap-break-word">
-                      <span aria-hidden className="mt-3 size-3.5 shrink-0 rounded-full bg-brand" />
+                      <span aria-hidden className="mt-3 size-3.5 shrink-0 rounded-full bg-brand-solid" />
                       {o}
                     </li>
                   ))}
@@ -98,7 +98,7 @@ export function PresentLesson({ lesson }: { lesson: { id: string; title: string;
                         <h1 className="mt-3 text-[clamp(26px,3.6vw,58px)] leading-tight wrap-break-word font-semibold">{section.title}</h1>
                         <p className="fc-prose mt-8 text-[clamp(20px,1.9vw,30px)] leading-relaxed">{section.body}</p>
                       </div>
-                      {section.visual ? <FunctionPlot {...section.visual} large className={theme === "dark" ? "bg-white" : undefined} /> : null}
+                      {section.visual ? <FunctionPlot {...section.visual} large className={theme === "dark" ? "theme-light bg-white" : undefined} /> : null}
                     </div>
                   );
                 })()

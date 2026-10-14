@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // The Pyodide runtime copied from node_modules before a build (scripts/copy-pyodide.mjs).
+    "public/pyodide/**",
   ]),
 ]);
 

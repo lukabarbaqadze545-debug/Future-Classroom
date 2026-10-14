@@ -12,6 +12,9 @@
 /out/
 /build
 
+# Pyodide runtime copied from node_modules before a build (scripts/copy-pyodide.mjs)
+/public/pyodide/
+
 # local data (SQLite database + uploaded materials) and backups
 /data/
 /backups/

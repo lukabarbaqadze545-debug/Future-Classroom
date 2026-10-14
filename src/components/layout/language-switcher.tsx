@@ -29,7 +29,7 @@ export function LanguageSwitcher({ className }: { className?: string }) {
           lang={code}
           onClick={() => change(code)}
           aria-pressed={locale === code}
-          className={cn("h-8 rounded-md px-2.5 text-xs font-semibold transition-colors", locale === code ? "bg-ink text-white" : "text-ink-muted hover:bg-muted")}
+          className={cn("h-8 rounded-md px-2.5 text-xs font-semibold transition-colors", locale === code ? "bg-brand-solid text-white shadow-[0_0_14px_-2px_rgb(229_36_47/0.7)]" : "text-ink-muted hover:bg-muted")}
         >
           {code === "ka" ? "ქარ" : "EN"}
           <span className="sr-only"> — {LABELS[code]}</span>

@@ -55,7 +55,7 @@ export function PresentSession({ initial, joinUrl }: { initial: TeacherSessionVi
         <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
           <p className="text-xl font-semibold opacity-80">{session.title}</p>
           {session.status !== "ended" ? (
-            <p className="rounded-xl bg-brand px-4 py-1.5 font-mono text-2xl font-bold tracking-widest text-white">{session.joinCode}</p>
+            <p className="rounded-xl bg-brand-solid px-4 py-1.5 font-mono text-2xl font-bold tracking-widest text-white">{session.joinCode}</p>
           ) : null}
           {current && results ? <p className="text-xl tabular-nums opacity-80">{fmt(p.responses, { a: results.responseCount, b: results.participantCount })}</p> : null}
           {session.paused ? <p className="rounded-full bg-amber-500/20 px-4 py-1 text-lg font-semibold text-amber-600">{p.paused}</p> : null}
@@ -203,7 +203,7 @@ export function PresentSession({ initial, joinUrl }: { initial: TeacherSessionVi
             {results && current.state === "open" && !revealed ? (
               <div className="mt-6" aria-hidden>
                 <div className={cn("h-3 overflow-hidden rounded-full", dark ? "bg-white/10" : "bg-muted")}>
-                  <div className="h-full rounded-full bg-brand transition-[width] duration-500" style={{ width: `${answered}%` }} />
+                  <div className="h-full rounded-full bg-brand-solid transition-[width] duration-500" style={{ width: `${answered}%` }} />
                 </div>
               </div>
             ) : null}
@@ -214,7 +214,7 @@ export function PresentSession({ initial, joinUrl }: { initial: TeacherSessionVi
                 <ul className="grid gap-4 md:grid-cols-2">
                   {activity.options.map((o) => (
                     <li key={o.id} className={cn("flex items-center gap-5 rounded-3xl border-2 px-6 py-5 text-[clamp(20px,2.2vw,34px)] font-medium wrap-break-word", dark ? "border-white/15" : "border-line")}>
-                      <span className="flex size-14 shrink-0 items-center justify-center rounded-2xl bg-brand text-2xl font-bold text-white uppercase">{o.id}</span>
+                      <span className="flex size-14 shrink-0 items-center justify-center rounded-2xl bg-brand-solid text-2xl font-bold text-white uppercase">{o.id}</span>
                       {o.text}
                     </li>
                   ))}

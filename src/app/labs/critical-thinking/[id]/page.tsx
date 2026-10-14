@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ClipboardList, Radio } from "lucide-react";
-import { getCurrentUser, isStaff } from "@/lib/auth/session";
+import { isStaff, requirePageUser, ALL_ROLES } from "@/lib/auth/session";
 import { getDictionary } from "@/lib/i18n/server";
 import { fmt, relativeTime } from "@/lib/i18n/config";
 import { tr } from "@/lib/labs/localized";
@@ -32,7 +32,7 @@ export default async function ExercisePage({ params, searchParams }: Props) {
   const { id } = await params;
   const exercise = findExercise(id);
   if (!exercise) notFound();
-  const user = (await getCurrentUser())!;
+  const user = await requirePageUser(ALL_ROLES, "/labs");
   const { dict, locale } = await getDictionary();
   const c = dict.labs.critical;
   const staff = isStaff(user);

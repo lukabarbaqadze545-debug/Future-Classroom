@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ArrowRight, Plus, ShieldCheck } from "lucide-react";
-import { getCurrentUser, isStaff } from "@/lib/auth/session";
+import { isStaff, requirePageUser, ALL_ROLES } from "@/lib/auth/session";
 import { getDictionary } from "@/lib/i18n/server";
 import { tr } from "@/lib/labs/localized";
 import { getProblem, listProblems, problemStatuses, programmingProgress } from "@/lib/labs/programming/service";
@@ -18,7 +18,7 @@ export async function generateMetadata() {
 }
 
 export default async function ProgrammingLabPage() {
-  const user = (await getCurrentUser())!;
+  const user = await requirePageUser(ALL_ROLES, "/labs");
   const { dict, locale } = await getDictionary();
   const p = dict.labs.programming;
   const statuses = problemStatuses(user.id);

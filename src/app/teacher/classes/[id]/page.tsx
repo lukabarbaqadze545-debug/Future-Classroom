@@ -1,11 +1,12 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ClipboardList, MonitorPlay, Play } from "lucide-react";
-import { getCurrentUser } from "@/lib/auth/session";
+import { getCurrentUser, requirePageUser, STAFF_ROLES } from "@/lib/auth/session";
 import { getDictionary } from "@/lib/i18n/server";
 import { fmt, fmtCount, formatDateTime, relativeTime } from "@/lib/i18n/config";
 import { ApiError } from "@/lib/http/errors";
 import { classProgress, listStudents } from "@/lib/services/classes";
+import { classroomControlAvailable } from "@/lib/services/classroom";
 import { publicOrigin } from "@/lib/labs/library/qr";
 import { PageContainer } from "@/components/layout/site-header";
 import { ButtonLink } from "@/components/ui/button";
@@ -38,7 +39,7 @@ export async function generateMetadata({ params }: Props) {
 /** One class: its students (add, remove, new password) and its progress. */
 export default async function ClassPage({ params }: Props) {
   const { id } = await params;
-  const user = (await getCurrentUser())!;
+  const user = await requirePageUser(STAFF_ROLES, "/teacher");
   const { dict, locale } = await getDictionary();
   const c = dict.labs.classes;
   const { class: cls, students, sessions, assignments } = load(id, user);
@@ -62,10 +63,12 @@ export default async function ClassPage({ params }: Props) {
               <Play aria-hidden className="size-5" />
               {c.startLesson}
             </ButtonLink>
-            <ButtonLink href={`/teacher/classes/${cls.id}/live`} size="lg" variant="secondary" data-testid="class-live">
-              <MonitorPlay aria-hidden className="size-5" />
-              {dict.classroom.open}
-            </ButtonLink>
+            {classroomControlAvailable() ? (
+              <ButtonLink href={`/teacher/classes/${cls.id}/live`} size="lg" variant="secondary" data-testid="class-live">
+                <MonitorPlay aria-hidden className="size-5" />
+                {dict.classroom.open}
+              </ButtonLink>
+            ) : null}
             <ButtonLink href={`/teacher/assignments/new?class=${cls.id}`} size="lg" variant="secondary">
               <ClipboardList aria-hidden className="size-5" />
               {c.assignWork}

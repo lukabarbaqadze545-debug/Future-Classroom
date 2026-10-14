@@ -1,4 +1,4 @@
-import { getCurrentUser } from "@/lib/auth/session";
+import { requirePageUser, STAFF_ROLES } from "@/lib/auth/session";
 import { getDictionary, pageTitle } from "@/lib/i18n/server";
 import { ASSIGNMENT_KINDS, type AssignmentKind } from "@/lib/labs/registry";
 import { assignableItems } from "@/lib/labs/assignment-items";
@@ -12,7 +12,7 @@ export async function generateMetadata() {
 }
 
 export default async function NewAssignmentPage({ searchParams }: { searchParams: Promise<{ kind?: string; ref?: string; class?: string; title?: string; instructions?: string }> }) {
-  const user = (await getCurrentUser())!;
+  const user = await requirePageUser(STAFF_ROLES, "/teacher");
   const { dict, locale } = await getDictionary();
   const { kind, ref, class: classParam, title, instructions } = await searchParams;
   const initialKind: AssignmentKind = kind && (ASSIGNMENT_KINDS as readonly string[]).includes(kind) ? (kind as AssignmentKind) : "programming";

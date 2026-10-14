@@ -1,8 +1,9 @@
-import { beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { freshDb, makeUser } from "../helpers";
 import { areaOf, isPlatformPath } from "@/lib/classroom/areas";
 import { createClass } from "@/lib/services/classes";
 import {
+  classroomControlAvailable,
   IDLE_MS,
   LOCK_MAX_MS,
   OFFLINE_MS,
@@ -43,7 +44,40 @@ describe("classroom paths", () => {
   });
 });
 
+describe("classroom control with open access", () => {
+  const saved = process.env.OPEN_ACCESS;
+  afterEach(() => {
+    if (saved === undefined) delete process.env.OPEN_ACCESS;
+    else process.env.OPEN_ACCESS = saved;
+  });
+
+  it("is off: everyone shares one demo student, so nobody could be allowed to pause the others", () => {
+    freshDb();
+    const teacher = makeUser("teacher", "nino");
+    const mariam = makeUser("student", "mariam");
+    const classId = createClass(teacher, "9A", [mariam.id]).id;
+    delete process.env.OPEN_ACCESS; // open access is the default
+    expect(classroomControlAvailable()).toBe(false);
+    expect(recordHeartbeat(mariam, beat(), T0)).toBeNull();
+    expect(() => raiseHand(mariam, "", T0)).toThrow(ApiError);
+    expect(() => classroomState(classId, teacher)).toThrow(ApiError);
+    expect(() => setLocked(classId, teacher, null, true)).toThrow(ApiError);
+    expect(() => sendMessage(classId, teacher, null, "hi")).toThrow(ApiError);
+    process.env.OPEN_ACCESS = "false";
+    expect(classroomControlAvailable()).toBe(true);
+  });
+});
+
 describe("classroom control", () => {
+  const saved = process.env.OPEN_ACCESS;
+  beforeEach(() => {
+    process.env.OPEN_ACCESS = "false";
+  });
+  afterEach(() => {
+    if (saved === undefined) delete process.env.OPEN_ACCESS;
+    else process.env.OPEN_ACCESS = saved;
+  });
+
   let teacher: ReturnType<typeof makeUser>;
   let other: ReturnType<typeof makeUser>;
   let mariam: ReturnType<typeof makeUser>;

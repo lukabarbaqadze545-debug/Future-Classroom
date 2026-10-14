@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getCurrentUser } from "@/lib/auth/session";
+import { requirePageUser } from "@/lib/auth/session";
 import { getDictionary, pageTitle } from "@/lib/i18n/server";
 import { fmt, formatDateTime } from "@/lib/i18n/config";
 import { listAssignmentsForStudent } from "@/lib/services/assignments";
@@ -19,7 +19,7 @@ export async function generateMetadata() {
 const DONE = ["submitted", "completed", "reviewed"];
 
 export default async function StudentAssignmentsPage({ searchParams }: { searchParams: Promise<{ filter?: string }> }) {
-  const user = (await getCurrentUser())!;
+  const user = await requirePageUser(["student"], "/student");
   const { dict, locale } = await getDictionary();
   const a = dict.labs.assignments;
   const filter = (await searchParams).filter ?? "todo";

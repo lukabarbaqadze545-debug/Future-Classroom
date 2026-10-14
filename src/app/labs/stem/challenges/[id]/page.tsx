@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ClipboardList } from "lucide-react";
-import { getCurrentUser, isStaff } from "@/lib/auth/session";
+import { isStaff, requirePageUser, ALL_ROLES } from "@/lib/auth/session";
 import { getDictionary } from "@/lib/i18n/server";
 import { fmt, relativeTime } from "@/lib/i18n/config";
 import { tr } from "@/lib/labs/localized";
@@ -27,7 +27,7 @@ export default async function ChallengePage({ params }: Props) {
   const { id } = await params;
   const set = findChallengeSet(id);
   if (!set) notFound();
-  const user = (await getCurrentUser())!;
+  const user = await requirePageUser(ALL_ROLES, "/labs");
   const { dict, locale } = await getDictionary();
   const s = dict.labs.stem;
   const staff = isStaff(user);

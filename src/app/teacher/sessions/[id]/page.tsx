@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { getCurrentUser } from "@/lib/auth/session";
+import { requirePageUser, STAFF_ROLES } from "@/lib/auth/session";
 import { getDictionary, pageTitle } from "@/lib/i18n/server";
 import { getSessionForTeacher, getSessionSummary, getTeacherSessionView } from "@/lib/services/sessions";
 import { getLesson } from "@/lib/services/lessons";
@@ -15,7 +15,7 @@ export async function generateMetadata() {
 }
 
 export default async function SessionPage({ params }: { params: Promise<{ id: string }> }) {
-  const user = (await getCurrentUser())!;
+  const user = await requirePageUser(STAFF_ROLES, "/teacher");
   const [{ id }, { dict, locale }] = await Promise.all([params, getDictionary()]);
   let session;
   try {

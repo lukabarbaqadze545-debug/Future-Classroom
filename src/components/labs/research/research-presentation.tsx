@@ -115,7 +115,7 @@ export function ResearchPresentation({
           <p className={cn("text-2xl font-medium", muted)}>
             {s.data}: {d.name}
           </p>
-          <div className="mx-auto mt-6 max-w-5xl rounded-2xl bg-white p-4 text-ink">
+          <div className="mx-auto mt-6 max-w-5xl theme-light rounded-2xl bg-white p-4 text-ink">
             <DatasetChart dataset={d} spec={spec!} large />
           </div>
           {d.collection ? <p className={cn("mt-4 text-xl", muted)}>{d.collection}</p> : null}

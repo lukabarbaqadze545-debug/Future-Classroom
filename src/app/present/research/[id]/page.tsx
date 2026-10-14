@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { getCurrentUser } from "@/lib/auth/session";
+import { requirePageUser, ALL_ROLES } from "@/lib/auth/session";
 import { ApiError } from "@/lib/http/errors";
 import { getResearchBundle } from "@/lib/labs/research/service";
 import { ResearchPresentation } from "@/components/labs/research/research-presentation";
@@ -12,7 +12,7 @@ export async function generateMetadata() {
 /** Students present their own research; teachers can present any student's. */
 export default async function PresentResearchPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const user = (await getCurrentUser())!;
+  const user = await requirePageUser(ALL_ROLES, "/");
   let bundle;
   try {
     bundle = getResearchBundle(id, user);

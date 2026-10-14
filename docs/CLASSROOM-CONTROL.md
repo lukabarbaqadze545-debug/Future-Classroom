@@ -4,6 +4,16 @@ Status: implemented. One teacher's computer can see and guide a whole class
 (18–20 students) from the browser, on the school network, with no software to
 install on the students' computers.
 
+## Needs real student accounts: set `OPEN_ACCESS=false`
+
+With open access (the default for the public demo) everyone shares one demo
+student, so there is no one to watch, and anyone with the link could pause
+every other visitor's screen. Classroom control is therefore **off** while open
+access is on: students send nothing, the raise-hand button is hidden, the class
+page has no "Live classroom" button, `/live` explains why, and the API answers
+409. For a school with real students set `OPEN_ACCESS=false` (students then sign
+in with their own accounts, which teachers create on the class page).
+
 ## What the teacher can do
 
 Open a class and choose **Live classroom** (`/teacher/classes/<id>/live`).
@@ -76,7 +86,7 @@ such as Veyon can run beside the platform; the platform does not depend on it.
 
 | Part | Where |
 | --- | --- |
-| Tables `student_presence`, `page_visits`, `classroom_commands` | migration 6, `src/lib/db/schema.ts` |
+| Tables `student_presence`, `page_visits`, `classroom_commands` | migration 7, `src/lib/db/schema.ts` |
 | Rules (status, commands, expiry, permissions) | `src/lib/services/classroom.ts` |
 | Page → area, allowed paths | `src/lib/classroom/areas.ts` |
 | API | `src/app/api/classroom/` (`heartbeat`, `leave`, `help`, `messages`, `[classId]/…`) |
@@ -104,10 +114,11 @@ one every 4 seconds — a few requests per second on the school server.
 ## Tests
 
 `tests/unit/classroom.test.ts` (statuses, tabs, timeline, raised hands, pauses
-and their expiry, messages, page requests, permissions) and
+and their expiry, messages, page requests, permissions) 
 `tests/e2e/classroom-control.spec.ts` (a teacher with two real student browsers:
 where they are, help, message, open a page, pause and resume, tab closed; other
-teacher and student refused; Georgian on a phone).
+teacher and student refused; Georgian on a phone) and
+`tests/e2e-open/open-access.spec.ts` (control stays off with open access).
 
 ## Not done
 

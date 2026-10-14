@@ -85,7 +85,7 @@ export function TutorChat({ lessonId, aiAvailable }: { lessonId: string | null; 
       <div className="min-h-48 space-y-3 rounded-2xl border border-line bg-surface p-4" aria-live="polite">
         {messages.map((m, i) => (
           <div key={i} className={cn("flex gap-3", m.role === "user" && "flex-row-reverse")}>
-            <span className={cn("flex size-8 shrink-0 items-center justify-center rounded-full", m.role === "user" ? "bg-brand text-white" : "bg-ai-soft text-ai")} aria-hidden>
+            <span className={cn("flex size-8 shrink-0 items-center justify-center rounded-full", m.role === "user" ? "bg-brand-solid text-white" : "bg-ai-soft text-ai")} aria-hidden>
               {m.role === "user" ? <User className="size-4" /> : <Bot className="size-4" />}
             </span>
             <div className={cn("max-w-[80%] rounded-2xl px-4 py-2.5", m.role === "user" ? "bg-brand-soft" : "bg-muted")}>

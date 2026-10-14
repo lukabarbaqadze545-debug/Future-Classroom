@@ -1,5 +1,6 @@
 import "server-only";
 import { getDb, now } from "@/lib/db";
+import { openAccessEnabled } from "@/lib/config";
 import { newId } from "@/lib/domain/ids";
 import { ApiError } from "@/lib/http/errors";
 import type { CurrentUser } from "@/lib/auth/session";
@@ -16,6 +17,19 @@ import { getClassForTeacher } from "./classes";
  * back what the teacher sent them. Only the path of a platform page and its
  * title are recorded — never query strings, other websites or programs.
  */
+
+/**
+ * Classroom control needs real student accounts. With open access everyone
+ * shares one demo student, so any visitor could pause every other visitor's
+ * screen: it is off there.
+ */
+export function classroomControlAvailable(): boolean {
+  return !openAccessEnabled();
+}
+
+function assertAvailable(): void {
+  if (!classroomControlAvailable()) throw new ApiError(409, "classroom_off", "Classroom control needs student accounts: it is off while open access is on.");
+}
 
 /** No heartbeat for this long: the student is offline. */
 export const OFFLINE_MS = 75_000;
@@ -158,7 +172,7 @@ function screenState(userId: string, row: PresenceRow | null, owner: boolean, at
  * visible one has gone quiet.
  */
 export function recordHeartbeat(user: CurrentUser, input: HeartbeatInput, at = now()): ScreenState | null {
-  if (user.role !== "student") return null;
+  if (user.role !== "student" || !classroomControlAvailable()) return null;
   const db = getDb();
   const path = cleanPath(input.path);
   const title = input.title.replace(/\s+/g, " ").trim().slice(0, 160);
@@ -207,6 +221,7 @@ export function recordLeave(user: CurrentUser, tabId: string, at = now()): void 
 
 export function raiseHand(user: CurrentUser, note: string, at = now()): void {
   if (user.role !== "student") throw new ApiError(403, "forbidden");
+  assertAvailable();
   ensurePresence(user.id);
   getDb()
     .prepare("UPDATE student_presence SET help_at = COALESCE(help_at, ?), help_note = ?, help_ack_at = CASE WHEN help_at IS NULL THEN NULL ELSE help_ack_at END WHERE user_id = ?")
@@ -249,6 +264,7 @@ export interface ClassroomState {
 const STATUS_ORDER: Record<StudentStatus, number> = { active: 0, idle: 1, away: 2, offline: 3 };
 
 export function classroomState(classId: string, teacher: CurrentUser, at = now()): ClassroomState {
+  assertAvailable();
   const cls = getClassForTeacher(classId, teacher);
   const db = getDb();
   const presence = db.prepare("SELECT * FROM student_presence WHERE user_id = ?");
@@ -288,6 +304,7 @@ export function classroomState(classId: string, teacher: CurrentUser, at = now()
 
 /** The students of the class a command is for: all of them, or the chosen ones (members only). */
 function recipients(classId: string, teacher: CurrentUser, studentIds: string[] | null): string[] {
+  assertAvailable();
   const members = getClassForTeacher(classId, teacher).members.map((m) => m.id);
   if (!studentIds) return members;
   const chosen = studentIds.filter((id) => members.includes(id));

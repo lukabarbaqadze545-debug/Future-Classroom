@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getCurrentUser, isStaff } from "@/lib/auth/session";
+import { isStaff, requirePageUser, ALL_ROLES } from "@/lib/auth/session";
 import { getDictionary } from "@/lib/i18n/server";
 import { fmt, relativeTime } from "@/lib/i18n/config";
 import { tr } from "@/lib/labs/localized";
@@ -26,7 +26,7 @@ export async function generateMetadata() {
 }
 
 export default async function StemLabPage() {
-  const user = (await getCurrentUser())!;
+  const user = await requirePageUser(ALL_ROLES, "/labs");
   const { dict, locale } = await getDictionary();
   const s = dict.labs.stem;
   const staff = isStaff(user);

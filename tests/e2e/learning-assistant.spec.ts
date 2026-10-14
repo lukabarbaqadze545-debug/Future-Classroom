@@ -136,7 +136,7 @@ test("a teacher turns a research start into an assignment for students", async (
 
 test("says honestly when the material does not cover a question, or covers only part of it", async ({ browser }) => {
   const { context, page } = await userPage(browser, "mariam");
-  await page.goto("/learning-assistant?mode=explain&q=zebrafish%20fin%20regeneration");
+  await page.goto("/learning-assistant?mode=explain&q=zebrafish%20axolotl%20regeneration");
   await expect(page.getByTestId("assistant-result")).toHaveAttribute("data-found", "no");
   await expect(page.getByText("The material does not seem to cover this.")).toBeVisible();
   await expect(page.getByTestId("assistant-passage")).toHaveCount(0);

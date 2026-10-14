@@ -80,9 +80,9 @@ All six labs are reachable from **Labs** in the navigation (`/labs`), plus **Lib
 | **STEM** (`/labs/stem`) | 8 classroom experiments (materials, safety, procedure, data table, conclusion), 7 simulations (projectile, motion, circuits, probability, linear model, growth, grid robot), electronics and robotics guides, engineering design projects. | Challenge questions are graded on the server with tolerances; experiment records reveal the expected results only after submission. Every item is labelled *Simulation*, *Classroom experiment* or *Physical project*. |
 | **Research** (`/labs/research`) | Question → hypothesis → sources → notes → evidence → data → analysis → findings → conclusion → presentation. Source quality checklist, quotations with attribution, evidence table, datasets with statistics and charts, generated bibliography, presentation mode. | Teacher feedback; quotations must be linked to a source (enforced on the server). |
 | **Critical Thinking** (`/labs/critical-thinking`) | Claim analysis, argument builder, fallacy identification (10 fallacies, taught for recognition, not manipulation), media literacy, debate mode with timer, intellectual humility. | Deterministic rubric feedback; progress per fallacy. |
-| **School Library** (`/library`) | Catalogue with filters, digital (openly licensed or school-owned) and physical copies, bookmarks, reading progress, questions answered from school materials. | Librarians print QR labels (`/library/labels`); scanning one opens the book page for that copy. Loans are recorded by staff. |
+| **School Library** (`/library`) | Catalogue with filters, digital (openly licensed or school-owned) and physical copies, **reading a book on the site** — a Word file opens as Word shows it (fonts, colours, tables, page breaks; drawn in the browser, no internet needed), or as text with a contents, pages and search inside the book — next to downloading the school's copy, bookmarks, reading progress, questions answered from school materials. | Librarians print QR labels (`/library/labels`); scanning one opens the book page for that copy. Loans are recorded by staff. Four books ship with the platform, among them *189 Problems in C++* (hints and solutions in separate parts, so a student has to go looking for them). |
 | **Career & University** (`/career`) | Career explorer, fields of study, a university guide (25 universities in Georgia and abroad for computer science, medicine and the arts: admission, costs, grants and scholarships, deadlines), university research cards, skills self-assessment, goals, portfolio. | The guide and the cards show when they were last checked, cite their sources and warn after a year — admission facts are never presented as permanent. |
-| **Classroom control** (`/teacher/classes/<id>/live`) | See what each student has open, who needs help; send messages or pages, pause screens — for the whole class or chosen students, from one computer. | Sees the platform only, never other sites or programs; see docs/CLASSROOM-CONTROL.md for blocking games on the computers. |
+| **Classroom control** (`/teacher/classes/<id>/live`) | See what each student has open, who needs help; send messages or pages, pause screens — for the whole class or chosen students, from one computer. | Needs real student accounts (`OPEN_ACCESS=false`). Sees the platform only, never other sites or programs; see docs/CLASSROOM-CONTROL.md for blocking games on the computers. |
 
 **Teachers** assign any lab item to a class or to students (`/teacher/assignments`), see who has started, handed in or finished, review work with feedback, and open each student's learning profile (`/teacher/students`). Lab items can also be run as a live classroom session (`/teacher/sessions/labs`).
 
@@ -99,7 +99,7 @@ Future Classroom is the learning infrastructure; the **Learning Assistant** (`/l
 | „რა კითხვები უნდა დავსვა ამ თემაზე?“ — what should I ask? | Questions built from the material's own definitions, formulas, claims and sections |
 | „დამეხმარე კვლევის დაწყებაში“ — help me start research | Research questions to choose from, the sources found, what they do not cover, and a Research Lab project created with real quotations and their pages |
 
-It searches only what the person may see (their materials by visibility, and published lessons — never activities, answers or solutions); a material can be chosen as the only source. Page numbers are shown only when the source has them. Without an AI key everything works; with one, only *explain* asks the model, only with the retrieved passages, and never for a question the material does not cover. Teachers can hand a research question or a set of questions to students as an assignment. Details and the design history: [docs/LEARNING-ASSISTANT.md](docs/LEARNING-ASSISTANT.md).
+It searches only what the person may see (their materials by visibility, and published lessons — never activities, answers or solutions); a material can be chosen as the only source. Page numbers are shown only when the source has them. Without an AI key everything works; with one, only *explain* asks the model, only with the retrieved passages, and never for a question the material does not cover. Teachers can hand a research question or a set of questions to students as an assignment. The assistant also reads **what a question is about** ("what does afternoon mean?" searches for *afternoon*) and works as a **dictionary** over the school's English–Spanish book: the entry as printed (with its page in the reader), forms such as *went → go*, Spanish → English, spelling help, suggestions while typing, listening with the device's own voice, and **My words** — saved words practised with cards or by choosing the answer on a spaced-repetition schedule, kept in the visitor's own browser. Details and the design history: [docs/LEARNING-ASSISTANT.md](docs/LEARNING-ASSISTANT.md).
 
 ## Running it in a classroom
 
@@ -112,9 +112,9 @@ npm run user:create -- --role teacher --username nbe --name "Nino Beridze"
 npm run doctor              # checks settings, database, backups, disk
 ```
 
-A production build (`npm start`) has demo sign-in and demo accounts **off** unless `DEMO_MODE` or `SEED_DEMO` is set to `true`. Anyone can create a student account with just a name and a password (`/register`; turn off with `SELF_REGISTRATION=false`); teachers can also create accounts on their class page and print sign-in slips.
+**Before real students use it, set `OPEN_ACCESS=false`** (see below). A production build (`npm start`) with `OPEN_ACCESS=false` has demo sign-in and demo accounts **off** unless `DEMO_MODE` or `SEED_DEMO` is set to `true`. Anyone can create a student account with just a name and a password (`/register`; turn off with `SELF_REGISTRATION=false`); teachers can also create accounts on their class page and print sign-in slips.
 
-**Guides:** [docs/LEARNING-ASSISTANT.md](docs/LEARNING-ASSISTANT.md) · [docs/OPERATIONS.md](docs/OPERATIONS.md) (install, service, backups, accounts, updates, checklists) · [docs/PILOT.md](docs/PILOT.md) (a 45-minute pilot lesson, minute by minute) · [docs/SECURITY-REVIEW.md](docs/SECURITY-REVIEW.md) · [docs/DATA-ARCHITECTURE.md](docs/DATA-ARCHITECTURE.md) (SQLite assessment, PostgreSQL plan) · [docs/CONTENT-ROADMAP.md](docs/CONTENT-ROADMAP.md) · [docs/LIBRARY-AND-UNIVERSITY-DATA.md](docs/LIBRARY-AND-UNIVERSITY-DATA.md) · [docs/AUDIT.md](docs/AUDIT.md) (pilot-readiness audit).
+**Guides:** [docs/LEARNING-ASSISTANT.md](docs/LEARNING-ASSISTANT.md) · [docs/OPERATIONS.md](docs/OPERATIONS.md) (install, service, backups, accounts, updates, checklists) · [docs/PILOT.md](docs/PILOT.md) (a 45-minute pilot lesson, minute by minute) · [docs/SECURITY-REVIEW.md](docs/SECURITY-REVIEW.md) · [docs/DATA-ARCHITECTURE.md](docs/DATA-ARCHITECTURE.md) (SQLite assessment, PostgreSQL plan) · [docs/CONTENT-ROADMAP.md](docs/CONTENT-ROADMAP.md) · [docs/LIBRARY-AND-UNIVERSITY-DATA.md](docs/LIBRARY-AND-UNIVERSITY-DATA.md) · [docs/AUDIT.md](docs/AUDIT.md) (pilot-readiness audit) · [docs/PROGRAMMING-AND-INDEPENDENT-LEARNING.md](docs/PROGRAMMING-AND-INDEPENDENT-LEARNING.md) (12-week C++ programme, independent-learning framework, student projects and assessment; in Georgian) · [docs/SUPABASE-AUTH.md](docs/SUPABASE-AUTH.md) (optional sign-up and sign-in with an email through Supabase: setup, flow, messages, privacy; in Georgian) · [docs/ART-AND-CREATIVE-THINKING.md](docs/ART-AND-CREATIVE-THINKING.md) (Art & Creative Thinking: foundations, art history and Georgian art, photography, digital art, creative thinking, art + technology, projects, portfolio, assessment, site structure and a 12-week programme; in Georgian).
 
 - Data lives in `data/` (SQLite database + uploaded files). `npm run backup` makes a checked copy while lessons run; `npm run restore` brings one back.
 - Real-time updates use Server-Sent Events with automatic polling fallback, so sessions keep working behind proxies or on unstable Wi-Fi; student drafts are kept in the browser.
@@ -122,6 +122,33 @@ A production build (`npm start`) has demo sign-in and demo accounts **off** unle
 - Run a single instance (the real-time channel and rate limiter are in-process).
 - Set `PUBLIC_BASE_URL` (e.g. `http://192.168.1.10:3000`) so the join address on the projector, account slips and library QR labels show the address workstations and phones actually use. Without it the server uses the request's address, replacing `localhost` with its own network address.
 - C++ checking on the server needs a Judge0 instance you run yourself (`JUDGE0_URL`, optionally `JUDGE0_TOKEN`). Student code is never executed by the Future Classroom server itself.
+
+## Open access and Vercel
+
+**Open access is on by default** (`OPEN_ACCESS`): there is no sign-in and no registration. The home page offers two choices, "demo teacher" and "demo student"; the page then greets "Hello, teacher!" or "Hello, student!", and a button in the header switches the view. A link to an inner page lets the visitor straight in as the view that part of the site is for (teacher pages: teacher; everything else: student). The choice is kept in a cookie (`fc_open`), nothing about it is stored on the server, so any server instance can serve the visitor. Everyone who opens the site works as the same demo account: they all see (and can change) the same data. That is right for showing the platform and wrong for a school with real students: set `OPEN_ACCESS=false` and the platform's own sign-in (and Supabase sign-in, when configured) is back; `npm run doctor` reports open access as a problem.
+
+**On Vercel** the app runs as it is, with these differences from a school server:
+
+- The deployment is read-only, so the database and uploaded files go to the instance's temporary folder (`/tmp/future-classroom`; `DATABASE_PATH` and `UPLOAD_DIR` still override). The demo school is created on the instance's first request (about 2 seconds), so **what visitors change is private to one running instance and is lost when Vercel replaces it**, and two visitors may be served by different instances. The seeded demo content is the same everywhere. Lasting, shared data needs a database outside the instance (see docs/DATA-ARCHITECTURE.md).
+- Live lessons use in-process messaging with polling as the fallback; on a platform that runs several instances, a teacher and the students of one lesson may land on different instances and not see each other. Run live lessons on a school server, or on a single always-on process.
+- A request body is limited to 4.5 MB: larger material uploads fail.
+- The Pyodide files (Python in the browser) are copied to `public/pyodide` by `npm run build` (the `prebuild` script) so Vercel serves them as static files; the built-in books are included in the deployment through `outputFileTracingIncludes` in `next.config.ts`.
+- No environment variables are needed. Set `ANTHROPIC_API_KEY` for the AI features and `DEFAULT_LANGUAGE=en` for an English demo.
+
+## Today: a reason to come back
+
+`/today` is open to everyone (no account needed) and is built to be opened every day:
+
+- **The daily challenge**: one question a day, the same for everybody, new at midnight (Tbilisi time). Each weekday has its own kind of question (Monday numbers, Tuesday science, Wednesday code and tech, Thursday thinking sharp, Friday a surprise from any subject, Saturday our world, Sunday life skills), taken from the built-in lessons and quizzes, so a week is a small course and a question comes back only after every other question of its kind. Three tries: hints after wrong answers, the answer after the third. **It is graded on the server** (`/api/daily/check`); the page never carries the answer, hints or explanation, and the check needs no database, so it works on any host.
+- **Study streak, experience points, levels, achievements, an activity map and three daily goals** (finishing all three earns a bonus). They come from the challenge and from real activity anywhere on the platform: correct practice answers, finished quizzes, live-class answers and joins, work in a laboratory (`src/lib/engagement/api-events.ts` decides what counts). Showing up counts: a missed challenge still keeps the streak. Wrong tries, answers and the result are plain: no confetti, no cartoon characters; a thin light crosses the top of the window when something is earned.
+- **It is the visitor's own and lives in their browser** (localStorage, `src/lib/engagement/model.ts` is the whole game and is unit-tested). It needs no account, works with open access (where everyone shares one demo student), survives a host without a database, and is not a grade: the teacher does not see it. The privacy page says so. Share button: a result to paste to friends, without the answer.
+- **For teachers**: *Start with today's challenge* on the teacher dashboard puts the question on the classroom display (`/present/daily`) with hints and the answer behind buttons.
+
+**Look**: black and premium with one red. Everything takes its colours from the tokens at the top of `src/app/globals.css` (`canvas`, `surface`, `ink`, `line`, `brand` for text and strokes, `brand-solid` behind white text, `glow-a/b/c` for the moving red lights), so the whole site changes in one place. `.theme-light` puts the original white page back inside a region (the projector's light mode, the research presentation) and printing always uses it, so worksheets, sign-in slips and QR labels stay black on white.
+
+**Motion** (`src/app/globals.css`, `src/components/motion/`): one language everywhere. Content rises into place with a soft focus pull (`.fc-rise`, staggered with `--i`), sections arrive as they scroll into view (`.fc-reveal`, tied to scroll where the browser can), numbers count up in pure CSS (`CountNumber`), the dark panels (`Aurora`) drift slowly, cards light up around the pointer (`.fc-spotlight`, one listener in `SpotlightPointer`), the navigation underline slides between items, and a page rises in when the address changes (`PageTransition`). It all collapses to a still page under `prefers-reduced-motion`.
+
+`SCHOOL_TIMEZONE` (an IANA name, default `Asia/Tbilisi`) decides where the day changes. About half of the built-in questions have no written explanation yet, so the "Why" panel is missing for them: adding explanations to the lessons in `src/lib/content/lessons/` improves the challenge directly.
 
 ## Architecture
 
@@ -159,11 +186,11 @@ src/
                         session bridge and assignment registry
     domain/             zod schemas, grading, ids/join codes, safe math-expression parser
     db/                 connection, schema, demo seed
-    content/            built-in lessons (EN + KA), subject catalogue and its resolver
+    content/            built-in lessons (EN + KA), subject catalogue and its resolver (library books: content/books/, their sources: content/books-src/)
     i18n/               en.ts (source of truth), ka.ts (type-checked against en), terminology
     files/              upload validation, text extraction (PDF lines, DOCX headings)
     http/, auth/, realtime/
-tests/unit, tests/e2e
+tests/unit, tests/e2e, tests/e2e-supabase
 ```
 
 ### Key design decisions
@@ -182,19 +209,23 @@ tests/unit, tests/e2e
 | `npm run dev` / `build` / `start` | Next.js |
 | `npm run typecheck` / `lint` / `test` | TypeScript, ESLint, Vitest |
 | `npm run check` | All three of the above |
-| `npm run test:e2e` | Builds, starts a fresh demo server with AI disabled and runs the Playwright suites (set `PLAYWRIGHT_CHROMIUM_PATH` to use a system Chromium, `E2E_SKIP_BUILD=1` to reuse the last build) |
+| `npm run test:e2e` | Builds, starts a fresh demo server with AI disabled and `OPEN_ACCESS=false` (so sign-in is tested) and runs the Playwright suites (set `PLAYWRIGHT_CHROMIUM_PATH` to use a system Chromium, `E2E_SKIP_BUILD=1` to reuse the last build) |
+| `npm run test:e2e:supabase` | The email sign-up and sign-in flow in a browser against a stand-in for Supabase (`tests/e2e-supabase/`); same options as `test:e2e` |
+| `npm run test:e2e:open` | The site in open-access mode (the default): two choices (demo teacher, demo student), no sign-in or registration |
 | `npm run db:reset` | Recreate the database with demo data (`-- --empty` for none) |
 | `npm run user:create` | Create a teacher/student/admin account |
 | `npm run user:password` | New temporary password for an account (`-- --username x`), or `-- --list` |
 | `npm run backup` / `restore` | Checked backup of database and uploads (safe while running) / restore one (server stopped) |
+| `npm run supabase:check` | Checks `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY` and asks the project whether the key is accepted, sign-ups and email confirmation are on and which redirect URL to allow (only the public key is used) |
 | `npm run doctor` | Health check: settings, database integrity, demo passwords, backup age, disk space |
 | `npm run materials:reindex` | Re-read uploaded files and rebuild their passages and knowledge (`-- --all` for every material); older materials are otherwise upgraded automatically at start-up |
 | `npm run drill` | Real browsers against a throwaway server: duplicate tabs, slow network, reloads, server restart mid-lesson |
+| `npx tsx scripts/build-problem-book.ts verify` / `build` | The C++ problem book (`content/books-src/cpp-problems/`, 189 problems): compiles every solution (warnings and sanitizers on), runs it on the examples, the extra tests and against a brute-force solution on random inputs, then `build` writes `content/books/cpp-problems-1.docx` and its text. Needs `g++` and `python3`; never runs in the app |
 | `node scripts/classroom-sim.mjs --base <url> --students 16` | Simulates a teacher, a projector and N students running a whole lesson over HTTP/SSE; prints latencies |
 
 ## Configuration
 
-See `.env.example`: `ANTHROPIC_API_KEY`, `AI_MODEL`, `DATABASE_PATH`, `UPLOAD_DIR`, `SEED_DEMO`, `DEMO_MODE`, `SELF_REGISTRATION`, `BACKUP_DIR`, `DEFAULT_LANGUAGE` (`ka` or `en`: the school's default interface language and the language of the demo data), `COOKIE_SECURE`, `PUBLIC_BASE_URL`, `JUDGE0_URL`, `JUDGE0_TOKEN`, `JUDGE0_PYTHON_ID`, `JUDGE0_CPP_ID`.
+See `.env.example`: `ANTHROPIC_API_KEY`, `AI_MODEL`, `DATABASE_PATH`, `UPLOAD_DIR`, `SEED_DEMO`, `DEMO_MODE`, `SELF_REGISTRATION`, `BACKUP_DIR`, `DEFAULT_LANGUAGE` (`ka` or `en`: the school's default interface language and the language of the demo data), `COOKIE_SECURE`, `PUBLIC_BASE_URL`, `JUDGE0_URL`, `JUDGE0_TOKEN`, `JUDGE0_PYTHON_ID`, `JUDGE0_CPP_ID`, `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` (optional email sign-up and sign-in through Supabase; see docs/SUPABASE-AUTH.md), `SCHOOL_TIMEZONE` (where the school day changes; default `Asia/Tbilisi`), `OPEN_ACCESS` (on by default: no sign-in at all, visitors choose the demo teacher or demo student view; `OPEN_ACCESS=false` brings sign-in back for real students).
 
 ## Known limitations
 

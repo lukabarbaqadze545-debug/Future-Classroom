@@ -1,4 +1,4 @@
-import { getCurrentUser } from "@/lib/auth/session";
+import { requirePageUser, STAFF_ROLES } from "@/lib/auth/session";
 import { getDictionary } from "@/lib/i18n/server";
 import { lessonsForSessions } from "@/lib/services/lessons";
 import { listClassesForTeacher } from "@/lib/services/classes";
@@ -13,7 +13,7 @@ export async function generateMetadata() {
 
 /** Start a live lesson: from a subject page (?lesson=), a class page (?class=) or from scratch. */
 export default async function NewSessionPage({ searchParams }: { searchParams: Promise<{ lesson?: string; class?: string }> }) {
-  const user = (await getCurrentUser())!;
+  const user = await requirePageUser(STAFF_ROLES, "/teacher");
   const [{ dict, locale }, params] = await Promise.all([getDictionary(), searchParams]);
   const lessons = lessonsForSessions(user, locale);
   const classes = listClassesForTeacher(user.id).map((c) => ({ id: c.id, name: c.name, size: c.members.length }));

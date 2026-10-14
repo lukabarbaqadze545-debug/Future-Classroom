@@ -20,8 +20,13 @@ export type ErrorCode =
   | "file_type_not_allowed"
   | "file_invalid"
   | "bad_origin"
+  | "invalid_token"
+  | "email_not_confirmed"
+  | "auth_unavailable"
   | "conflict"
   | "attempt_first"
+  | "stale_day"
+  | "classroom_off"
   | "internal";
 
 export class ApiError extends Error {

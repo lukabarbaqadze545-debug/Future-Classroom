@@ -371,7 +371,7 @@ export function StudentSession({ initial, signedIn }: { initial: View; signedIn:
         )}
 
         {view.session.paused && view.session.status !== "ended" ? (
-          <div role="alertdialog" aria-modal="true" aria-labelledby="paused-title" className="fixed inset-0 z-40 flex items-center justify-center bg-ink/60 p-4 backdrop-blur-sm">
+          <div role="alertdialog" aria-modal="true" aria-labelledby="paused-title" className="fixed inset-0 z-40 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm">
             <div className="max-w-md rounded-3xl bg-surface p-8 text-center shadow-[var(--shadow-raised)]">
               <Coffee aria-hidden className="mx-auto size-10 text-brand" />
               <h2 id="paused-title" className="mt-4 text-2xl font-semibold">

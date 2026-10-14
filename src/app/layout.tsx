@@ -7,6 +7,12 @@ import { I18nProvider } from "@/lib/i18n/client";
 import { getCurrentUser } from "@/lib/auth/session";
 import { DraftScopeProvider } from "@/components/labs/use-local-draft";
 import { StudentPresence } from "@/components/classroom/student-presence";
+import { classroomControlAvailable } from "@/lib/services/classroom";
+import { AuthHashRedirect } from "@/components/auth/auth-hash-redirect";
+import { supabaseConfig } from "@/lib/supabase/config";
+import { schoolTimeZone } from "@/lib/config";
+import { EngagementProvider } from "@/components/engagement/engagement-provider";
+import { SpotlightPointer } from "@/components/motion/spotlight-pointer";
 
 export async function generateMetadata(): Promise<Metadata> {
   const { dict } = await getDictionary();
@@ -18,7 +24,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export const viewport: Viewport = {
-  themeColor: "#1d4ed8",
+  themeColor: "#060607",
   width: "device-width",
   initialScale: 1,
 };
@@ -32,8 +38,12 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           {dict.nav.skipToContent}
         </a>
         <I18nProvider locale={locale} dict={dict}>
-          <DraftScopeProvider userId={user?.id ?? null}>{children}</DraftScopeProvider>
-          {user?.role === "student" ? <StudentPresence /> : null}
+          {supabaseConfig() ? <AuthHashRedirect /> : null}
+          <DraftScopeProvider userId={user?.id ?? null}>
+            <EngagementProvider timeZone={schoolTimeZone()}>{children}</EngagementProvider>
+            <SpotlightPointer />
+          </DraftScopeProvider>
+          {user?.role === "student" && classroomControlAvailable() ? <StudentPresence /> : null}
         </I18nProvider>
       </body>
     </html>

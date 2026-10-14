@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { getCurrentUser } from "@/lib/auth/session";
+import { requirePageUser, ALL_ROLES } from "@/lib/auth/session";
 import { getDictionary, pageTitle } from "@/lib/i18n/server";
 import { fmt, formatDateTime } from "@/lib/i18n/config";
 import { tr } from "@/lib/labs/localized";
@@ -18,7 +18,7 @@ export async function generateMetadata() {
 /** One submission: the code as handed in and how each test went. Owner and staff only. */
 export default async function SubmissionPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const user = (await getCurrentUser())!;
+  const user = await requirePageUser(ALL_ROLES, "/labs");
   const submission = getSubmission(id);
   if (!submission || (submission.userId !== user.id && user.role === "student")) notFound();
   const problem = getProblem(submission.problemId);
