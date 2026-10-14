@@ -42,7 +42,9 @@ export default async function SessionsPage() {
                 <th className="px-5 py-3 font-medium">{s.code}</th>
                 <th className="px-5 py-3 font-medium">{s.participants}</th>
                 <th className="px-5 py-3 font-medium">{s.activities}</th>
-                <th className="px-5 py-3 font-medium" />
+                <th className="px-5 py-3 font-medium">
+                  <span className="sr-only">{dict.common.open}</span>
+                </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-line">

@@ -30,7 +30,7 @@ export function StemCard({
         <ModeBadge mode={mode} label={dict.labs.stem.modes[mode]} />
         {status}
       </div>
-      <h3 className="mt-2.5 font-semibold group-hover:text-lab-stem">{title}</h3>
+      <h2 className="mt-2.5 font-semibold group-hover:text-lab-stem-ink">{title}</h2>
       <p className="mt-1 line-clamp-3 text-sm text-ink-muted">{text}</p>
       <div className="mt-auto flex items-center justify-between gap-2 pt-3 text-sm text-ink-muted">
         <span>{meta}</span>

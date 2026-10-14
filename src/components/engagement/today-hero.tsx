@@ -38,7 +38,7 @@ function NameForm({ initial, onDone }: { initial: string; onDone: () => void }) 
         placeholder={dict.today.namePlaceholder}
         aria-label={dict.today.namePlaceholder}
         data-testid="today-name-input"
-        className="h-11 min-w-0 flex-1 rounded-xl border border-white/15 bg-white/[0.07] px-3.5 text-white backdrop-blur placeholder:text-white/50 focus:border-glow-c/60 focus:bg-white/10 focus:outline-none"
+        className="h-11 min-w-0 flex-1 rounded-xl border border-white/15 bg-white/[0.07] px-3.5 text-white backdrop-blur placeholder:text-white/60 focus:border-glow-c/60 focus:bg-white/10 focus:outline-none"
       />
       <button type="submit" className="h-11 rounded-xl bg-white px-5 font-semibold text-night transition-transform hover:bg-white/90 active:scale-[0.97]" data-testid="today-name-save">
         {dict.today.nameSave}
@@ -108,7 +108,7 @@ function ActivityMap({ state, today }: { state: { days: string[]; xpByDay: Recor
     <div className="fc-rise mt-8" style={{ "--i": 5 } as React.CSSProperties} data-testid="activity-map">
       <div className="mb-3 flex max-w-[680px] items-center justify-between">
         <h2 className="text-xs font-semibold tracking-[0.14em] text-white/60 uppercase">{t.activityTitle}</h2>
-        <div className="flex items-center gap-1.5 text-[11px] text-white/50" aria-hidden>
+        <div className="flex items-center gap-1.5 text-[11px] text-white/70" aria-hidden>
           <span>{t.activityLess}</span>
           {levels.map((cls, i) => (
             <span key={i} className={cn("size-2.5 rounded-[3px]", cls)} />
@@ -123,7 +123,7 @@ function ActivityMap({ state, today }: { state: { days: string[]; xpByDay: Recor
         className="grid max-w-[680px] gap-[5px] [--weeks:16] [grid-auto-flow:column] [grid-template-columns:auto_repeat(var(--weeks),minmax(0,1fr))] [grid-template-rows:repeat(7,auto)] md:[--weeks:22] lg:[--weeks:26]"
       >
         {t.weekdaysShort.map((name, i) => (
-          <span key={name} aria-hidden className={cn("flex items-center pr-2.5 text-[10px] text-white/45", i % 2 === 1 && "invisible")}>
+          <span key={name} aria-hidden className={cn("flex items-center pr-2.5 text-[11px] text-white/65", i % 2 === 1 && "invisible")}>
             {name}
           </span>
         ))}

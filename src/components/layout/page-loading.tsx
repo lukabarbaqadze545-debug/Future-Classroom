@@ -1,7 +1,7 @@
 /** Lightweight skeleton shown while a page's data loads. */
 export function PageLoading() {
   return (
-    <main id="main" aria-busy="true" className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+    <main id="main" tabIndex={-1} aria-busy="true" className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8 focus:outline-none">
       <div className="h-8 w-64 animate-pulse rounded-lg bg-muted" />
       <div className="mt-3 h-4 w-96 max-w-full animate-pulse rounded bg-muted" />
       <div className="mt-8 grid gap-4 md:grid-cols-3">

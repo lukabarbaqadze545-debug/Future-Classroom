@@ -89,7 +89,7 @@ export async function SiteHeader() {
 
 export function PageContainer({ children, wide = false }: { children: React.ReactNode; wide?: boolean }) {
   return (
-    <main id="main" className={`mx-auto w-full ${wide ? "max-w-[1600px]" : "max-w-7xl"} px-4 py-6 sm:px-6 sm:py-8 lg:px-8`}>
+    <main id="main" tabIndex={-1} className={`mx-auto w-full ${wide ? "max-w-[1600px]" : "max-w-7xl"} px-4 py-6 sm:px-6 sm:py-8 lg:px-8 focus:outline-none`}>
       <PageTransition>{children}</PageTransition>
     </main>
   );

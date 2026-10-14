@@ -41,7 +41,7 @@ export function CareerExplorer({ bookmarked }: { bookmarked: string[] }) {
             <li key={x.id}>
               <Link href={`/career/careers/${x.id}`} className="group flex h-full flex-col rounded-2xl border border-line bg-surface p-4 shadow-[var(--shadow-card)] transition-colors hover:border-lab-career/40">
                 <div className="flex items-start justify-between gap-2">
-                  <h3 className="font-semibold group-hover:text-lab-career">{tr(x.title, locale)}</h3>
+                  <h2 className="font-semibold group-hover:text-lab-career-ink">{tr(x.title, locale)}</h2>
                   {bookmarked.includes(x.id) ? <Badge tone="brand">{dict.labs.common.bookmarked}</Badge> : null}
                 </div>
                 <p className="mt-1 text-sm text-ink-muted">{tr(x.summary, locale)}</p>

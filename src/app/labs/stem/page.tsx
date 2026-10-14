@@ -93,7 +93,7 @@ export default async function StemLabPage() {
             <Card key={t.id} className="p-5">
               <h3 className="font-semibold">{tr(t.title, locale)}</h3>
               <p className="mt-1.5 text-[15px] text-ink-muted">{tr(t.text, locale)}</p>
-              {t.formula ? <p className="mt-2 font-mono text-lg font-semibold text-lab-stem">{t.formula}</p> : null}
+              {t.formula ? <p className="mt-2 font-mono text-lg font-semibold text-lab-stem-ink">{t.formula}</p> : null}
             </Card>
           ))}
         </div>
@@ -137,7 +137,7 @@ export default async function StemLabPage() {
         <div className="grid gap-4 lg:grid-cols-3">
           {(["sensors", "actuators", "control"] as const).map((group) => (
             <Card key={group} className="p-5">
-              <h3 className="font-semibold text-lab-stem">{s.conceptGroups[group]}</h3>
+              <h3 className="font-semibold text-lab-stem-ink">{s.conceptGroups[group]}</h3>
               <dl className="mt-2 space-y-2.5">
                 {ROBOTICS_CONCEPTS.filter((c) => c.group === group).map((c) => (
                   <div key={c.id}>

@@ -44,7 +44,7 @@ export default async function CareerPage({ searchParams }: { searchParams: Promi
       {FIELDS.map((f) => (
         <li key={f.id}>
           <Card className="flex h-full flex-col p-5">
-            <h3 className="text-lg font-semibold text-lab-career">{tr(f.name, locale)}</h3>
+            <h3 className="text-lg font-semibold text-lab-career-ink">{tr(f.name, locale)}</h3>
             <p className="mt-1 text-[15px]">{tr(f.description, locale)}</p>
             <p className="mt-3 text-sm">
               <span className="font-medium">{c.fields.schoolSubjects}: </span>

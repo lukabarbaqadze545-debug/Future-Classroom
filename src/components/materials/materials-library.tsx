@@ -209,7 +209,7 @@ export function MaterialsLibrary({ initial, currentUserId, lessons, isAdmin }: {
                 <div className="flex items-start gap-3">
                   <FileText aria-hidden className="mt-0.5 size-5 shrink-0 text-brand" />
                   <div className="min-w-0">
-                    <h3 className="font-semibold">{material.title}</h3>
+                    <h2 className="font-semibold">{material.title}</h2>
                     <p className="text-sm text-ink-muted">
                       {dict.subjects[material.subject]}
                       {material.grade ? ` · ${fmt(dict.common.grade, { n: material.grade })}` : ""}

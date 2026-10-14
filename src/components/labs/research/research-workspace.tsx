@@ -239,7 +239,7 @@ export function ResearchWorkspace({
         <p className="text-[15px] text-ink-muted">{r.findings.prompt}</p>
         {data.findings.map((f, i) => (
           <div key={i} className="flex gap-2">
-            <span className="mt-3 w-6 shrink-0 text-right font-semibold text-lab-research">{i + 1}.</span>
+            <span className="mt-3 w-6 shrink-0 text-right font-semibold text-lab-research-ink">{i + 1}.</span>
             <Textarea aria-label={`${r.steps.findings} ${i + 1}`} rows={2} placeholder={r.findings.placeholder} value={f} onChange={(e) => set({ findings: data.findings.map((x, j) => (j === i ? e.target.value : x)) })} data-testid="finding" />
             <Button variant="ghost" aria-label={dict.common.remove} onClick={() => set({ findings: data.findings.filter((_, j) => j !== i) })}>
               <Trash2 aria-hidden className="size-4" />

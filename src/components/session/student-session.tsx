@@ -238,7 +238,7 @@ export function StudentSession({ initial, signedIn }: { initial: View; signedIn:
         </div>
       </header>
 
-      <main id="main" className="mx-auto max-w-4xl px-4 py-6 sm:py-10">
+      <main id="main" tabIndex={-1} className="mx-auto max-w-4xl px-4 py-6 sm:py-10 focus:outline-none">
         {error ? <Notice tone="danger" className="mb-4">{error}</Notice> : null}
         {liveError?.status === 401 ? (
           <div className="mb-4" data-testid="removed-from-session">

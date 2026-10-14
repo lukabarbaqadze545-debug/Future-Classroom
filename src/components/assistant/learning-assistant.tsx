@@ -474,7 +474,7 @@ export function LearningAssistant({ initialMode = "explain", initialText = "", m
             {result.mode === "research" && result.research ? (
               <section className="space-y-4 rounded-2xl border border-lab-research/30 bg-lab-research/5 p-5" data-testid="assistant-research">
                 <h2 className="flex items-center gap-2 font-semibold">
-                  <FlaskConical aria-hidden className="size-4 text-lab-research" />
+                  <FlaskConical aria-hidden className="size-4 text-lab-research-ink" />
                   {a.researchTitle}
                 </h2>
                 <fieldset>

@@ -34,7 +34,7 @@ export default async function PortfolioOverviewPage({ params }: { params: Promis
         <div className="mx-auto max-w-4xl">
           <div className="flex flex-wrap items-end justify-between gap-3 border-b border-line pb-4">
             <div>
-              <p className="text-sm font-medium text-lab-career">{p.studentOverview}</p>
+              <p className="text-sm font-medium text-lab-career-ink">{p.studentOverview}</p>
               <h1 className="text-3xl font-semibold">{student.displayName}</h1>
               <p className="text-sm text-ink-muted">
                 {fmtCount(p.items, items.length)} · {fmt(p.printedOn, { date: formatDate(locale, now()) })}

@@ -148,9 +148,9 @@ export function Catalogue({ items, initialSubject }: { items: CatalogueItem[]; i
                   {r.reading ? <Badge tone={r.reading === "finished" ? "success" : "brand"}>{b.reading.status[r.reading]}</Badge> : null}
                   {r.bookmarked ? <BookmarkCheck aria-label={dict.labs.common.bookmarked} className="ml-auto size-4 text-brand" /> : null}
                 </div>
-                <h3 className="mt-2.5 font-semibold group-hover:text-lab-library" lang={r.language === "ka" ? "ka" : r.language === "en" ? "en" : undefined}>
+                <h2 className="mt-2.5 font-semibold group-hover:text-lab-library-ink" lang={r.language === "ka" ? "ka" : r.language === "en" ? "en" : undefined}>
                   {r.title}
-                </h3>
+                </h2>
                 {r.authors ? (
                   <p className="text-sm text-ink-muted" lang={r.language === "ka" ? "ka" : r.language === "en" ? "en" : undefined}>
                     {r.authors}
@@ -159,7 +159,7 @@ export function Catalogue({ items, initialSubject }: { items: CatalogueItem[]; i
                 <p className="mt-1.5 line-clamp-2 text-sm text-ink-muted">{tr(r.description, locale)}</p>
                 <div className="mt-auto flex flex-wrap items-center gap-x-3 gap-y-1 pt-3 text-xs text-ink-muted">
                   {r.digital ? (
-                    <span className="inline-flex items-center gap-1 font-medium text-lab-library">
+                    <span className="inline-flex items-center gap-1 font-medium text-lab-library-ink">
                       <Globe aria-hidden className="size-3.5" />
                       {b.digitalVersion}
                     </span>

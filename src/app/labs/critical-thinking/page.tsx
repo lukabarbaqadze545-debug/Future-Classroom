@@ -39,10 +39,10 @@ export default async function CriticalThinkingPage() {
           <li key={e.id}>
             <Link href={`/labs/critical-thinking/${e.id}`} className="group flex h-full flex-col rounded-2xl border border-line bg-surface p-4 shadow-[var(--shadow-card)] transition-colors hover:border-lab-critical/40">
               <div className="flex items-start justify-between gap-2">
-                <span className="text-xs font-semibold tracking-wide text-lab-critical uppercase">{c.kinds[e.kind]}</span>
+                <span className="text-xs font-semibold tracking-wide text-lab-critical-ink uppercase">{c.kinds[e.kind]}</span>
                 {b ? <Badge tone={b.score / Math.max(b.max, 1) >= 0.8 ? "success" : "warn"}>{fmt(c.best, { score: b.score, max: b.max })}</Badge> : null}
               </div>
-              <h3 className="mt-2 font-semibold group-hover:text-lab-critical">{tr(e.title, locale)}</h3>
+              <h2 className="mt-2 font-semibold group-hover:text-lab-critical-ink">{tr(e.title, locale)}</h2>
               <p className="mt-1 line-clamp-2 text-sm text-ink-muted">{tr(e.intro, locale)}</p>
               <div className="mt-auto flex items-center justify-between gap-2 pt-3 text-sm text-ink-muted">
                 <span>
@@ -67,7 +67,7 @@ export default async function CriticalThinkingPage() {
       {CONCEPTS.map((card) => (
         <li key={card.topic}>
           <Card className="h-full p-5">
-            <h3 className="text-lg font-semibold text-lab-critical">{tr(card.title, locale)}</h3>
+            <h3 className="text-lg font-semibold text-lab-critical-ink">{tr(card.title, locale)}</h3>
             <p className="mt-2 text-[15px] leading-relaxed">{tr(card.summary, locale)}</p>
             <p className="mt-3 rounded-xl bg-muted/60 px-3.5 py-2.5 text-sm">
               <span className="font-medium">{c.guide.example}: </span>
@@ -86,7 +86,7 @@ export default async function CriticalThinkingPage() {
   const guidePanel = (
     <div className="space-y-8">
       <p className="flex items-start gap-2 rounded-2xl border border-lab-critical/25 bg-lab-critical/5 px-4 py-3 text-[15px]">
-        <HeartHandshake aria-hidden className="mt-0.5 size-5 shrink-0 text-lab-critical" />
+        <HeartHandshake aria-hidden className="mt-0.5 size-5 shrink-0 text-lab-critical-ink" />
         {c.respectNote}
       </p>
       <section>

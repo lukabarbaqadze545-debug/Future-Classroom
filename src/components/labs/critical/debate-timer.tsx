@@ -51,7 +51,7 @@ export function DebateTimer() {
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <p className="flex items-center gap-2 font-semibold">
-            <Timer aria-hidden className="size-4.5 text-lab-critical" />
+            <Timer aria-hidden className="size-4.5 text-lab-critical-ink" />
             {d.timer}
           </p>
           <p className="text-sm text-ink-muted">{d.timerLead}</p>
@@ -63,7 +63,7 @@ export function DebateTimer() {
               type="button"
               aria-pressed={phase === p.id}
               onClick={() => choose(p.id)}
-              className={cn("h-10 rounded-lg border px-3 text-sm font-medium", phase === p.id ? "border-lab-critical bg-lab-critical/10 text-lab-critical" : "border-line-strong hover:bg-muted")}
+              className={cn("h-10 rounded-lg border px-3 text-sm font-medium", phase === p.id ? "border-lab-critical bg-lab-critical/10 text-lab-critical-ink" : "border-line-strong hover:bg-muted")}
             >
               {d.phases[p.id]} · {p.seconds / 60}:00
             </button>

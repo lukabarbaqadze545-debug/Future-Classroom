@@ -106,7 +106,7 @@ export function UniversityGuidePanel({ dict, locale }: { dict: Dictionary; local
             return (
               <li key={f}>
                 <Link href={`/career/universities/for/${f}`} className="flex h-full items-center gap-3 rounded-2xl border border-line bg-surface p-4 shadow-[var(--shadow-card)] transition-colors hover:border-lab-career/50">
-                  <Icon aria-hidden className="size-6 shrink-0 text-lab-career" />
+                  <Icon aria-hidden className="size-6 shrink-0 text-lab-career-ink" />
                   <span className="min-w-0">
                     <span className="block font-semibold">{g.fieldNames[f]}</span>
                     <span className="inline-flex items-center gap-1 text-sm text-brand">

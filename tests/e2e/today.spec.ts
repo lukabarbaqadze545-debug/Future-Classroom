@@ -73,7 +73,7 @@ test("a wrong answer gives a hint and a retry, a right one earns the streak, exp
   await expect(page.getByTestId("badge-firstTry")).toHaveAttribute("data-earned", "false");
   await expect(page.getByTestId("next-challenge")).toContainText(/\d\d:\d\d:\d\d/);
   await expect(page.getByTestId("toasts")).toContainText("1-day streak");
-  await expect(page.getByTestId("streak-chip")).toHaveAttribute("aria-label", /1 day streak/);
+  await expect(page.getByTestId("streak-chip")).toHaveAttribute("title", /1 day streak/);
 
   // Everything survives a reload, and the question is closed for today.
   await page.reload();

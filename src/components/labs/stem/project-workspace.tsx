@@ -16,7 +16,7 @@ import { useLocalJsonDraft } from "../use-local-draft";
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
     <Card className="space-y-4 p-5">
-      <h2 className="text-lg font-semibold text-lab-stem">{title}</h2>
+      <h2 className="text-lg font-semibold text-lab-stem-ink">{title}</h2>
       {children}
     </Card>
   );

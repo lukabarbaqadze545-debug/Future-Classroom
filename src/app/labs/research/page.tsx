@@ -37,7 +37,7 @@ export default async function ResearchLabPage() {
       <LabHeader lab="research" hubLabel={dict.labs.hub.title} labName={r.title} lead={r.lead} />
       <AssignmentBanner assignments={assignments} dict={dict} locale={locale} />
       <p className="mb-6 flex items-start gap-2 rounded-2xl border border-lab-research/25 bg-lab-research/5 px-4 py-3 text-[15px]">
-        <ShieldCheck aria-hidden className="mt-0.5 size-5 shrink-0 text-lab-research" />
+        <ShieldCheck aria-hidden className="mt-0.5 size-5 shrink-0 text-lab-research-ink" />
         {r.noInvent}
       </p>
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
@@ -83,7 +83,7 @@ export default async function ResearchLabPage() {
             <ol className="mt-3 space-y-2.5">
               {RESEARCH_STEPS.map((s, i) => (
                 <li key={s} className="flex gap-3">
-                  <span className="inline-flex size-7 shrink-0 items-center justify-center rounded-full bg-lab-research/10 text-sm font-semibold text-lab-research">{i + 1}</span>
+                  <span className="inline-flex size-7 shrink-0 items-center justify-center rounded-full bg-lab-research/10 text-sm font-semibold text-lab-research-ink">{i + 1}</span>
                   <span>
                     <span className="font-medium">{r.steps[s]}</span>
                     <span className="block text-sm text-ink-muted">{r.stepHelp[s]}</span>

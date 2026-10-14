@@ -53,7 +53,7 @@ export function Meter({ value, tone = "brand", className, label }: { value: numb
   const colors = { brand: "bg-brand-solid", success: "bg-success", warn: "bg-warn", danger: "bg-danger", neutral: "bg-ink-subtle" };
   const clamped = Math.max(0, Math.min(100, value));
   return (
-    <div role="meter" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(clamped)} aria-label={label} className={cn("h-2 w-full overflow-hidden rounded-full bg-muted", className)}>
+    <div role={label ? "meter" : undefined} aria-hidden={label ? undefined : true} aria-valuemin={label ? 0 : undefined} aria-valuemax={label ? 100 : undefined} aria-valuenow={label ? Math.round(clamped) : undefined} aria-label={label} className={cn("h-2 w-full overflow-hidden rounded-full bg-muted", className)}>
       <div className={cn("h-full rounded-full transition-[width] duration-500", colors[tone])} style={{ width: `${clamped}%` }} />
     </div>
   );

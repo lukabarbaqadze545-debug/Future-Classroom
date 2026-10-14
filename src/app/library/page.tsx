@@ -144,7 +144,7 @@ export default async function LibraryPage({ searchParams }: { searchParams: Prom
       <LabHeader lab="library" hubLabel={dict.labs.hub.title} labName={b.title} lead={b.lead} />
       <AssignmentBanner assignments={assignments} dict={dict} locale={locale} />
       <p className="mb-6 flex items-start gap-2 rounded-2xl border border-lab-library/25 bg-lab-library/5 px-4 py-3 text-[15px]">
-        <ShieldCheck aria-hidden className="mt-0.5 size-5 shrink-0 text-lab-library" />
+        <ShieldCheck aria-hidden className="mt-0.5 size-5 shrink-0 text-lab-library-ink" />
         {b.legalNote}
       </p>
       <TabPanels

@@ -99,7 +99,7 @@ export function GridRobotSim({ report }: { report: TaskReporter }) {
                 return (
                   <li key={i} className="flex items-center gap-2 rounded-lg border border-line px-3 py-1.5 text-sm">
                     <span className="w-5 text-ink-subtle tabular-nums">{i + 1}.</span>
-                    <Icon aria-hidden className="size-4 text-lab-stem" />
+                    <Icon aria-hidden className="size-4 text-lab-stem-ink" />
                     <span className="flex-1 font-medium">{s.commands[st.command]}</span>
                     <Button variant="ghost" size="sm" aria-label="−" disabled={st.times <= 1} onClick={() => change(program.map((x, j) => (j === i ? { ...x, times: x.times - 1 } : x)))}>
                       <Minus aria-hidden className="size-4" />

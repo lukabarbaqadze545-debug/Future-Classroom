@@ -90,7 +90,7 @@ export function ProblemBrowser({ problems, progress }: { problems: ProblemSummar
               )}
               aria-pressed={level === String(lv.level)}
             >
-              <p className="text-xs font-semibold tracking-wide text-lab-programming uppercase">{fmt(dict.labs.common.level, { n: lv.level })}</p>
+              <p className="text-xs font-semibold tracking-wide text-lab-programming-ink uppercase">{fmt(dict.labs.common.level, { n: lv.level })}</p>
               <p className="mt-1 font-semibold">{info.name}</p>
               <p className="mt-1 line-clamp-2 text-sm text-ink-muted">{info.text}</p>
               <p className="mt-3 text-xs text-ink-subtle">{fmt(p.solvedCount, { solved: lv.solved, total: lv.total })}</p>
@@ -150,7 +150,7 @@ export function ProblemBrowser({ problems, progress }: { problems: ProblemSummar
                       className={cn("size-5 shrink-0", x.status === "solved" ? "text-success" : x.status === "attempted" ? "text-warn" : "text-line-strong")}
                     />
                   </div>
-                  <h3 className="mt-2.5 font-semibold group-hover:text-lab-programming">{tr(x.title, locale)}</h3>
+                  <h2 className="mt-2.5 font-semibold group-hover:text-lab-programming-ink">{tr(x.title, locale)}</h2>
                   <div className="mt-auto flex items-center justify-between gap-2 pt-3 text-sm text-ink-muted">
                     <span>
                       {p.topics[x.topic]}

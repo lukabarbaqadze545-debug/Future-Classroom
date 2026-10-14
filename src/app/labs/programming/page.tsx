@@ -62,14 +62,14 @@ export default async function ProgrammingLabPage() {
           className="mb-6 flex items-center justify-between gap-3 rounded-2xl border border-lab-programming/30 bg-lab-programming/5 px-5 py-4 transition-colors hover:bg-lab-programming/10"
         >
           <span>
-            <span className="block text-xs font-semibold tracking-wide text-lab-programming uppercase">{p.recommended}</span>
+            <span className="block text-xs font-semibold tracking-wide text-lab-programming-ink uppercase">{p.recommended}</span>
             <span className="mt-0.5 block font-semibold">{tr(recommended.title, locale)}</span>
             <span className="block text-sm text-ink-muted">
               {p.levels[recommended.level].name} · {p.topics[recommended.topic]}
               {recommended.authorName ? ` · ${recommended.authorName}` : ""}
             </span>
           </span>
-          <ArrowRight aria-hidden className="size-5 shrink-0 text-lab-programming" />
+          <ArrowRight aria-hidden className="size-5 shrink-0 text-lab-programming-ink" />
         </Link>
       ) : null}
       <ProblemBrowser problems={problems} progress={progress.byLevel} />

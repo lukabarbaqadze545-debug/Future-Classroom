@@ -64,7 +64,7 @@ export function PresentShell({ children, controls, top, overlay }: { children: (
           </button>
         </div>
       </div>
-      <main id="main" className="flex flex-1 flex-col px-6 py-6 lg:px-12">
+      <main id="main" tabIndex={-1} className="flex flex-1 flex-col px-6 py-6 lg:px-12 focus:outline-none">
         {children(theme)}
       </main>
       <div className={cn("sticky bottom-0 border-t px-4 py-4 lg:px-10", dark ? "border-white/10 bg-black/95" : "border-line bg-surface/95")}>

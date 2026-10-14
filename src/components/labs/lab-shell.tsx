@@ -16,12 +16,12 @@ export const LAB_ICONS: Record<LabId, LucideIcon> = {
 
 /** Accent colour per laboratory — subtle, but each room is recognisable. */
 export const LAB_ACCENT: Record<LabId, { text: string; bg: string; soft: string; border: string }> = {
-  programming: { text: "text-lab-programming", bg: "bg-lab-programming", soft: "bg-lab-programming/10", border: "border-lab-programming/30" },
-  stem: { text: "text-lab-stem", bg: "bg-lab-stem", soft: "bg-lab-stem/10", border: "border-lab-stem/30" },
-  research: { text: "text-lab-research", bg: "bg-lab-research", soft: "bg-lab-research/10", border: "border-lab-research/30" },
-  critical: { text: "text-lab-critical", bg: "bg-lab-critical", soft: "bg-lab-critical/10", border: "border-lab-critical/30" },
-  library: { text: "text-lab-library", bg: "bg-lab-library", soft: "bg-lab-library/10", border: "border-lab-library/30" },
-  career: { text: "text-lab-career", bg: "bg-lab-career", soft: "bg-lab-career/10", border: "border-lab-career/30" },
+  programming: { text: "text-lab-programming-ink", bg: "bg-lab-programming", soft: "bg-lab-programming/10", border: "border-lab-programming/30" },
+  stem: { text: "text-lab-stem-ink", bg: "bg-lab-stem", soft: "bg-lab-stem/10", border: "border-lab-stem/30" },
+  research: { text: "text-lab-research-ink", bg: "bg-lab-research", soft: "bg-lab-research/10", border: "border-lab-research/30" },
+  critical: { text: "text-lab-critical-ink", bg: "bg-lab-critical", soft: "bg-lab-critical/10", border: "border-lab-critical/30" },
+  library: { text: "text-lab-library-ink", bg: "bg-lab-library", soft: "bg-lab-library/10", border: "border-lab-library/30" },
+  career: { text: "text-lab-career-ink", bg: "bg-lab-career", soft: "bg-lab-career/10", border: "border-lab-career/30" },
 };
 
 export function LabIcon({ lab, size = "md" }: { lab: LabId; size?: "sm" | "md" | "lg" }) {

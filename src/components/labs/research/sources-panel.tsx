@@ -167,7 +167,7 @@ export function SourcesPanel({
           <h3 className="font-semibold">{editing.id ? r.edit : r.add}</h3>
           {library.length ? (
             <div className="flex flex-wrap items-center gap-2 rounded-xl bg-lab-library/5 p-3">
-              <BookMarked aria-hidden className="size-4 text-lab-library" />
+              <BookMarked aria-hidden className="size-4 text-lab-library-ink" />
               <Select
                 aria-label={r.fromLibrary}
                 className="max-w-md"

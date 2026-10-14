@@ -48,7 +48,7 @@ export default async function FieldGuidePage({ params }: Props) {
             {guide.paths.map((p, i) => (
               <li key={i}>
                 <Card className="p-5">
-                  <h3 className="font-semibold text-lab-career">{tr(p.title, locale)}</h3>
+                  <h3 className="font-semibold text-lab-career-ink">{tr(p.title, locale)}</h3>
                   <p className="mt-1.5 text-[15px] leading-relaxed">{tr(p.text, locale)}</p>
                   <ul className="mt-3 grid gap-2 sm:grid-cols-2">
                     {p.universities.map((id) => {

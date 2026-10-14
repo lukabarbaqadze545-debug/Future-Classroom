@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { freshDb, makeUser } from "../helpers";
 import { areaOf, isPlatformPath } from "@/lib/classroom/areas";
+import { heartbeatSchema, MAX_IDLE_MS } from "@/lib/classroom/schema";
 import { createClass } from "@/lib/services/classes";
 import {
   classroomControlAvailable,
@@ -238,5 +239,22 @@ describe("classroom control", () => {
 
   it("ignores heartbeats from teachers", () => {
     expect(recordHeartbeat(teacher, beat(), T0)).toBeNull();
+  });
+});
+
+describe("the report a student's browser sends", () => {
+  const ok = { tabId: "t", path: "/library", title: "Library", visible: true };
+  it("clamps a silly idle time instead of refusing the report (a refused report shows the student as offline)", () => {
+    // A browser whose "last input" clock had not started sent the whole epoch as idle time.
+    expect(heartbeatSchema.parse({ ...ok, idleMs: Date.now() }).idleMs).toBe(MAX_IDLE_MS);
+    expect(heartbeatSchema.parse({ ...ok, idleMs: -5 }).idleMs).toBe(0);
+    expect(heartbeatSchema.parse({ ...ok, idleMs: 1234.6 }).idleMs).toBe(1235);
+    expect(heartbeatSchema.parse(ok).idleMs).toBe(0);
+  });
+  it("still refuses what is not a report", () => {
+    expect(heartbeatSchema.safeParse({ ...ok, idleMs: Number.NaN }).success).toBe(false);
+    expect(heartbeatSchema.safeParse({ ...ok, tabId: "" }).success).toBe(false);
+    expect(heartbeatSchema.safeParse({ ...ok, path: "x".repeat(2001) }).success).toBe(false);
+    expect(heartbeatSchema.safeParse({ ...ok, visible: "yes" }).success).toBe(false);
   });
 });

@@ -39,7 +39,7 @@ export function SkillsSelf({ initial, readOnly }: { initial: SkillRow[]; readOnl
       <div className="grid gap-5 lg:grid-cols-3">
         {(["thinking", "technical", "people"] as const).map((group) => (
           <Card key={group} className="p-5">
-            <h3 className="font-semibold text-lab-career">{s.groups[group]}</h3>
+            <h3 className="font-semibold text-lab-career-ink">{s.groups[group]}</h3>
             <ul className="mt-3 space-y-4">
               {rows
                 .filter((r) => r.group === group)

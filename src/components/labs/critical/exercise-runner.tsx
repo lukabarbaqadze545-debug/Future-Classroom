@@ -380,7 +380,7 @@ function DebateForm({ exercise, answers, setAnswers, locked }: { exercise: Stude
   return (
     <div className="space-y-5">
       <Card className="border-lab-critical/30 p-5">
-        <p className="text-xs font-semibold tracking-wide text-lab-critical uppercase">{d.motion}</p>
+        <p className="text-xs font-semibold tracking-wide text-lab-critical-ink uppercase">{d.motion}</p>
         <p className="mt-1 text-xl font-semibold">{exercise.motion ? tr(exercise.motion, locale) : null}</p>
         {exercise.context ? <p className="mt-2 text-[15px] text-ink-muted">{tr(exercise.context, locale)}</p> : null}
       </Card>
@@ -479,7 +479,7 @@ function HumilityForm({ exercise, answers, setAnswers, result, locked }: { exerc
             ) : (
               <>
                 <div className="rounded-xl border border-lab-critical/30 bg-lab-critical/5 px-4 py-3">
-                  <p className="text-xs font-semibold tracking-wide text-lab-critical uppercase">{h.newEvidence}</p>
+                  <p className="text-xs font-semibold tracking-wide text-lab-critical-ink uppercase">{h.newEvidence}</p>
                   <p className="mt-1 text-[15px]">{tr(s.newEvidence, locale)}</p>
                 </div>
                 <ConfidenceSlider label={h.after} value={rating?.after ?? rating?.before ?? 50} disabled={locked} onChange={(v) => rate(s.id, { after: v })} />
@@ -522,7 +522,7 @@ function DecisionForm({ exercise, answers, setAnswers, result, locked }: { exerc
   return (
     <fieldset disabled={locked} className="space-y-5">
       <Card className="p-5">
-        <p className="text-xs font-semibold tracking-wide text-lab-critical uppercase">{d.scenario}</p>
+        <p className="text-xs font-semibold tracking-wide text-lab-critical-ink uppercase">{d.scenario}</p>
         <p className="mt-1 text-lg font-semibold">{exercise.scenario ? tr(exercise.scenario as L, locale) : null}</p>
         <p className="mt-2 text-sm text-ink-muted">{d.note}</p>
       </Card>

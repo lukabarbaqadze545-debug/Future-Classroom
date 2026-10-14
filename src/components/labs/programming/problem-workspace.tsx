@@ -339,7 +339,7 @@ export function ProblemWorkspace({
                 <Send aria-hidden className="size-4" />
                 {busy === "submit" ? p.submitting : isCode ? (cppManual ? p.submitOutputs : p.submit) : p.check}
               </Button>
-              {progress ? <Spinner label={progress} className="text-lab-programming" /> : null}
+              {progress ? <Spinner label={progress} className="text-lab-programming-ink" /> : null}
             </div>
             {error ? <Notice tone="danger">{error}</Notice> : null}
           </div>

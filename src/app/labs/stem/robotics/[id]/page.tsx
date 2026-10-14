@@ -68,7 +68,7 @@ export default async function RoboticsProjectPage({ params }: Props) {
         {section(s.steps, project.steps, true)}
         <Card className="p-5">
           <h2 className="flex items-center gap-2 font-semibold">
-            <Cpu aria-hidden className="size-4.5 text-lab-stem" />
+            <Cpu aria-hidden className="size-4.5 text-lab-stem-ink" />
             {s.extensions}
           </h2>
           <ul className="mt-2 list-disc space-y-1.5 pl-5 text-[15px]">

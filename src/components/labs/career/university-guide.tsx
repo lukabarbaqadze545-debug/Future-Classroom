@@ -66,7 +66,7 @@ export function UniversityGuideList({ items }: { items: GuideItem[] }) {
         {shown.map((u) => (
           <li key={u.id} data-testid="guide-university">
             <Link href={`/career/universities/${u.id}`} className="flex h-full flex-col rounded-2xl border border-line bg-surface p-5 shadow-[var(--shadow-card)] transition-colors hover:border-lab-career/50">
-              <h3 className="font-semibold text-lab-career">
+              <h3 className="font-semibold text-lab-career-ink">
                 {u.name}
                 {u.short && !u.name.includes(u.short) ? <span className="text-ink-subtle"> · {u.short}</span> : null}
               </h3>

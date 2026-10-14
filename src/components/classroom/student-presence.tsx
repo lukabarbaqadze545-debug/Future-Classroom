@@ -84,7 +84,8 @@ export function StudentPresence() {
           path: pathRef.current,
           title: pageTitle(document.title, appTitle),
           visible: document.visibilityState === "visible",
-          idleMs: Math.max(0, Date.now() - lastInput.current),
+          // Before the first keystroke or touch the page has only just opened: not idle.
+          idleMs: lastInput.current ? Math.max(0, Date.now() - lastInput.current) : 0,
         },
       });
       if (!next) return;

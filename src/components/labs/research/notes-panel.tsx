@@ -176,7 +176,7 @@ function NoteItem({ note, source, onDelete }: { note: ResearchNote; source: Rese
         <div className="min-w-0 text-[15px]">
           {note.kind === "quote" ? (
             <blockquote className="flex gap-2 italic">
-              <Quote aria-hidden className="mt-0.5 size-4 shrink-0 text-lab-research" />
+              <Quote aria-hidden className="mt-0.5 size-4 shrink-0 text-lab-research-ink" />
               <span>“{note.content}”</span>
             </blockquote>
           ) : (
