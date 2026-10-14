@@ -609,4 +609,61 @@ CREATE TABLE assistant_saved (
 CREATE INDEX assistant_saved_user ON assistant_saved(user_id, created_at DESC);
 `,
   },
+  {
+    id: 6,
+    name: "classroom_control",
+    sql: `
+-- Which page of the platform each signed-in student has open (one row per
+-- student: the tab they are looking at), whether they are active, and a
+-- raised hand. Only paths inside the platform are recorded, never query
+-- strings, other websites or other programs.
+CREATE TABLE student_presence (
+  user_id      TEXT PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+  tab_id       TEXT NOT NULL,
+  path         TEXT NOT NULL,
+  title        TEXT NOT NULL DEFAULT '',
+  page_since   INTEGER NOT NULL,
+  last_seen    INTEGER NOT NULL,
+  last_input   INTEGER NOT NULL,
+  visible      INTEGER NOT NULL DEFAULT 1,
+  left_at      INTEGER,
+  help_at      INTEGER,
+  help_note    TEXT NOT NULL DEFAULT '',
+  help_ack_at  INTEGER,
+  locked       INTEGER NOT NULL DEFAULT 0,
+  locked_at    INTEGER,
+  lock_message TEXT NOT NULL DEFAULT '',
+  locked_by    TEXT REFERENCES users(id) ON DELETE SET NULL
+);
+
+-- The pages a student opened, for the teacher's "today" timeline. Kept for
+-- 14 days.
+CREATE TABLE page_visits (
+  id         TEXT PRIMARY KEY,
+  user_id    TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  path       TEXT NOT NULL,
+  title      TEXT NOT NULL DEFAULT '',
+  started_at INTEGER NOT NULL,
+  ended_at   INTEGER NOT NULL
+);
+CREATE INDEX page_visits_user ON page_visits(user_id, started_at DESC);
+
+-- What a teacher sent to a student's screen: open a page, or a message.
+-- A message to the whole class is one row per student, so each can be
+-- marked as delivered and read.
+CREATE TABLE classroom_commands (
+  id           TEXT PRIMARY KEY,
+  student_id   TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  teacher_id   TEXT REFERENCES users(id) ON DELETE SET NULL,
+  class_id     TEXT REFERENCES classes(id) ON DELETE CASCADE,
+  kind         TEXT NOT NULL CHECK (kind IN ('open','message')),
+  path         TEXT,
+  text         TEXT NOT NULL DEFAULT '',
+  created_at   INTEGER NOT NULL,
+  delivered_at INTEGER,
+  read_at      INTEGER
+);
+CREATE INDEX classroom_commands_student ON classroom_commands(student_id, delivered_at, created_at);
+`,
+  },
 ];

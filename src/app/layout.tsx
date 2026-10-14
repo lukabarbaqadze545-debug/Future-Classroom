@@ -6,6 +6,7 @@ import { getDictionary } from "@/lib/i18n/server";
 import { I18nProvider } from "@/lib/i18n/client";
 import { getCurrentUser } from "@/lib/auth/session";
 import { DraftScopeProvider } from "@/components/labs/use-local-draft";
+import { StudentPresence } from "@/components/classroom/student-presence";
 
 export async function generateMetadata(): Promise<Metadata> {
   const { dict } = await getDictionary();
@@ -32,6 +33,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         </a>
         <I18nProvider locale={locale} dict={dict}>
           <DraftScopeProvider userId={user?.id ?? null}>{children}</DraftScopeProvider>
+          {user?.role === "student" ? <StudentPresence /> : null}
         </I18nProvider>
       </body>
     </html>

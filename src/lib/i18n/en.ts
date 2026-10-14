@@ -5,6 +5,7 @@
  */
 import { labsEn } from "./labs-en";
 import { assistantEn } from "./assistant-en";
+import { classroomEn } from "./classroom-en";
 
 export const en = {
   meta: {
@@ -1034,6 +1035,7 @@ export const en = {
           "Teachers see results for their own sessions and quizzes.",
           "Students see only their own progress and, when the teacher reveals them, anonymous class results.",
           "Materials are visible according to the visibility the teacher chooses.",
+          "While a student is signed in, the teacher of their class can see which page of Future Classroom is open and whether the student is working, and the pages opened that day (kept for 14 days). Nothing outside Future Classroom is seen: not other websites, programs or the screen itself.",
         ],
       },
     ],
@@ -1041,6 +1043,7 @@ export const en = {
   },
   labs: labsEn,
   assistant: assistantEn,
+  classroom: classroomEn,
 };
 
 type Widen<T> = T extends string

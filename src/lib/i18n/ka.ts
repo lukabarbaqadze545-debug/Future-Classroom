@@ -1,6 +1,7 @@
 import type { Dictionary } from "./en";
 import { labsKa } from "./labs-ka";
 import { assistantKa } from "./assistant-ka";
+import { classroomKa } from "./classroom-ka";
 
 /** Georgian UI strings (ქართული). Must match the English dictionary shape. */
 export const ka: Dictionary = {
@@ -1031,6 +1032,7 @@ export const ka: Dictionary = {
           "მასწავლებლები ხედავენ საკუთარი სესიებისა და ქვიზების შედეგებს.",
           "მოსწავლეები ხედავენ მხოლოდ საკუთარ პროგრესს და, როცა მასწავლებელი აჩვენებს, კლასის ანონიმურ შედეგებს.",
           "მასალები ჩანს იმ ხილვადობის მიხედვით, რომელსაც მასწავლებელი აირჩევს.",
+          "სანამ მოსწავლე სისტემაშია, მისი კლასის მასწავლებელს ჩანს, Future Classroom-ის რომელი გვერდია გახსნილი და მუშაობს თუ არა მოსწავლე, ასევე — იმავე დღეს გახსნილი გვერდები (ინახება 14 დღე). Future Classroom-ის გარეთ არაფერი ჩანს: არც სხვა ვებგვერდები, არც პროგრამები, არც თავად ეკრანი.",
         ],
       },
     ],
@@ -1038,4 +1040,5 @@ export const ka: Dictionary = {
   },
   labs: labsKa,
   assistant: assistantKa,
+  classroom: classroomKa,
 };

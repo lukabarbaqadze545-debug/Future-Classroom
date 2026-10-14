@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ClipboardList, Play } from "lucide-react";
+import { ClipboardList, MonitorPlay, Play } from "lucide-react";
 import { getCurrentUser } from "@/lib/auth/session";
 import { getDictionary } from "@/lib/i18n/server";
 import { fmt, fmtCount, formatDateTime, relativeTime } from "@/lib/i18n/config";
@@ -61,6 +61,10 @@ export default async function ClassPage({ params }: Props) {
             <ButtonLink href={`/teacher/sessions/new?class=${cls.id}`} size="lg" data-testid="class-start-lesson">
               <Play aria-hidden className="size-5" />
               {c.startLesson}
+            </ButtonLink>
+            <ButtonLink href={`/teacher/classes/${cls.id}/live`} size="lg" variant="secondary" data-testid="class-live">
+              <MonitorPlay aria-hidden className="size-5" />
+              {dict.classroom.open}
             </ButtonLink>
             <ButtonLink href={`/teacher/assignments/new?class=${cls.id}`} size="lg" variant="secondary">
               <ClipboardList aria-hidden className="size-5" />
