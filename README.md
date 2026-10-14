@@ -221,6 +221,7 @@ tests/unit, tests/e2e, tests/e2e-supabase
 | `npm run materials:reindex` | Re-read uploaded files and rebuild their passages and knowledge (`-- --all` for every material); older materials are otherwise upgraded automatically at start-up |
 | `npm run drill` | Real browsers against a throwaway server: duplicate tabs, slow network, reloads, server restart mid-lesson |
 | `npx tsx scripts/build-problem-book.ts verify` / `build` | The C++ problem book (`content/books-src/cpp-problems/`, 189 problems): compiles every solution (warnings and sanitizers on), runs it on the examples, the extra tests and against a brute-force solution on random inputs, then `build` writes `content/books/cpp-problems-1.docx` and its text. Needs `g++` and `python3`; never runs in the app |
+| `node scripts/classroom-control-sim.mjs --base <url> --students 20` | Simulates classroom control: students' heartbeats, the teacher's live view, and a message, a page and a pause sent to everyone; prints latencies and how long each command took to arrive (needs `OPEN_ACCESS=false`) |
 | `node scripts/classroom-sim.mjs --base <url> --students 16` | Simulates a teacher, a projector and N students running a whole lesson over HTTP/SSE; prints latencies |
 
 ## Configuration

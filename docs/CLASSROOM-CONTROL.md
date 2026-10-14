@@ -96,6 +96,14 @@ such as Veyon can run beside the platform; the platform does not depend on it.
 
 Load: 20 students send one small request every 6 seconds and the teacher's page
 one every 4 seconds — a few requests per second on the school server.
+Measured with `scripts/classroom-control-sim.mjs` (20 students, one minute, a
+production build on the development container): 4 requests per second, a
+heartbeat took 8 ms (median) and 15 ms (95th percentile), the teacher's view
+8 ms (94 ms at the 95th percentile), and every command — message, open a page,
+pause, resume — reached all 20 students within 6 seconds (median 3.4 s, the
+interval of the students' heartbeats). Run it against your own server with
+`node scripts/classroom-control-sim.mjs --base http://<server>:3000 --students 20`
+(needs `OPEN_ACCESS=false` and the demo teacher, or `--teacher/--password`).
 
 ## Safety rules, and where they are enforced
 
