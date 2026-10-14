@@ -4,6 +4,8 @@ import { lessonsForSessions } from "@/lib/services/lessons";
 import { listClassesForTeacher } from "@/lib/services/classes";
 import { PageContainer } from "@/components/layout/site-header";
 import { PageHeader } from "@/components/ui/misc";
+import { openAccessEnabled } from "@/lib/config";
+import { Notice } from "@/components/ui/notice";
 import { StartSessionForm } from "@/components/teacher/start-session-form";
 
 export async function generateMetadata() {
@@ -22,6 +24,13 @@ export default async function NewSessionPage({ searchParams }: { searchParams: P
   return (
     <PageContainer>
       <PageHeader title={dict.newSession.title} description={dict.newSession.lead} />
+      {openAccessEnabled() ? (
+        <div className="mb-5 max-w-3xl" data-testid="open-access-session-notice">
+          <Notice tone="warn" title={dict.newSession.openAccessNotice.title}>
+            {dict.newSession.openAccessNotice.text}
+          </Notice>
+        </div>
+      ) : null}
       <StartSessionForm lessons={lessons} classes={classes} initialLessonId={initialLessonId} initialClassId={initialClassId} />
     </PageContainer>
   );

@@ -1105,6 +1105,10 @@ export const en = {
   },
   newSession: {
     title: "Start a lesson in class",
+    openAccessNotice: {
+      title: "Class lessons need a school server",
+      text: "This is the open demo. Live lessons, join codes and classroom control need one running copy on a school computer with student accounts (OPEN_ACCESS=false): on a hosting service that runs several copies, starting a lesson can fail with \"We couldn't find that\". See docs/FIRST-LESSON-KA.md.",
+    },
     lead: "Choose a lesson and a class. Students join with the code shown on the board — students of the class also see the lesson on their home page.",
     lesson: "Lesson",
     search: "Search by title or topic",

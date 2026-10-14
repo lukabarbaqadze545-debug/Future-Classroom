@@ -122,3 +122,10 @@ test("classroom control stays off: everyone shares one demo student, so no one c
   await expect(page.getByTestId("live-unavailable")).toContainText("Classroom control is off while open access is on");
   expect((await page.request.post(`/api/classroom/${classId}/control`, { data: { action: "lock", studentIds: null, message: "" } })).status()).toBe(409);
 });
+
+test("the start-a-lesson page warns that class lessons need a school server", async ({ page }) => {
+  await page.goto("/");
+  await page.getByTestId("demo-teacher").click();
+  await page.goto("/teacher/sessions/new");
+  await expect(page.getByTestId("open-access-session-notice")).toContainText("Class lessons need a school server");
+});
