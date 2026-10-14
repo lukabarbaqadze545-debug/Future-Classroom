@@ -104,7 +104,7 @@ export function LiveClassroom({ classId, initial }: { classId: string; initial: 
 
   // Times are shown relative to the server's clock, as of the last update.
   const ago = (ts: number) => relativeTime(dict, ts, state.at);
-  const clock = (ts: number) => new Date(ts).toLocaleTimeString(locale, { hour: "2-digit", minute: "2-digit" });
+  const clock = (ts: number) => new Date(ts).toLocaleTimeString(locale === "ka" ? "ka-GE" : "en-GB", { hour: "2-digit", minute: "2-digit", hour12: false });
   const students = state.students;
   const targetIds = selected.size ? [...selected] : null;
   const targetLabel = targetIds ? fmtCount(c.target.chosen, targetIds.length) : c.target.whole;

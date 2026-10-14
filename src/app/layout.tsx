@@ -43,7 +43,13 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             <EngagementProvider timeZone={schoolTimeZone()}>{children}</EngagementProvider>
             <SpotlightPointer />
           </DraftScopeProvider>
-          {user?.role === "student" && classroomControlAvailable() ? <StudentPresence /> : null}
+          {user?.role === "student" && classroomControlAvailable() ? (
+            <>
+              {/* Room under the page for the help button, so it never covers the last lines. */}
+              <div aria-hidden className="h-16 print:hidden" />
+              <StudentPresence />
+            </>
+          ) : null}
         </I18nProvider>
       </body>
     </html>

@@ -26,13 +26,13 @@ export function TodayStrip({ challengeNumber }: { challengeNumber: number }) {
       <span className="relative flex size-10 shrink-0 items-center justify-center rounded-xl bg-white/10 text-glow-c">
         <Activity aria-hidden className="size-5" strokeWidth={2} />
       </span>
-      <span className="relative min-w-0 flex-1">
+      <span className="relative min-w-[11rem] flex-1">
         <span className="block font-semibold">{solved ? t.challenge.ctaDone : t.challenge.cta}</span>
         <span className="block text-sm text-white/70">
           {fmt(t.challenge.title, { n: challengeNumber })} · {fmtCount(t.streak, streak)} · {fmt(t.levelShort, { n: levelOf(state.xp) })}
         </span>
       </span>
-      <span className="relative inline-flex h-10 items-center gap-1.5 rounded-xl bg-white px-4 text-sm font-semibold text-night transition-transform group-hover:translate-x-0.5">
+      <span className="relative inline-flex h-10 items-center gap-1.5 rounded-xl bg-white px-4 max-sm:w-full max-sm:justify-center text-sm font-semibold text-night transition-transform group-hover:translate-x-0.5">
         {solved ? <Check aria-hidden className="size-4" strokeWidth={3} /> : null}
         {solved ? t.title : t.challenge.start}
         <ArrowRight aria-hidden className="size-4" />

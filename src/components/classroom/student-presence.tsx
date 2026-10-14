@@ -7,6 +7,7 @@ import { Hand, PauseCircle, X } from "lucide-react";
 import { useI18n } from "@/lib/i18n/client";
 import { fmt } from "@/lib/i18n/config";
 import { api } from "@/lib/client/api";
+import { Aurora } from "@/components/motion/aurora";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/form";
 
@@ -242,15 +243,24 @@ export function StudentPresence() {
             </Button>
           </div>
         ) : (
-          <Button variant="secondary" className="shadow-[var(--shadow-card)]" onClick={() => setHelpOpen((o) => !o)} aria-expanded={helpOpen} data-testid="help-button">
-            <Hand aria-hidden className="size-4" />
-            {c.help.button}
+          <Button
+            variant="secondary"
+            size="sm"
+            className="max-sm:size-12 max-sm:justify-center max-sm:rounded-full max-sm:p-0 bg-surface/95 shadow-[var(--shadow-raised)] backdrop-blur"
+            onClick={() => setHelpOpen((o) => !o)}
+            aria-expanded={helpOpen}
+            aria-label={c.help.button}
+            title={c.help.button}
+            data-testid="help-button"
+          >
+            <Hand aria-hidden className="size-4 max-sm:size-5" />
+            <span className="max-sm:hidden">{c.help.button}</span>
           </Button>
         )}
       </div>
 
       {toast ? (
-        <div role="status" className="fc-fade-in fixed top-20 left-1/2 z-40 -translate-x-1/2 rounded-xl bg-ink px-4 py-2 text-sm text-surface shadow-lg" data-testid="classroom-toast">
+        <div role="status" className="fc-fade-in fixed top-20 left-1/2 z-40 -translate-x-1/2 rounded-xl bg-night px-4 py-2 text-sm text-white shadow-[var(--shadow-raised)] ring-1 ring-white/15" data-testid="classroom-toast">
           {toast}
         </div>
       ) : null}
@@ -273,16 +283,17 @@ export function StudentPresence() {
       {/* Paused screen: covers everything and is not reachable behind it */}
       {locked
         ? createPortal(
-            <div data-classroom-overlay className="fixed inset-0 z-[100] flex items-center justify-center bg-ink p-6 text-center text-surface" role="alertdialog" aria-modal="true" aria-labelledby="paused-title" data-testid="screen-paused">
-              <div className="max-w-xl">
-                <PauseCircle aria-hidden className="mx-auto size-20 opacity-90" />
+            <div data-classroom-overlay className="fixed inset-0 z-[100] flex items-center justify-center overflow-hidden bg-night p-6 text-center text-white" role="alertdialog" aria-modal="true" aria-labelledby="paused-title" data-testid="screen-paused">
+              <Aurora />
+              <div className="relative max-w-xl">
+                <PauseCircle aria-hidden className="mx-auto size-20 text-glow-c" />
                 <h1 id="paused-title" className="mt-6 text-3xl font-semibold">
                   {c.paused.title}
                 </h1>
                 <p className="mt-4 text-2xl leading-snug" data-testid="paused-message">
                   {state?.lockMessage || c.paused.defaultMessage}
                 </p>
-                {state?.lockedBy ? <p className="mt-6 text-sm opacity-70">{fmt(c.paused.from, { name: state.lockedBy })}</p> : null}
+                {state?.lockedBy ? <p className="mt-6 text-sm text-white/70">{fmt(c.paused.from, { name: state.lockedBy })}</p> : null}
               </div>
             </div>,
             document.body,
